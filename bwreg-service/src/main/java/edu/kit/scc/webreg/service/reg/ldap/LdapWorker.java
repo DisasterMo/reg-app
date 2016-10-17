@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Michael Simon - initial
+ *     Sven Siebler  - Samba modifications for Service SDS@hd
  ******************************************************************************/
 package edu.kit.scc.webreg.service.reg.ldap;
 
@@ -22,6 +23,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchResult;
+import java.io.IOException;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.slf4j.Logger;
@@ -38,6 +40,11 @@ import edu.vt.middleware.ldap.AttributesFactory;
 import edu.vt.middleware.ldap.Ldap;
 import edu.vt.middleware.ldap.Ldap.AttributeModification;
 import edu.vt.middleware.ldap.SearchFilter;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+
+import java.util.Hashtable;
 
 public class LdapWorker {
 
@@ -57,18 +64,55 @@ public class LdapWorker {
 		this.auditor = auditor;
 		this.sambaEnabled = sambaEnabled;
 		
+                if (sambaEnabled) {
+                    logger.debug("INFO LdapWorker - using Samba Style");
+                } else {
+                    logger.debug("INFO LdapWorker - using Non-Samba Style");
+                }
 		try {
 			connectionManager = new LdapConnectionManager(prop);
 			ldapUserBase = prop.readProp("ldap_user_base");
 			ldapGroupBase = prop.readProp("ldap_group_base");
 
-			if (sambaEnabled)
-				sidPrefix = prop.readProp("sid_prefix");
+			//if (sambaEnabled)
+			//	sidPrefix = prop.readProp("sid_prefix");
 		} catch (PropertyReaderException e) {
 			throw new RegisterException(e);
 		}		
 	}
 
+        /**
+         * Aufrufen eines externen Tools zum ausführen von LDAP relevanten Abfragen
+         * 
+         * @param cmd Kommando inkl. zusätzlichen Parametern
+         * @param msg Text der in Logmeldungen verwendet werden soll
+         * @param uid 
+         * @return 
+         */
+        private String externalCall(String[] cmd, String msg, String uid) {
+            try {
+                ProcessBuilder pb = new ProcessBuilder(cmd);
+                pb.redirectErrorStream(true);                        
+                Process p = pb.start();
+                BufferedReader reader = new BufferedReader (new InputStreamReader(p.getInputStream()));                            
+                p.waitFor();
+                String line = reader.readLine();
+                String logline="";
+                while (line != null && ! line.trim().equals("--EOF--")) {
+                    logger.debug("console: {}",line);
+                    logline += " " + line;
+                    line = reader.readLine();
+                }
+                auditor.logAction("", msg.toUpperCase() + ": SUCCESS:", uid, msg + ": "+logline, AuditStatus.SUCCESS);
+                return logline;
+            } catch (IOException|InterruptedException e) {
+                logger.warn("{} FAILED: {}", 
+                                    new Object[] {msg, e.getMessage()});
+//                auditor.logAction("", "SET SAMBA PASSWORD LDAP USER", uid, "Set User samba password failed: " + e.getMessage(), AuditStatus.FAIL);
+                return "FAILED";
+            }
+        }
+        
 	public void deleteUser(String uid) {
 
 		for (Ldap ldap : connectionManager.getConnections()) {
@@ -82,6 +126,12 @@ public class LdapWorker {
 						new Object[] {uid, ldapUserBase, e.getMessage()});
 				auditor.logAction("", "DELETE LDAP USER", uid, "User deletion failed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
 			}
+                        
+                        if (sambaEnabled) {
+                            // SS: es muss anschließen auf Konsole die DB repariert werden: "samba-tool dbcheck --fix" um einen fehlerhaften Memberverweis zu entfernen
+                            logger.debug("Samba4 Delete User: repair groupmemberships..."); 
+                            externalCall(new String[]{"/home/wildfly/repair_groups"}, "Samba Delete User", uid);
+                        }
 /*
 			try {
 				Iterator<SearchResult> iterator = ldap.search(new SearchFilter("memberUid=" + uid), new String[] {"cn"});
@@ -124,13 +174,22 @@ public class LdapWorker {
 		for (Ldap ldap : connectionManager.getConnections()) {
 			try {
 				Set<String> oldMemberUids = new HashSet<String>();
-				Attributes attrs = ldap.getAttributes(dn, new String[]{"memberUid"});
-				Attribute attr = attrs.get("memberUid");
+                                String memberUid_Identifier = "memberUid";
+                                
+                                // SS: Samba 4 AD legt die Infos bei der Gruppe im Attribut member als "UID=xxxx,dc..." ab (anstatt in memberUid als XXX)
+                                if (sambaEnabled) {
+                                    memberUid_Identifier = "member";   
+                                }                                
+                                Attributes attrs = ldap.getAttributes(dn, new String[]{memberUid_Identifier});
+                                Attribute attr = attrs.get(memberUid_Identifier);
 				if (attr != null) {
-					for (int i=0; i<attr.size(); i++) {
-						String memberUid = (String) attr.get(i);
-						oldMemberUids.add(memberUid);
-					}
+                                    for (int i=0; i<attr.size(); i++) {
+                                        String memberUid = (String) attr.get(i);
+                                        if (sambaEnabled) {        
+                                            memberUid = memberUid.substring(memberUid.indexOf("UID=")+4, memberUid.indexOf(","));
+                                        }
+                                        oldMemberUids.add(memberUid);
+                                    }
 				}
 				
 				Set<String> addMemberUids = new HashSet<String>(memberUids);
@@ -140,25 +199,31 @@ public class LdapWorker {
 				removeMemberUids.removeAll(memberUids);
 
 				for (String memberUid : addMemberUids) {
-					logger.info("Adding member {} to group {}", memberUid, cn);
-					try {
-						ldap.modifyAttributes(dn, AttributeModification.ADD, 
-								AttributesFactory.createAttributes("memberUid", memberUid));
-						auditor.logAction(cn, "ADD LDAP GROUP MEMBER", memberUid, "Added member on " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
-					} catch (NamingException e) {
-						auditor.logAction(cn, "ADD LDAP GROUP MEMBER", memberUid, "Add member on " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
-					}
+                                    if (sambaEnabled) {
+                                        memberUid = "uid="+memberUid+","+ldapUserBase;
+                                    }
+                                    logger.info("Adding member {} to group {}", memberUid, cn);
+                                    try {
+                                            ldap.modifyAttributes(dn, AttributeModification.ADD, 
+                                                            AttributesFactory.createAttributes(memberUid_Identifier, memberUid));
+                                            auditor.logAction(cn, "ADD LDAP GROUP MEMBER", memberUid, "Added member on " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
+                                    } catch (NamingException e) {
+                                            auditor.logAction(cn, "ADD LDAP GROUP MEMBER", memberUid, "Add member on " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
+                                    }
 				}
 				
 				for (String memberUid : removeMemberUids) {
-					logger.info("Removing member {} from group {}", memberUid, cn);
-					try {
-						ldap.modifyAttributes(dn, AttributeModification.REMOVE, 
-								AttributesFactory.createAttributes("memberUid", memberUid));
-						auditor.logAction(cn, "REMOVE LDAP GROUP MEMBER", memberUid, "Removed member on " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
-					} catch (NamingException e) {
-						auditor.logAction(cn, "REMOVE LDAP GROUP MEMBER", memberUid, "Remove member on " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
-					}
+                                    if (sambaEnabled) {
+                                        memberUid = "uid="+memberUid+","+ldapUserBase;
+                                    }
+                                    logger.info("Removing member {} from group {}", memberUid, cn);
+                                    try {
+                                            ldap.modifyAttributes(dn, AttributeModification.REMOVE, 
+                                                            AttributesFactory.createAttributes(memberUid_Identifier, memberUid));
+                                            auditor.logAction(cn, "REMOVE LDAP GROUP MEMBER", memberUid, "Removed member on " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
+                                    } catch (NamingException e) {
+                                            auditor.logAction(cn, "REMOVE LDAP GROUP MEMBER", memberUid, "Remove member on " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
+                                    }
 				}
 
 			} catch (NamingException e) {
@@ -176,11 +241,11 @@ public class LdapWorker {
 			try {
 				ldap.delete("cn=" + cn + "," + ldapGroupBase);
 				logger.info("Deleted Group {} from ldap {}", 
-						new Object[] {cn, ldapUserBase});
+						new Object[] {cn, ldapGroupBase});
 				auditor.logAction("", "DELETE LDAP GROUP", cn, "Group deleted in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
 			} catch (NamingException e) {
 				logger.warn("FAILED: Delete Group {} from ldap {}", 
-						new Object[] {cn, ldapUserBase});
+						new Object[] {cn, ldapGroupBase});
 				auditor.logAction("", "DELETE LDAP GROUP", cn, "Group deletion failed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
 			}
 		}
@@ -190,13 +255,14 @@ public class LdapWorker {
 			String homeDir, String description) {
 		for (Ldap ldap : connectionManager.getConnections()) {
 			List<String> dnList = new ArrayList<String>();
-
+                        
 			try {
-				Iterator<SearchResult> iterator = ldap.search(new SearchFilter("uidNumber="+uidNumber), new String[] {"uid"});
-				while (iterator.hasNext()) {
-					SearchResult sr = iterator.next();
-					dnList.add(sr.getName());
-				}
+                            // zus. Begrenzung des Suchraums auf Userbase verhindert beim Samba 4 einen Fehler mit "Unprocessed Continuation Reference(s)"
+                            Iterator<SearchResult> iterator = ldap.search(ldapUserBase,new SearchFilter("uidNumber="+uidNumber), new String[] {"uid"});
+                            while (iterator.hasNext()) {
+                                    SearchResult sr = iterator.next();
+                                    dnList.add(sr.getName());
+                            }
 			} catch (NamingException e) {
 				logger.warn("FAILED: Search user {}, uid:{}, gid:{} with ldap {}: {}", 
 						new Object[] {uid, uidNumber, gidNumber, 
@@ -245,13 +311,24 @@ public class LdapWorker {
 					compareAttr(attrs, "givenName", givenName, modList, log);
 					compareAttr(attrs, "mail", mail, modList, log);
 					compareAttr(attrs, "uidNumber", uidNumber, modList, log);
-					compareAttr(attrs, "gidNumber", gidNumber, modList, log);
+                                        if (! sambaEnabled) {
+                                            compareAttr(attrs, "gidNumber", gidNumber, modList, log);
+                                        }
 					compareAttr(attrs, "homeDirectory", homeDir, modList, log);
 					compareAttr(attrs, "description", description, modList, log);
 					
 					if (sambaEnabled) {
-						addAttrIfNotExists(attrs, "objectClass", "sambaSamAccount", modList);
-						compareAttr(attrs, "sambaSID", sidPrefix + (Long.parseLong(uidNumber) * 2L + 1000L), modList, log);					
+                                                // SS: im RFC2307 Schema gar nicht vorgesehen ? Wird wahrscheinlich nur für Samba Komaptibilät in einem beliebigen LDAP gebraucht
+                                                // -> Samba 4 braucht das nicht
+						//addAttrIfNotExists(attrs, "objectClass", "sambaSamAccount", modList);
+						//compareAttr(attrs, "sambaSID", sidPrefix + (Long.parseLong(uidNumber) * 2L + 1000L), modList, log);	
+                                                
+                                                // SS: nss_winbind + idmap_ad liest zwangsweise genau dieses Attribut als Gruppe aus
+                                                // @todo: aus der GIDnumber die RID holen
+//                                                String rid = "1118";
+//                                                compareAttr(attrs, "primaryGroupID", rid, modList, log);	
+                                                // SS: RFC2307-Schema bildet zwingend das AD-Attribut samAccountName auf den Unix-Usernamen ab
+                                                compareAttr(attrs, "samAccountName", uid, modList, log);	
 					}
 					
 					if (modList.size() == 0) {
@@ -312,10 +389,11 @@ public class LdapWorker {
 						String dn = sr.getName();
 						String newDn = "cn=" + cn + "," + ldapGroupBase;
 						ldap.rename(dn, newDn);
-						if (sambaEnabled) {
-							ldap.modifyAttributes(newDn, AttributeModification.REPLACE, 
-								AttributesFactory.createAttributes("uid", cn));
-						}
+                                                // SS: uid gar nicht unterstützt in Group bzw. posixGroup Schema
+						//if (sambaEnabled) {
+						//	ldap.modifyAttributes(newDn, AttributeModification.REPLACE, 
+						//		AttributesFactory.createAttributes("uid", cn));
+						//}
 						logger.info("Rename Group {} ({}) completed", cn, gidNumber);
 						auditor.logAction("", "RENAME LDAP GROUP", cn, "Group renamed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
 					}
@@ -330,12 +408,12 @@ public class LdapWorker {
 			try {
 				createGroupIntern(ldap, cn, gidNumber);
 				logger.info("Group {},{} with ldap {} successfully created", 
-						new Object[] {cn, gidNumber, ldapUserBase});
+						new Object[] {cn, gidNumber, ldapGroupBase});
 				auditor.logAction("", "CREATE LDAP GROUP", cn, "Group created in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
 			} catch (NamingException e) {
 				logger.warn("FAILED: Group cn:{}, gid:{} with ldap {}: {}", 
 						new Object[] {cn, gidNumber, 
-						ldapUserBase, e.getMessage()});
+						ldapGroupBase, e.getMessage()});
 				auditor.logAction("", "CREATE LDAP GROUP", cn, "Group creation failed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
 			}
 
@@ -389,57 +467,41 @@ public class LdapWorker {
 			}
 		}		
 	}
-	
-	public void setSambaPassword(String uid, String password, UserEntity user) {
-		for (Ldap ldap : connectionManager.getConnections()) {
-			try {
-				Attributes attrs = ldap.getAttributes("uid=" + uid + "," + ldapUserBase);
-
-				List<ModificationItem> modList = new ArrayList<ModificationItem>();
-				StringBuilder log = new StringBuilder();
-				
-				addAttrIfNotExists(attrs, "objectClass", "sambaSamAccount", modList);
-				compareAttr(attrs, "sambaSID", sidPrefix + (user.getUidNumber().longValue() * 2L + 1000L), modList, log);
-				compareAttr(attrs, "sambaNTPassword", password, modList, log);
-				compareAttr(attrs, "sambaPasswordHistory", "00000000000000000000000000000000000000000000000000000000", modList, log);
-				compareAttr(attrs, "sambaPwdLastSet", "1366812351", modList, log);
-				compareAttr(attrs, "sambaAcctFlags", "[U          ]", modList, log);
-				
-				if (modList.size() == 0) {
-					logger.debug("No modification detected");
-				}
-				else {
-					logger.debug("Replacing {} attribute", modList.size());
-					ldap.modifyAttributes("uid=" + uid + "," + ldapUserBase, modList.toArray(new ModificationItem[modList.size()]));
-				}
-
-				auditor.logAction("", "SET SAMBA PASSWORD LDAP USER", uid, "Set User samba password in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
-			} catch (NamingException e) {
-				logger.warn("FAILED: Setting password for User {} in ldap {}: {}", 
-						new Object[] {uid, ldapUserBase, e.getMessage()});
-				auditor.logAction("", "SET SAMBA PASSWORD LDAP USER", uid, "Set User samba password failed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
-			}
-		}		
+	/**
+         * Problem: die Nutzerpasswörter in Samba 4 sind nicht direkt per LDAP modifizierbar 
+         * (http://unix.stackexchange.com/questions/73365/where-does-samba-4-store-user-passwords)
+         * 
+         * @param uid
+         * @param passwordhash 
+         * @param user 
+         */
+	public void setSambaPassword(String uid, String passwordhash, UserEntity user) {
+            externalCall(new String[]{"/home/wildfly/change_passwd", uid, passwordhash}, "Set Samba Password", uid);
 	}
 
 	public void deletePassword(String uid) {
-		for (Ldap ldap : connectionManager.getConnections()) {
+		for (Ldap ldap : connectionManager.getConnections()) {                    
+                    if (sambaEnabled) {
+                        // SS: Passwort löschen erfolgt durch deaktivieren des Nutzers im Samba AD
+                        externalCall(new String[]{"/home/wildfly/change_passwd", uid}, "Delete Samba Password", uid);
+                    } else {
 			try {
-				String ldapDn = "uid=" + uid + "," + ldapUserBase;
-				Attributes attrs = ldap.getAttributes(ldapDn);
-				Attribute attr = attrs.get("userPassword");
-				if (attr != null) {
-					ldap.modifyAttributes(ldapDn, AttributeModification.REMOVE, 
-							AttributesFactory.createAttributes("userPassword"));
-				}
-				logger.info("Delete password for User {} in ldap {}", 
-						new Object[] {uid, ldapUserBase});
-				auditor.logAction("", "DELETE PASSWORD LDAP USER", uid, "Delete User password in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
+                            String ldapDn = "uid=" + uid + "," + ldapUserBase;
+                            Attributes attrs = ldap.getAttributes(ldapDn);
+                            Attribute attr = attrs.get("userPassword");
+                            if (attr != null) {
+                                    ldap.modifyAttributes(ldapDn, AttributeModification.REMOVE, 
+                                                    AttributesFactory.createAttributes("userPassword"));
+                            }
+                            logger.info("Delete password for User {} in ldap {}", 
+                                            new Object[] {uid, ldapUserBase});
+                            auditor.logAction("", "DELETE PASSWORD LDAP USER", uid, "Delete User password in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
 			} catch (NamingException e) {
 				logger.warn("FAILED: Setting password for User {} in ldap {}: {}", 
 						new Object[] {uid, ldapUserBase, e.getMessage()});
 				auditor.logAction("", "DELETE PASSWORD LDAP USER", uid, "Delete User password failed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
 			}
+                    }
 		}		
 	}
 		
@@ -525,12 +587,26 @@ public class LdapWorker {
 	private void createUserIntern(Ldap ldap, String cn, String givenName, String sn, String mail, String uid, String uidNumber, String gidNumber,
 			String homeDir, String description) throws NamingException {
 		Attributes attrs;
-		
+	                
 		if (sambaEnabled) {
+                        // SS: im RFC2307 Schema gar nicht vorgesehen ? Wird wahrscheinlich nur für Samba Komaptibilät in einem beliebigen LDAP gebraucht
+                        // -> Samba 4 braucht das nicht 
+                        // -> inetOrgPerson haben im Samba 4 eigentlich keine UNIX attribute -> deswegen besser nur anlegen als person
+                        // https://social.technet.microsoft.com/Forums/windowsserver/en-US/2691a35f-110a-445e-bb63-37d801b796f6/why-does-the-unix-attributes-tab-disappear-for-inetorgperson-classed-objects?forum=winserverDS
+                        // ohne inetOrgPerson schlägt allerdings das anlegen eines Accounts per regApp fehl - noch k.A. warum
 			attrs = AttributesFactory.createAttributes("objectClass", new String[] {
 					"top", "person", "organizationalPerson", 
-	        		"inetOrgPerson", "posixAccount", "sambaSamAccount"});
-			attrs.put(AttributesFactory.createAttribute("sambaSID", sidPrefix + (Long.parseLong(uidNumber) * 2L + 1000L)));					
+	        		"inetOrgPerson","posixAccount"}); // "sambaSamAccount"
+
+                        // SS: in Samba 4 ersetzt durch objectSid
+			// attrs.put(AttributesFactory.createAttribute("sambaSID", sidPrefix + (Long.parseLong(uidNumber) * 2L + 1000L)));
+                                                                        
+                        // SS: nss_winbind + idmap_ad liest zwangsweise genau dieses Attribut als Gruppe aus
+                        // PrimaryGroup kann aber nicht beim Anlegen geändert/gesetzt werden! Muss nachträglich direkt an der Gruppe passieren
+                        //attrs.put(AttributesFactory.createAttribute("primaryGroupID", gidNumber));
+                        
+                        // SS: RFC2307-Schema bildet zwingend das AD-Attribut samAccountName auf den Unix-Usernamen ab
+                        attrs.put(AttributesFactory.createAttribute("samAccountName", uid));
 		}
 		else {
 			attrs = AttributesFactory.createAttributes("objectClass", new String[] {
@@ -544,11 +620,64 @@ public class LdapWorker {
 		attrs.put(AttributesFactory.createAttribute("mail", mail));
 		attrs.put(AttributesFactory.createAttribute("uid", uid));
 		attrs.put(AttributesFactory.createAttribute("uidNumber", uidNumber));
-		attrs.put(AttributesFactory.createAttribute("gidNumber", gidNumber));
+                //! SS: gidNumber ist beim Nutzer im Samba 4 AD nicht vorgesehen -> memberOf
+                //! wird aber für kompatibilität zur LDAP Abfragen trotzdem benötigt
+                attrs.put(AttributesFactory.createAttribute("gidNumber", gidNumber));
 		attrs.put(AttributesFactory.createAttribute("homeDirectory", homeDir));
 		attrs.put(AttributesFactory.createAttribute("description", description));
 
 		ldap.create("uid=" + uid + "," + ldapUserBase, attrs);
+                
+                // SS: nach dem Anlegen eines Nutzers muss seine Primärgruppe angepasst werden
+                if (sambaEnabled) {                    
+                    logger.debug("Samba4 Create User: group modifications...");
+
+                    // Set up environment for creating initial context
+                    Iterator<SearchResult> resultIterator = ldap.search(ldapGroupBase,
+				  new SearchFilter("(gidNumber=" + gidNumber + ")"), new String[]{"cn", "objectSid"});
+                    List<SearchResult> resultList = IteratorUtils.toList(resultIterator);
+                    if (resultList.size() > 1) {
+                            logger.warn("More than one Ldap Group ({}) with gid {} found!", resultList.size(), gidNumber);
+                            
+                    } else if (resultList.size() > 0) {
+                        SearchResult sr = resultList.get(0);
+                        Attribute cnAttr = sr.getAttributes().get("cn");
+                        String pgname = (String) cnAttr.get();     //! hd_hd, etc
+                        String objectSid = externalCall(new String[]{"/opt/samba/bin/wbinfo", "--gid-to-sid", gidNumber}, "Samba Create User", uid);
+                        String actualRID = objectSid.substring(objectSid.lastIndexOf('-') + 1);
+                        logger.debug("Samba4 Create User: found for gidnumber {} the group {} with RID {} ",new Object[] {gidNumber,pgname,actualRID});
+
+                        try {                        
+                            // Primärgruppe von Domain Users zu HomeOrgGroup ändern
+                            // Nutzer muss vorher allerdings schon member der zukünftigen primaryGroup sein !!                        
+                            ldap.modifyAttributes("cn="+pgname+"," + ldapGroupBase, AttributeModification.ADD, 
+                                                            AttributesFactory.createAttributes("member", "uid="+uid+","+ldapUserBase));
+                            ldap.modifyAttributes("uid=" + uid + "," + ldapUserBase, AttributeModification.REPLACE, 
+                                                            AttributesFactory.createAttributes("primaryGroupID", actualRID));
+                        } catch (NamingException e) {
+                            logger.warn("FAILED: changing group for User {} in ldap {}: {}", 
+                                            new Object[] {uid, ldapUserBase, e.getMessage()});
+                            auditor.logAction("", "CHANGE PRIMARYGROUPID FAILED", uid, "changing primarygroupid failed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
+                        }
+                        //! Nutzer wieder aus Kompatibilitätsgründen in Domain Users aufnehmen
+                        logger.debug("Samba4 Create User: add Member to Domain Users group..."); 
+                        try {
+                            ldap.modifyAttributes("cn=Domain Users," + ldapUserBase, AttributeModification.ADD, 
+                                                            AttributesFactory.createAttributes("member", "uid="+uid+","+ldapUserBase));                               
+                        } catch (NamingException e) {
+                            logger.warn("FAILED: adding member to domain user {} in ldap {}: {}", 
+                                            new Object[] {uid, ldapUserBase, e.getMessage()});
+                            auditor.logAction("", "adding to domain user failed", uid, "adding user to domain members failed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
+                        }
+                        // SS: es muss anschließend auf Konsole die DB repariert werden: "samba-tool dbcheck --fix" um einen fehlerhaften Memberverweis zu entfernen
+                        logger.debug("Samba4 Create User: repair groupmemberships..."); 
+                        externalCall(new String[]{"/home/wildfly/repair_groups"}, "Samba Create User (repair groups)", uid);
+                    } else {
+                        //! SS: Gruppe gibts gar nicht ??
+                        logger.debug("Samba4 Create User: no valid group found for gidnumber {}",new Object[] {gidNumber});                                            
+                        auditor.logAction("", "SAMBA CREATE USER FAILED", uid, "Samba4 Create User failed: no group found for gidnumber " + gidNumber, AuditStatus.FAIL);
+                    }                   
+                }
 	}
 	
 	private void createGroupIntern(Ldap ldap, String cn, String gidNumber) 
@@ -558,9 +687,14 @@ public class LdapWorker {
 		
 		if (sambaEnabled) {
 			attrs = AttributesFactory.createAttributes("objectClass", new String[] {
-					"top", "posixGroup", "sambaSamAccount"});
-			attrs.put(AttributesFactory.createAttribute("sambaSID", sidPrefix + (Long.parseLong(gidNumber) * 2L + 1000L)));					
-			attrs.put(AttributesFactory.createAttribute("uid", cn));
+					"top", "group","posixGroup"}); // "sambaSamAccount",
+                        // SS: in Samba 4 nicht benötigt
+			//attrs.put(AttributesFactory.createAttribute("sambaSID", sidPrefix + (Long.parseLong(gidNumber) * 2L + 1000L)));
+                        
+                        // @todo: uid wird weder in group, noch posixGroup unterstützt. Wirklich gebraucht ??
+			//attrs.put(AttributesFactory.createAttribute("uid", cn));
+                        // SS: RFC2307-Schema bildet zwingend das AD-Attribut samAccountName auf den Unix-Usernamen ab
+                        attrs.put(AttributesFactory.createAttribute("samAccountName", cn));    
 		}
 		else {
 			attrs = AttributesFactory.createAttributes("objectClass", new String[] {

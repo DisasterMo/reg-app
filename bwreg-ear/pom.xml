@@ -22,26 +22,26 @@
 	<parent>
 		<groupId>edu.kit.scc</groupId>
 		<artifactId>bwreg</artifactId>
-		<version>2.5.10</version>
+		<version>2.5.10-hd</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
 			<artifactId>bwreg-jpa</artifactId>
-			<version>2.5.10</version>
+			<version>2.5.10-hd</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
 			<artifactId>bwreg-service</artifactId>
-			<version>2.5.10</version>
+			<version>2.5.10-hd</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
 			<artifactId>bwreg-webapp</artifactId>
-			<version>2.5.10</version>
+			<version>2.5.10-hd</version>
 			<type>war</type>
 		</dependency>
 

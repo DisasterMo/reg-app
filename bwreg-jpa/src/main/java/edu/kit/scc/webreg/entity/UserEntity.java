@@ -65,6 +65,11 @@ public class UserEntity extends AbstractBaseEntity {
 	@Column(name = "uid_number", unique = true, nullable = false)
 	private Integer uidNumber;
 	
+        // SS: Sonderfall durch Migration vom alten System am BQ (SDS@HD)
+        // wird nur manuell befüllt und als uid_number im Samba 4 verwendet, falls ein Wert gesetzt ist
+        @Column(name = "uid_number_lsdf1", unique = true, nullable = true)
+	private Integer uidNumberLsdf1;
+        
 	@OneToMany(targetEntity=UserRoleEntity.class, mappedBy = "user")
 	private Set<UserRoleEntity> roles;
 	
@@ -221,6 +226,14 @@ public class UserEntity extends AbstractBaseEntity {
 		this.uidNumber = uidNumber;
 	}
 
+        public Integer getUidNumberLSDF1() {
+		return uidNumberLsdf1;
+	}
+
+	public void setUidNumberLSDF1(Integer uidNumber) {
+		this.uidNumberLsdf1 = uidNumber;
+	}
+        
 	public GroupEntity getPrimaryGroup() {
 		return primaryGroup;
 	}

@@ -3,3 +3,6 @@
 .classpath
 .metadata
 target
+/bwreg-service/src/main/nbproject/private/
+/bwreg-service/src/main/build/
+*~
