@@ -2,6 +2,8 @@ package edu.kit.scc.webreg.bootstrap;
 
 import java.util.List;
 
+import javax.naming.NamingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,16 +28,20 @@ public class VersionConverter2__3 extends AbstractVersionConverter {
 	@Override
 	public void convert(ApplicationConfigEntity appConfig) throws ConversionException {
 		logger.info("Starting upgrade");
-		List<UserEntity> userList = userService.findAll();
-		
-		for (UserEntity user : userList) {
-			logger.debug("Analyzing user {} ({})", user.getId(), user.getEppn());
+		try {
+			List<UserEntity> userList = getUserService().findAll();
+			
+			for (UserEntity user : userList) {
+				logger.debug("Analyzing user {} ({})", user.getId(), user.getEppn());
 
-			// if idp is null, user is already converted or no saml user
-			if (user.getIdp() != null) {
-				SamlAccountEntity samlAccountEntity = samlAccountService.createSamlAccountForUser(user);
-				logger.info("SamlAccount {} created for user {}", samlAccountEntity.getId(), user.getId());
+				// if idp is null, user is already converted or no saml user
+				if (user.getIdp() != null) {
+					SamlAccountEntity samlAccountEntity = getSamlAccountService().convertUserForSamlAccount(user);
+					logger.info("SamlAccount {} created for user {}", samlAccountEntity.getId(), user.getId());
+				}
 			}
+		} catch (NamingException e) {
+			throw new ConversionException(e);
 		}
 	}
 

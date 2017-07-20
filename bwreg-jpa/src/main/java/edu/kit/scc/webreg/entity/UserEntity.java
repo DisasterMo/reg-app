@@ -125,10 +125,12 @@ public class UserEntity extends AbstractBaseEntity {
 		this.persistentId = persistentId;
 	}
 
+	@Deprecated
 	public String getEppn() {
 		return eppn;
 	}
 
+	@Deprecated
 	public void setEppn(String eppn) {
 		this.eppn = eppn;
 	}

@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -24,7 +23,6 @@ public class AccountEntity extends AbstractBaseEntity {
 
 	private static final long serialVersionUID = 1L;
 
-    @Id
 	@ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
 	private UserEntity user;
@@ -34,6 +32,9 @@ public class AccountEntity extends AbstractBaseEntity {
     @MapKeyColumn(name = "key_data", length = 1024)
     @Column(name = "value_data", length = 2048)
     private Map<String, String> accountStore;
+
+	@Column(name = "global_id", length = 1024)
+	private String globalId;
 
 	public Map<String, String> getAccountStore() {
 		return accountStore;
@@ -49,5 +50,13 @@ public class AccountEntity extends AbstractBaseEntity {
 
 	public void setUser(UserEntity user) {
 		this.user = user;
+	}
+
+	public String getGlobalId() {
+		return globalId;
+	}
+
+	public void setGlobalId(String globalId) {
+		this.globalId = globalId;
 	} 
 }

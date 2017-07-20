@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
 import edu.kit.scc.webreg.dao.BaseDao;
@@ -40,9 +42,9 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 	private SamlSpConfigurationDao samlSpConfigurationDao;
 	
 	@Override
-	public SamlAccountEntity createSamlAccountForUser(UserEntity user) {
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public SamlAccountEntity convertUserForSamlAccount(UserEntity user) {
 		SamlAccountEntity entity = dao.createNew();
-		user = userDao.merge(user);
 		
 		entity.setUser(user);
 		entity.setIdp(user.getIdp());
@@ -52,10 +54,17 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 		user.setPersistentId(null);
 		entity.setSp(samlSpConfigurationDao.findByEntityId(user.getPersistentSpId()));
 		user.setPersistentSpId(null);
+		entity.setGlobalId(user.getEppn());
+		user.setEppn(null);
+		
 		Map<String, String> accountStore = new HashMap<>();
 		accountStore.putAll(user.getAttributeStore());
 		entity.setAccountStore(accountStore);
 		
+		user = userDao.persist(user);
+
+		entity.setUser(user);
+
 		entity = dao.persist(entity);
 		return entity;
 	}

@@ -17,14 +17,14 @@ public abstract class AbstractVersionConverter implements VersionConverter {
 
 	protected InitialContext ic;
 
-	protected GroupService groupService;
-	protected UserService userService;
-	protected RoleService roleService;
-	protected ServiceService serviceService;
-	protected AdminUserService adminUserService;
-	protected SerialService serialService;
-	protected SamlAccountService samlAccountService;
-	protected SamlSpConfigurationService samlSpConfigurationService;
+	private GroupService groupService;
+	private UserService userService;
+	private RoleService roleService;
+	private ServiceService serviceService;
+	private AdminUserService adminUserService;
+	private SerialService serialService;
+	private SamlAccountService samlAccountService;
+	private SamlSpConfigurationService samlSpConfigurationService;
 	
 	public abstract String fromVersion();
 	public abstract String toVersion();
@@ -82,7 +82,7 @@ public abstract class AbstractVersionConverter implements VersionConverter {
 
 	public SamlAccountService getSamlAccountService() throws NamingException {
 		if (samlAccountService == null) {
-			samlAccountService = (SamlAccountService) ic.lookup("global/bwreg/bwreg-service/SamlAccountServiceImpl!edu.kit.scc.webreg.service.SamlAccountService");
+			samlAccountService = (SamlAccountService) ic.lookup("global/bwreg/bwreg-service/SamlAccountServiceImpl!edu.kit.scc.webreg.service.account.SamlAccountService");
 		}
 		return samlAccountService;
 	}

@@ -16,6 +16,6 @@ import edu.kit.scc.webreg.service.BaseService;
 
 public interface SamlAccountService extends BaseService<SamlAccountEntity, Long> {
 
-	SamlAccountEntity createSamlAccountForUser(UserEntity user);
+	SamlAccountEntity convertUserForSamlAccount(UserEntity user);
 
 }
