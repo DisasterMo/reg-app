@@ -12,7 +12,6 @@ package edu.kit.scc.webreg.service.impl;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +28,6 @@ import edu.kit.scc.webreg.dao.UserDao;
 import edu.kit.scc.webreg.entity.GroupEntity;
 import edu.kit.scc.webreg.entity.RegistryEntity;
 import edu.kit.scc.webreg.entity.RegistryStatus;
-import edu.kit.scc.webreg.entity.SamlIdpMetadataEntity;
 import edu.kit.scc.webreg.entity.ServiceEntity;
 import edu.kit.scc.webreg.entity.UserEntity;
 import edu.kit.scc.webreg.entity.UserStatus;
@@ -147,25 +145,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
 				registry.setRegistryStatus(RegistryStatus.ON_HOLD);
 				registry.setLastStatusChange(new Date());
 			}			
-		}
-	}
-	
-	@Override
-	public void convertLegacyUsers() {
-		List<UserEntity> userList = dao.findLegacyUsers();
-    	
-		if (userList.size() > 0) {
-    		logger.warn("Legacy Users found. Converting...");
-    		Map<String, SamlIdpMetadataEntity> idpCache = new HashMap<String, SamlIdpMetadataEntity>();
-	    	for (UserEntity user : userList) {
-	    		logger.info("Converting user {}", user.getEppn());
-	    		if (! idpCache.containsKey(user.getPersistentIdpId())) {
-	    			idpCache.put(user.getPersistentIdpId(), idpDao.findByEntityId(user.getPersistentIdpId()));
-	    		}
-	    		
-	    		user.setIdp(idpCache.get(user.getPersistentIdpId()));
-	    		user = dao.persist(user);
-	    	}
 		}
 	}
 }

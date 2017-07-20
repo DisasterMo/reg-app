@@ -23,7 +23,6 @@ public interface UserDao extends BaseDao<UserEntity, Long> {
 			String persistentId);
 	UserEntity findByEppn(String eppn);
 	UserEntity findByIdWithAll(Long id);
-	List<UserEntity> findLegacyUsers();
 	List<UserEntity> findByPrimaryGroup(GroupEntity group);
 	UserEntity findByIdWithStore(Long id);
 	List<UserEntity> findByGroup(GroupEntity group);

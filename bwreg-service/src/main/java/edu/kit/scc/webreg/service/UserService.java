@@ -37,8 +37,6 @@ public interface UserService extends BaseService<UserEntity, Long> {
 			Map<String, List<Object>> attributeMap, boolean withoutUidNumber, Auditor auditor)
 			throws UserUpdateException;
 
-	void convertLegacyUsers();
-
 	UserEntity findByIdWithStore(Long id);
 
 	List<UserEntity> findByGroup(GroupEntity group);

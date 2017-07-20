@@ -63,12 +63,6 @@ public class JpaUserDao extends JpaBaseDao<UserEntity, Long> implements UserDao,
 
     @Override
     @SuppressWarnings({"unchecked"})
-	public List<UserEntity> findLegacyUsers() {
-		return em.createQuery("select e from UserEntity e where e.idp is null").getResultList();
-	}
- 
-    @Override
-    @SuppressWarnings({"unchecked"})
 	public List<UserEntity> findByGroup(GroupEntity group) {
 		return em.createQuery("select e.user from UserGroupEntity e where e.group = :group")
 				.setParameter("group", group).getResultList();
