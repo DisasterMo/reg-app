@@ -24,12 +24,6 @@ import org.slf4j.Logger;
 
 import edu.kit.scc.webreg.dao.ApplicationConfigDao;
 import edu.kit.scc.webreg.entity.ApplicationConfigEntity;
-import edu.kit.scc.webreg.service.AdminUserService;
-import edu.kit.scc.webreg.service.GroupService;
-import edu.kit.scc.webreg.service.RoleService;
-import edu.kit.scc.webreg.service.SerialService;
-import edu.kit.scc.webreg.service.ServiceService;
-import edu.kit.scc.webreg.service.UserService;
 
 @Singleton
 public class ApplicationConfig implements Serializable {
@@ -40,24 +34,6 @@ public class ApplicationConfig implements Serializable {
 	
 	@Inject
 	private Logger logger;
-	
-	@Inject
-	private GroupService groupService;
-
-	@Inject
-	private UserService userService;
-	
-	@Inject
-	private RoleService roleService;
-	
-	@Inject
-	private ServiceService serviceService;
-	
-	@Inject
-	private AdminUserService adminUserService;
-	
-	@Inject
-	private SerialService serialService;
 	
 	@Inject
 	private ApplicationConfigDao dao;
@@ -92,7 +68,6 @@ public class ApplicationConfig implements Serializable {
 					if (vc.fromVersion().equals(appConfig.getConfigFormatVersion()) 
 							&& vc.toVersion().equals(actualConfigFormatVersion)) {
 						logger.info("Found configuration upgrader from version {} to version {}", vc.fromVersion(), vc.toVersion());
-						vc.populateServices(groupService, userService, roleService, serviceService, adminUserService, serialService);
 						vc.convert(appConfig);
 					}
 				}

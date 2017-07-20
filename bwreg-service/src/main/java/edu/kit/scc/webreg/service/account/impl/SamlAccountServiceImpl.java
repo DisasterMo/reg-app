@@ -10,10 +10,15 @@
  ******************************************************************************/
 package edu.kit.scc.webreg.service.account.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import edu.kit.scc.webreg.dao.BaseDao;
+import edu.kit.scc.webreg.dao.SamlSpConfigurationDao;
+import edu.kit.scc.webreg.dao.UserDao;
 import edu.kit.scc.webreg.dao.account.SamlAccountDao;
 import edu.kit.scc.webreg.entity.UserEntity;
 import edu.kit.scc.webreg.entity.account.SamlAccountEntity;
@@ -28,10 +33,28 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 	@Inject
 	private SamlAccountDao dao;
 	
+	@Inject
+	private UserDao userDao;
+	
+	@Inject
+	private SamlSpConfigurationDao samlSpConfigurationDao;
+	
 	@Override
 	public SamlAccountEntity createSamlAccountForUser(UserEntity user) {
 		SamlAccountEntity entity = dao.createNew();
+		user = userDao.merge(user);
+		
 		entity.setUser(user);
+		entity.setIdp(user.getIdp());
+		user.setIdp(null);
+		user.setPersistentIdpId(null);
+		entity.setPersistentId(user.getPersistentId());
+		user.setPersistentId(null);
+		entity.setSp(samlSpConfigurationDao.findByEntityId(user.getPersistentSpId()));
+		user.setPersistentSpId(null);
+		Map<String, String> accountStore = new HashMap<>();
+		accountStore.putAll(user.getAttributeStore());
+		entity.setAccountStore(accountStore);
 		
 		entity = dao.persist(entity);
 		return entity;
