@@ -1,6 +1,7 @@
 package edu.kit.scc.webreg.entity.account;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -11,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import edu.kit.scc.webreg.entity.AbstractBaseEntity;
@@ -36,6 +38,9 @@ public class AccountEntity extends AbstractBaseEntity {
 	@Column(name = "global_id", length = 1024)
 	private String globalId;
 
+	@OneToMany(targetEntity = AccountGroupEntity.class, mappedBy="account")
+	private Set<AccountGroupEntity> groups;		
+
 	public Map<String, String> getAccountStore() {
 		return accountStore;
 	}
@@ -58,5 +63,13 @@ public class AccountEntity extends AbstractBaseEntity {
 
 	public void setGlobalId(String globalId) {
 		this.globalId = globalId;
+	}
+
+	public Set<AccountGroupEntity> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(Set<AccountGroupEntity> groups) {
+		this.groups = groups;
 	} 
 }

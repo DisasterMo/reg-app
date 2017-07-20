@@ -21,6 +21,8 @@ import edu.kit.scc.webreg.entity.ServiceEntity;
 import edu.kit.scc.webreg.entity.ServiceGroupStatus;
 import edu.kit.scc.webreg.entity.UserEntity;
 import edu.kit.scc.webreg.entity.UserGroupEntity;
+import edu.kit.scc.webreg.entity.account.AccountEntity;
+import edu.kit.scc.webreg.entity.account.AccountGroupEntity;
 
 public interface GroupDao extends BaseDao<GroupEntity, Long> {
 
@@ -62,5 +64,13 @@ public interface GroupDao extends BaseDao<GroupEntity, Long> {
 
 	void setServiceFlags(ServiceBasedGroupEntity entity,
 			ServiceGroupStatus status);
+
+	void addAccountToGroup(AccountEntity account, GroupEntity group);
+
+	AccountGroupEntity findAccountGroupEntity(AccountEntity account, GroupEntity group);
+
+	AccountGroupEntity createNewAccountGroup();
+
+	void removeAccountGromGroup(AccountEntity account, GroupEntity group);
 
 }

@@ -5,6 +5,8 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
+import edu.kit.scc.webreg.entity.account.AccountGroupEntity;
+
 @Generated(value = "org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
 @StaticMetamodel(GroupEntity.class)
 public abstract class GroupEntity_ extends edu.kit.scc.webreg.entity.AbstractBaseEntity_ {
@@ -16,6 +18,7 @@ public abstract class GroupEntity_ extends edu.kit.scc.webreg.entity.AbstractBas
 	public static volatile SingularAttribute<GroupEntity, Integer> gidNumber;
 	public static volatile SingularAttribute<GroupEntity, GroupStatus> groupStatus;
 	public static volatile SetAttribute<GroupEntity, UserGroupEntity> users;
+	public static volatile SetAttribute<GroupEntity, AccountGroupEntity> accounts;
 	public static volatile SetAttribute<GroupEntity, GroupEntity> parents;
 
 }

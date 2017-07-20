@@ -26,6 +26,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Pattern;
 
+import edu.kit.scc.webreg.entity.account.AccountGroupEntity;
+
 @Entity(name = "GroupEntity")
 @Table(name = "group_store")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -45,6 +47,9 @@ public class GroupEntity extends AbstractBaseEntity {
 	
 	@OneToMany(targetEntity = UserGroupEntity.class, mappedBy="group")
 	private Set<UserGroupEntity> users;		
+
+	@OneToMany(targetEntity = AccountGroupEntity.class, mappedBy="group")
+	private Set<AccountGroupEntity> accounts;		
 	
 	@OneToMany(targetEntity = RoleGroupEntity.class, mappedBy="group")
 	private Set<RoleGroupEntity> roles;		
@@ -120,6 +125,14 @@ public class GroupEntity extends AbstractBaseEntity {
 
 	public void setUsers(Set<UserGroupEntity> users) {
 		this.users = users;
+	}
+
+	public Set<AccountGroupEntity> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(Set<AccountGroupEntity> accounts) {
+		this.accounts = accounts;
 	}
 
 }

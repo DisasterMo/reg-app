@@ -10,7 +10,9 @@
  ******************************************************************************/
 package edu.kit.scc.webreg.service.account.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Stateless;
@@ -19,10 +21,14 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
 import edu.kit.scc.webreg.dao.BaseDao;
+import edu.kit.scc.webreg.dao.GroupDao;
 import edu.kit.scc.webreg.dao.SamlSpConfigurationDao;
 import edu.kit.scc.webreg.dao.UserDao;
 import edu.kit.scc.webreg.dao.account.SamlAccountDao;
+import edu.kit.scc.webreg.entity.GroupEntity;
+import edu.kit.scc.webreg.entity.HomeOrgGroupEntity;
 import edu.kit.scc.webreg.entity.UserEntity;
+import edu.kit.scc.webreg.entity.UserGroupEntity;
 import edu.kit.scc.webreg.entity.account.SamlAccountEntity;
 import edu.kit.scc.webreg.service.account.SamlAccountService;
 import edu.kit.scc.webreg.service.impl.BaseServiceImpl;
@@ -37,6 +43,9 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 	
 	@Inject
 	private UserDao userDao;
+	
+	@Inject
+	private GroupDao groupDao;
 	
 	@Inject
 	private SamlSpConfigurationDao samlSpConfigurationDao;
@@ -64,8 +73,20 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 		user = userDao.persist(user);
 
 		entity.setUser(user);
-
 		entity = dao.persist(entity);
+		
+		List<GroupEntity> migrationGroupList = new ArrayList<>();
+		List<GroupEntity> allGroupList = groupDao.findByUser(user);
+		for (GroupEntity group : allGroupList) {
+			if (group instanceof HomeOrgGroupEntity) {
+				migrationGroupList.add(group);
+			}
+		}
+		
+		for (GroupEntity group : migrationGroupList) {
+			groupDao.removeUserGromGroup(user, group);
+			groupDao.addAccountToGroup(entity, group);
+		}
 		return entity;
 	}
 	

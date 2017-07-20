@@ -37,6 +37,8 @@ import edu.kit.scc.webreg.entity.ServiceGroupFlagEntity;
 import edu.kit.scc.webreg.entity.ServiceGroupStatus;
 import edu.kit.scc.webreg.entity.UserEntity;
 import edu.kit.scc.webreg.entity.UserGroupEntity;
+import edu.kit.scc.webreg.entity.account.AccountEntity;
+import edu.kit.scc.webreg.entity.account.AccountGroupEntity;
 
 @Named
 @ApplicationScoped
@@ -129,7 +131,36 @@ public class JpaGroupDao extends JpaBaseDao<GroupEntity, Long> implements GroupD
 			em.remove(userGroup);
 		}
 	}
+
+	@Override
+	public void addAccountToGroup(AccountEntity account, GroupEntity group) {
+		AccountGroupEntity accountGroup = createNewAccountGroup();
+		accountGroup.setAccount(account);
+		accountGroup.setGroup(group);
+		
+		if (account.getGroups() != null)
+			account.getGroups().add(accountGroup);
+		
+		if (group.getAccounts() != null)
+			group.getAccounts().add(accountGroup);
+		
+		em.persist(accountGroup);
+	}
 	
+	@Override
+	public void removeAccountGromGroup(AccountEntity account, GroupEntity group) {
+		AccountGroupEntity accountGroup = findAccountGroupEntity(account, group);
+		if (accountGroup != null) {
+			if (account.getGroups() != null)
+				account.getGroups().remove(accountGroup);
+			
+			if (group.getAccounts() != null)
+				group.getAccounts().remove(accountGroup);
+
+			em.remove(accountGroup);
+		}
+	}
+		
 	@Override
 	public boolean isUserInGroup(UserEntity user, GroupEntity group) {
 		if (findUserGroupEntity(user, group) != null) {
@@ -153,8 +184,25 @@ public class JpaGroupDao extends JpaBaseDao<GroupEntity, Long> implements GroupD
 	}
 	
 	@Override
+	public AccountGroupEntity findAccountGroupEntity(AccountEntity account, GroupEntity group) {
+		try {
+			return (AccountGroupEntity) em.createQuery("select r from AccountGroupEntity r where r.account = :account "
+					+ "and r.group = :group")
+				.setParameter("account", account).setParameter("group", group).getSingleResult();
+		}
+		catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	@Override
 	public UserGroupEntity createNewUserGroup() {
 		return new UserGroupEntity();
+	}
+	
+	@Override
+	public AccountGroupEntity createNewAccountGroup() {
+		return new AccountGroupEntity();
 	}
 	
 	@SuppressWarnings("unchecked")
