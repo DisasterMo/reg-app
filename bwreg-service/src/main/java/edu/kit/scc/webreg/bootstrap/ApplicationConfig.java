@@ -11,8 +11,10 @@
 package edu.kit.scc.webreg.bootstrap;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Singleton;
@@ -22,14 +24,40 @@ import org.slf4j.Logger;
 
 import edu.kit.scc.webreg.dao.ApplicationConfigDao;
 import edu.kit.scc.webreg.entity.ApplicationConfigEntity;
+import edu.kit.scc.webreg.service.AdminUserService;
+import edu.kit.scc.webreg.service.GroupService;
+import edu.kit.scc.webreg.service.RoleService;
+import edu.kit.scc.webreg.service.SerialService;
+import edu.kit.scc.webreg.service.ServiceService;
+import edu.kit.scc.webreg.service.UserService;
 
 @Singleton
 public class ApplicationConfig implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String actualConfigFormatVersion = "3.0.0";
+	
 	@Inject
 	private Logger logger;
+	
+	@Inject
+	private GroupService groupService;
+
+	@Inject
+	private UserService userService;
+	
+	@Inject
+	private RoleService roleService;
+	
+	@Inject
+	private ServiceService serviceService;
+	
+	@Inject
+	private AdminUserService adminUserService;
+	
+	@Inject
+	private SerialService serialService;
 	
 	@Inject
 	private ApplicationConfigDao dao;
@@ -38,6 +66,8 @@ public class ApplicationConfig implements Serializable {
 	
 	private Date lastLoad;
 	
+	private List<VersionConverter> converterList;
+	
 	public void init() {
 		logger.debug("Checking for Active Configuration");
 		appConfig = dao.findActive();
@@ -45,11 +75,32 @@ public class ApplicationConfig implements Serializable {
 		if (appConfig == null) {
 			logger.info("No active configuration found. Creating new config");
 			appConfig = dao.createNew();
-			appConfig.setConfigFormatVersion("2.0.0");
+			appConfig.setConfigFormatVersion(actualConfigFormatVersion);
 			appConfig.setSubVersion("1");
 			appConfig.setActiveConfig(true);
 			appConfig.setConfigOptions(new HashMap<String, String>());
 			appConfig = dao.persist(appConfig);
+		}
+		else if (! actualConfigFormatVersion.equals(appConfig.getConfigFormatVersion())) {
+			// Config format changed. Upgrade is needed
+			logger.debug("Populating converterList");
+			converterList = new ArrayList<>();
+			converterList.add(new VersionConverter2__3());
+			
+			try {
+				for (VersionConverter vc : converterList) {
+					if (vc.fromVersion().equals(appConfig.getConfigFormatVersion()) 
+							&& vc.toVersion().equals(actualConfigFormatVersion)) {
+						logger.info("Found configuration upgrader from version {} to version {}", vc.fromVersion(), vc.toVersion());
+						vc.populateServices(groupService, userService, roleService, serviceService, adminUserService, serialService);
+						vc.convert(appConfig);
+					}
+				}
+				
+				appConfig = dao.persist(appConfig);
+			} catch (ConversionException e) {
+				logger.warn("Version conversion failed", e);
+			}
 		}
 		
 		lastLoad = new Date();
