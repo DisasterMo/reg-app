@@ -115,10 +115,12 @@ public class UserEntity extends AbstractBaseEntity {
 		this.roles = roles;
 	}
 
+	@Deprecated
 	public String getPersistentId() {
 		return persistentId;
 	}
 
+	@Deprecated
 	public void setPersistentId(String persistentId) {
 		this.persistentId = persistentId;
 	}
@@ -179,10 +181,12 @@ public class UserEntity extends AbstractBaseEntity {
 		this.userStatus = userStatus;
 	}
 
+	@Deprecated
 	public String getPersistentSpId() {
 		return persistentSpId;
 	}
 
+	@Deprecated
 	public void setPersistentSpId(String persistentSpId) {
 		this.persistentSpId = persistentSpId;
 	}
@@ -245,10 +249,12 @@ public class UserEntity extends AbstractBaseEntity {
 		this.emailAddresses = emailAddresses;
 	}
 
+	@Deprecated
 	public SamlIdpMetadataEntity getIdp() {
 		return idp;
 	}
 
+	@Deprecated
 	public void setIdp(SamlIdpMetadataEntity idp) {
 		this.idp = idp;
 	}
