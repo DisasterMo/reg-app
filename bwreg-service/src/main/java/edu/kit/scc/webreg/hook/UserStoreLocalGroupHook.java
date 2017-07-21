@@ -141,7 +141,7 @@ public class UserStoreLocalGroupHook implements GroupServiceHook {
 			
 			if (! groupDao.isUserInGroup(user, group)) {
 				logger.debug("Adding user {} to group {}", user.getEppn(), groupString);
-				groupDao.addUserToGroup(user, group);
+				groupDao.addUserToGroup(user, group, false);
 				changedGroups.add(group);
 			}
 			
@@ -151,7 +151,7 @@ public class UserStoreLocalGroupHook implements GroupServiceHook {
 			LocalGroupEntity group = localGroupDao.findByName(groupString);
 			if (group != null && groupDao.isUserInGroup(user, group)) {
 				logger.debug("Removing user {} from group {}", user.getEppn(), groupString);
-				groupDao.removeUserGromGroup(user, group);
+				groupDao.removeUserFromGroup(user, group, false);
 				changedGroups.add(group);
 			}
 		}

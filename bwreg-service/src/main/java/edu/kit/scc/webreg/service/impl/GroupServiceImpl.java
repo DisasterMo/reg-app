@@ -54,7 +54,7 @@ public class GroupServiceImpl extends BaseServiceImpl<GroupEntity, Long> impleme
 		for (UserEntity user : usersToAdd) {
 			user = userDao.merge(user);
 			group = groupDao.merge(group);
-			groupDao.addUserToGroup(user, group);
+			groupDao.addUserToGroup(user, group, false);
 		}
 		
 		Set<UserEntity> usersToRemove = new HashSet<UserEntity>(oldMembers);
@@ -62,7 +62,7 @@ public class GroupServiceImpl extends BaseServiceImpl<GroupEntity, Long> impleme
 		for (UserEntity user : usersToRemove) { 
 			user = userDao.merge(user);
 			group = groupDao.merge(group);
-			groupDao.removeUserGromGroup(user, group);
+			groupDao.removeUserFromGroup(user, group, false);
 		}
 	}
 	
@@ -70,14 +70,14 @@ public class GroupServiceImpl extends BaseServiceImpl<GroupEntity, Long> impleme
 	public void addUserToGroup(UserEntity user, GroupEntity group) {
 		group = groupDao.merge(group);
 		user = userDao.merge(user);
-		groupDao.addUserToGroup(user, group);
+		groupDao.addUserToGroup(user, group, false);
 	}	
 	
 	@Override
 	public void removeUserGromGroup(UserEntity user, GroupEntity group) {
 		group = groupDao.merge(group);
 		user = userDao.merge(user);
-		groupDao.removeUserGromGroup(user, group);
+		groupDao.removeUserFromGroup(user, group, false);
 	}	
 	
 	@Override

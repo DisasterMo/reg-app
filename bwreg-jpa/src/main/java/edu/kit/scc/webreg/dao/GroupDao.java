@@ -36,9 +36,9 @@ public interface GroupDao extends BaseDao<GroupEntity, Long> {
 
 	GroupEntity findWithUsers(Long id);
 
-	void addUserToGroup(UserEntity user, GroupEntity group);
+	void addUserToGroup(UserEntity user, GroupEntity group, Boolean quick);
 
-	void removeUserGromGroup(UserEntity user, GroupEntity group);
+	void removeUserFromGroup(UserEntity user, GroupEntity group, Boolean quick);
 
 	UserGroupEntity createNewUserGroup();
 
@@ -65,12 +65,12 @@ public interface GroupDao extends BaseDao<GroupEntity, Long> {
 	void setServiceFlags(ServiceBasedGroupEntity entity,
 			ServiceGroupStatus status);
 
-	void addAccountToGroup(AccountEntity account, GroupEntity group);
+	void addAccountToGroup(AccountEntity account, GroupEntity group, Boolean quick);
 
 	AccountGroupEntity findAccountGroupEntity(AccountEntity account, GroupEntity group);
 
 	AccountGroupEntity createNewAccountGroup();
 
-	void removeAccountGromGroup(AccountEntity account, GroupEntity group);
+	void removeAccountFromGroup(AccountEntity account, GroupEntity group, Boolean quick);
 
 }

@@ -104,59 +104,65 @@ public class JpaGroupDao extends JpaBaseDao<GroupEntity, Long> implements GroupD
 	}
 	
 	@Override
-	public void addUserToGroup(UserEntity user, GroupEntity group) {
+	public void addUserToGroup(UserEntity user, GroupEntity group, Boolean quick) {
 		UserGroupEntity userGroup = createNewUserGroup();
 		userGroup.setUser(user);
 		userGroup.setGroup(group);
 		
-		if (user.getGroups() != null)
-			user.getGroups().add(userGroup);
-		
-		if (group.getUsers() != null)
-			group.getUsers().add(userGroup);
+		if ((quick != null) && (! quick)) {
+			if (user.getGroups() != null)
+				user.getGroups().add(userGroup);
+			
+			if (group.getUsers() != null)
+				group.getUsers().add(userGroup);
+		}
 		
 		em.persist(userGroup);
 	}
 	
 	@Override
-	public void removeUserGromGroup(UserEntity user, GroupEntity group) {
+	public void removeUserFromGroup(UserEntity user, GroupEntity group, Boolean quick) {
 		UserGroupEntity userGroup = findUserGroupEntity(user, group);
 		if (userGroup != null) {
-			if (user.getGroups() != null)
-				user.getGroups().remove(userGroup);
-			
-			if (group.getUsers() != null)
-				group.getUsers().remove(userGroup);
-
+			if ((quick != null) && (! quick)) {
+				if (user.getGroups() != null)
+					user.getGroups().remove(userGroup);
+				
+				if (group.getUsers() != null)
+					group.getUsers().remove(userGroup);
+			}
 			em.remove(userGroup);
 		}
 	}
 
 	@Override
-	public void addAccountToGroup(AccountEntity account, GroupEntity group) {
+	public void addAccountToGroup(AccountEntity account, GroupEntity group, Boolean quick) {
 		AccountGroupEntity accountGroup = createNewAccountGroup();
 		accountGroup.setAccount(account);
 		accountGroup.setGroup(group);
 		
-		if (account.getGroups() != null)
-			account.getGroups().add(accountGroup);
-		
-		if (group.getAccounts() != null)
-			group.getAccounts().add(accountGroup);
+		if ((quick != null) && (! quick)) {
+			if (account.getGroups() != null)
+				account.getGroups().add(accountGroup);
+			
+			if (group.getAccounts() != null)
+				group.getAccounts().add(accountGroup);
+		}
 		
 		em.persist(accountGroup);
 	}
 	
 	@Override
-	public void removeAccountGromGroup(AccountEntity account, GroupEntity group) {
+	public void removeAccountFromGroup(AccountEntity account, GroupEntity group, Boolean quick) {
 		AccountGroupEntity accountGroup = findAccountGroupEntity(account, group);
 		if (accountGroup != null) {
-			if (account.getGroups() != null)
-				account.getGroups().remove(accountGroup);
-			
-			if (group.getAccounts() != null)
-				group.getAccounts().remove(accountGroup);
-
+			if ((quick != null) && (! quick)) {
+				if (account.getGroups() != null)
+					account.getGroups().remove(accountGroup);
+				
+				if (group.getAccounts() != null)
+					group.getAccounts().remove(accountGroup);
+			}
 			em.remove(accountGroup);
 		}
 	}

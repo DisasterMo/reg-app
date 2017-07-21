@@ -20,6 +20,8 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+
 import edu.kit.scc.webreg.dao.BaseDao;
 import edu.kit.scc.webreg.dao.GroupDao;
 import edu.kit.scc.webreg.dao.SamlSpConfigurationDao;
@@ -39,6 +41,9 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 	private static final long serialVersionUID = 1L;
 
 	@Inject
+	private Logger logger;
+	
+	@Inject
 	private SamlAccountDao dao;
 	
 	@Inject
@@ -53,6 +58,7 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public SamlAccountEntity convertUserForSamlAccount(UserEntity user) {
+		logger.debug("processing user id {} ({})", user.getId(), user.getEppn());
 		SamlAccountEntity entity = dao.createNew();
 		
 		entity.setUser(user);
@@ -66,15 +72,19 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 		entity.setGlobalId(user.getEppn());
 		user.setEppn(null);
 		
+		logger.debug("processing account store for user id {} ({})", user.getId(), user.getEppn());
 		Map<String, String> accountStore = new HashMap<>();
 		accountStore.putAll(user.getAttributeStore());
 		entity.setAccountStore(accountStore);
 		
+		logger.debug("persisting user id {} ({})", user.getId(), user.getEppn());
 		user = userDao.persist(user);
 
+		logger.debug("persisting samlAccount for user id {} ({})", user.getId(), user.getEppn());
 		entity.setUser(user);
 		entity = dao.persist(entity);
 		
+		logger.debug("processing groups for user id {} ({})", user.getId(), user.getEppn());
 		List<GroupEntity> migrationGroupList = new ArrayList<>();
 		List<GroupEntity> allGroupList = groupDao.findByUser(user);
 		for (GroupEntity group : allGroupList) {
@@ -83,10 +93,12 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 			}
 		}
 		
+		logger.debug("migrating {} groups for user id {} ({})", migrationGroupList.size(), user.getId(), user.getEppn());
 		for (GroupEntity group : migrationGroupList) {
-			groupDao.removeUserGromGroup(user, group);
-			groupDao.addAccountToGroup(entity, group);
+			groupDao.removeUserFromGroup(user, group, true);
+			groupDao.addAccountToGroup(entity, group, true);
 		}
+		logger.debug("done migrating groups for user id {} ({})", migrationGroupList.size(), user.getId(), user.getEppn());
 		return entity;
 	}
 	

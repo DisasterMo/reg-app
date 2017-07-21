@@ -307,7 +307,7 @@ public class HomeOrgGroupUpdater implements Serializable {
 
 							if (! groupDao.isUserInGroup(user, groupEntity)) {
 								logger.debug("Adding user {} to group {}", user.getEppn(), groupEntity.getName());
-								groupDao.addUserToGroup(user, groupEntity);
+								groupDao.addUserToGroup(user, groupEntity, false);
 								changedGroups.remove(groupEntity);
 								//groupEntity = dao.persist(groupEntity);
 								auditor.logAction(user.getEppn(), "ADD TO GROUP", groupEntity.getName(), null, AuditStatus.SUCCESS);
@@ -329,7 +329,7 @@ public class HomeOrgGroupUpdater implements Serializable {
 				if (removeGroup instanceof HomeOrgGroupEntity) {
 					if (! removeGroup.equals(user.getPrimaryGroup())) {
 						logger.debug("Removing user {} from group {}", user.getEppn(), removeGroup.getName());
-						groupDao.removeUserGromGroup(user, removeGroup);
+						groupDao.removeUserFromGroup(user, removeGroup, false);
 						
 						auditor.logAction(user.getEppn(), "REMOVE FROM GROUP", removeGroup.getName(), null, AuditStatus.SUCCESS);
 	
@@ -346,7 +346,7 @@ public class HomeOrgGroupUpdater implements Serializable {
 			 */
 			if (user.getPrimaryGroup() != null && (! groupDao.isUserInGroup(user, user.getPrimaryGroup()))) {
 				logger.debug("Adding user {} to his primary group {} as secondary", user.getEppn(), user.getPrimaryGroup().getName());
-				groupDao.addUserToGroup(user, user.getPrimaryGroup());
+				groupDao.addUserToGroup(user, user.getPrimaryGroup(), false);
 				changedGroups.add(user.getPrimaryGroup());
 			}
 		}

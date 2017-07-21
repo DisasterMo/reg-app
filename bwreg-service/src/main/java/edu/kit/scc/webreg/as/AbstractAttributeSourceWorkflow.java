@@ -203,7 +203,7 @@ public abstract class AbstractAttributeSourceWorkflow implements AttributeSource
 			//delete all groups for this user
 			for (AttributeSourceGroupEntity group : oldGroupList) {
 				logger.debug("Removeing {} grom group {}", user.getEppn(), group.getName());
-				groupDao.removeUserGromGroup(user, group);
+				groupDao.removeUserFromGroup(user, group, false);
 				allChangedGroups.add(group);
 			}
 			changed = true;
@@ -222,7 +222,7 @@ public abstract class AbstractAttributeSourceWorkflow implements AttributeSource
 			
 			for(String s : groupsToRemove) {
 				logger.debug("Removing {} grom group {}", user.getEppn(), s);
-				groupDao.removeUserGromGroup(user, oldGroupsMap.get(s));
+				groupDao.removeUserFromGroup(user, oldGroupsMap.get(s), false);
 				allChangedGroups.add(oldGroupsMap.get(s));
 			}
 			
@@ -244,7 +244,7 @@ public abstract class AbstractAttributeSourceWorkflow implements AttributeSource
 				}
 				
 				logger.debug("Adding {} to group {}", user.getEppn(), s);
-				groupDao.addUserToGroup(user, group);
+				groupDao.addUserToGroup(user, group, false);
 				allChangedGroups.add(group);
 			}
 		}
