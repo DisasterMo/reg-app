@@ -31,6 +31,7 @@ import edu.kit.scc.webreg.entity.GroupEntity;
 import edu.kit.scc.webreg.entity.HomeOrgGroupEntity;
 import edu.kit.scc.webreg.entity.UserEntity;
 import edu.kit.scc.webreg.entity.UserGroupEntity;
+import edu.kit.scc.webreg.entity.account.AccountStatus;
 import edu.kit.scc.webreg.entity.account.SamlAccountEntity;
 import edu.kit.scc.webreg.service.account.SamlAccountService;
 import edu.kit.scc.webreg.service.impl.BaseServiceImpl;
@@ -71,12 +72,19 @@ public class SamlAccountServiceImpl extends BaseServiceImpl<SamlAccountEntity, L
 		user.setPersistentSpId(null);
 		entity.setGlobalId(user.getEppn());
 		user.setEppn(null);
+		entity.setAccountStatus(AccountStatus.valueOf(user.getUserStatus().name()));
+		entity.setLastFailedUpdate(user.getLastFailedUpdate());
+		user.setLastFailedUpdate(null);
+		entity.setLastStatusChange(user.getLastStatusChange());
+		entity.setLastUpdate(user.getLastUpdate());
+		user.setLastUpdate(null);
 		
 		logger.debug("processing account store for user id {} ({})", user.getId(), user.getEppn());
 		Map<String, String> accountStore = new HashMap<>();
 		accountStore.putAll(user.getAttributeStore());
 		entity.setAccountStore(accountStore);
-		
+		user.getAttributeStore().clear();
+
 		logger.debug("persisting user id {} ({})", user.getId(), user.getEppn());
 		user = userDao.persist(user);
 

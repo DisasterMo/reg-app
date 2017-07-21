@@ -211,10 +211,12 @@ public class UserEntity extends AbstractBaseEntity {
 		this.theme = theme;
 	}
 
+	@Deprecated
 	public Date getLastUpdate() {
 		return lastUpdate;
 	}
 
+	@Deprecated
 	public void setLastUpdate(Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
@@ -277,10 +279,12 @@ public class UserEntity extends AbstractBaseEntity {
 		this.lastStatusChange = lastStatusChange;
 	}
 
+	@Deprecated
 	public Date getLastFailedUpdate() {
 		return lastFailedUpdate;
 	}
 
+	@Deprecated
 	public void setLastFailedUpdate(Date lastFailedUpdate) {
 		this.lastFailedUpdate = lastFailedUpdate;
 	}
