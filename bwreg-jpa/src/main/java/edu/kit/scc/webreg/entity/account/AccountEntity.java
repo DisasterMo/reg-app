@@ -1,11 +1,14 @@
 package edu.kit.scc.webreg.entity.account;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -17,6 +20,7 @@ import javax.persistence.Table;
 
 import edu.kit.scc.webreg.entity.AbstractBaseEntity;
 import edu.kit.scc.webreg.entity.UserEntity;
+import edu.kit.scc.webreg.entity.UserStatus;
 
 @Entity(name = "AccountEntity")
 @Table(name = "account")
@@ -41,6 +45,18 @@ public class AccountEntity extends AbstractBaseEntity {
 	@OneToMany(targetEntity = AccountGroupEntity.class, mappedBy="account")
 	private Set<AccountGroupEntity> groups;		
 
+	@Enumerated(EnumType.STRING)
+	private AccountStatus accountStatus;
+	
+	@Column(name = "last_update")
+	private Date lastUpdate;
+	
+	@Column(name = "last_failed_update")
+	private Date lastFailedUpdate;
+
+	@Column(name = "last_status_change")
+	private Date lastStatusChange;
+		
 	public Map<String, String> getAccountStore() {
 		return accountStore;
 	}
@@ -71,5 +87,37 @@ public class AccountEntity extends AbstractBaseEntity {
 
 	public void setGroups(Set<AccountGroupEntity> groups) {
 		this.groups = groups;
+	}
+
+	public AccountStatus getAccountStatus() {
+		return accountStatus;
+	}
+
+	public void setAccountStatus(AccountStatus accountStatus) {
+		this.accountStatus = accountStatus;
+	}
+
+	public Date getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
+	public Date getLastFailedUpdate() {
+		return lastFailedUpdate;
+	}
+
+	public void setLastFailedUpdate(Date lastFailedUpdate) {
+		this.lastFailedUpdate = lastFailedUpdate;
+	}
+
+	public Date getLastStatusChange() {
+		return lastStatusChange;
+	}
+
+	public void setLastStatusChange(Date lastStatusChange) {
+		this.lastStatusChange = lastStatusChange;
 	} 
 }
