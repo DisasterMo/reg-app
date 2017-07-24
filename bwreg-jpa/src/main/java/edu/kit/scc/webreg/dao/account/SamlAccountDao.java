@@ -15,4 +15,8 @@ import edu.kit.scc.webreg.entity.account.SamlAccountEntity;
 
 public interface SamlAccountDao extends BaseDao<SamlAccountEntity, Long> {
 
+	SamlAccountEntity findByPersistentWithRoles(String spId, String idpId,
+			String persistentId);
+	SamlAccountEntity findByEppn(String eppn);
+
 }
