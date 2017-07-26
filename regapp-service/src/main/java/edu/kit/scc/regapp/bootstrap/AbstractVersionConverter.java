@@ -3,7 +3,7 @@ package edu.kit.scc.regapp.bootstrap;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import edu.kit.scc.webreg.entity.ApplicationConfigEntity;
+import edu.kit.scc.regapp.entity.ApplicationConfigEntity;
 import edu.kit.scc.webreg.service.AdminUserService;
 import edu.kit.scc.webreg.service.GroupService;
 import edu.kit.scc.webreg.service.RoleService;

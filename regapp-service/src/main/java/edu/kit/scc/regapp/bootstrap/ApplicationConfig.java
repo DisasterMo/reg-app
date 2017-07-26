@@ -22,8 +22,8 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import edu.kit.scc.webreg.dao.ApplicationConfigDao;
-import edu.kit.scc.webreg.entity.ApplicationConfigEntity;
+import edu.kit.scc.regapp.dao.ApplicationConfigDao;
+import edu.kit.scc.regapp.entity.ApplicationConfigEntity;
 
 @Singleton
 public class ApplicationConfig implements Serializable {

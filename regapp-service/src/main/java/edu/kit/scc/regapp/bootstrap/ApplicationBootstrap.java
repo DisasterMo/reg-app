@@ -23,12 +23,12 @@ import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
 import org.slf4j.Logger;
 
+import edu.kit.scc.regapp.entity.AdminUserEntity;
+import edu.kit.scc.regapp.entity.GroupEntity;
+import edu.kit.scc.regapp.entity.RoleEntity;
+import edu.kit.scc.regapp.entity.SerialEntity;
+import edu.kit.scc.regapp.entity.ServiceEntity;
 import edu.kit.scc.webreg.drools.BpmProcessService;
-import edu.kit.scc.webreg.entity.AdminUserEntity;
-import edu.kit.scc.webreg.entity.GroupEntity;
-import edu.kit.scc.webreg.entity.RoleEntity;
-import edu.kit.scc.webreg.entity.SerialEntity;
-import edu.kit.scc.webreg.entity.ServiceEntity;
 import edu.kit.scc.webreg.service.AdminUserService;
 import edu.kit.scc.webreg.service.GroupService;
 import edu.kit.scc.webreg.service.RoleService;

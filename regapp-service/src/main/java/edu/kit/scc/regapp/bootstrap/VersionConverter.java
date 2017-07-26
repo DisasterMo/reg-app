@@ -1,6 +1,6 @@
 package edu.kit.scc.regapp.bootstrap;
 
-import edu.kit.scc.webreg.entity.ApplicationConfigEntity;
+import edu.kit.scc.regapp.entity.ApplicationConfigEntity;
 
 public interface VersionConverter {
 

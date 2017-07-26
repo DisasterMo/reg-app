@@ -7,9 +7,9 @@ import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.kit.scc.webreg.entity.ApplicationConfigEntity;
-import edu.kit.scc.webreg.entity.UserEntity;
-import edu.kit.scc.webreg.entity.account.SamlAccountEntity;
+import edu.kit.scc.regapp.entity.ApplicationConfigEntity;
+import edu.kit.scc.regapp.entity.UserEntity;
+import edu.kit.scc.regapp.entity.account.SamlAccountEntity;
 
 public class VersionConverter2__3 extends AbstractVersionConverter {
 
