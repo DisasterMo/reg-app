@@ -12,15 +12,37 @@ package edu.kit.scc.webreg.dao.jpa.account;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import edu.kit.scc.webreg.dao.account.AccountDao;
 import edu.kit.scc.webreg.dao.jpa.JpaBaseDao;
 import edu.kit.scc.webreg.entity.account.AccountEntity;
+import edu.kit.scc.webreg.entity.account.AccountEntity_;
 
 @Named
 @ApplicationScoped
 public class JpaAccountDao extends JpaBaseDao<AccountEntity, Long> implements AccountDao {
 
+	@Override
+	public AccountEntity findByGlobalId(String globalId) {
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		CriteriaQuery<AccountEntity> criteria = builder.createQuery(AccountEntity.class);
+		Root<AccountEntity> root = criteria.from(AccountEntity.class);
+		criteria.where(
+				builder.equal(root.get(AccountEntity_.globalId), globalId));
+		criteria.select(root);
+		
+		try {
+			return em.createQuery(criteria).getSingleResult();
+		}
+		catch (NoResultException e) {
+			return null;
+		}			
+	}	
+	
 	@Override
 	public Class<AccountEntity> getEntityClass() {
 		return AccountEntity.class;

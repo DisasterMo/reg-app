@@ -23,11 +23,6 @@ import edu.kit.scc.webreg.exc.UserUpdateException;
 
 public interface UserService extends BaseService<UserEntity, Long> {
 
-	UserEntity findByPersistentWithRoles(String spId, String idpId,
-			String persistentId);
-	
-	UserEntity findByEppn(String eppn);
-	
 	UserEntity findByIdWithAll(Long id);
 	
 	boolean updateUserFromAttribute(UserEntity user,
