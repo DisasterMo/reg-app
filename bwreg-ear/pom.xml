@@ -11,7 +11,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>bwreg-ear</artifactId>
+	<artifactId>reg-app-ear</artifactId>
 	<packaging>ear</packaging>
 
 	<properties>
@@ -21,26 +21,26 @@
 
 	<parent>
 		<groupId>edu.kit.scc</groupId>
-		<artifactId>bwreg</artifactId>
+		<artifactId>reg-app</artifactId>
 		<version>3.0.0</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
-			<artifactId>bwreg-jpa</artifactId>
+			<artifactId>reg-app-jpa</artifactId>
 			<version>3.0.0</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
-			<artifactId>bwreg-service</artifactId>
+			<artifactId>reg-app-service</artifactId>
 			<version>3.0.0</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
-			<artifactId>bwreg-webapp</artifactId>
+			<artifactId>reg-app-webapp</artifactId>
 			<version>3.0.0</version>
 			<type>war</type>
 		</dependency>
@@ -121,7 +121,7 @@
 
 	<build>
 		<defaultGoal>install</defaultGoal>
-		<finalName>bwreg${bwreg.name.suffix}-${project.version}</finalName>
+		<finalName>reg-app${bwreg.name.suffix}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -129,24 +129,24 @@
 				<version>2.8</version>
 				<configuration>
 					<version>6</version>
-					<applicationName>bwreg</applicationName>
+					<applicationName>reg-app</applicationName>
 					<displayName>Registration Webapp</displayName>
 					<modules>
 						<ejbModule>
 							<groupId>edu.kit.scc</groupId>
-							<artifactId>bwreg-jpa</artifactId>
-							<bundleFileName>bwreg-jpa.jar</bundleFileName>
-							<moduleId>bwreg-jpa</moduleId>
+							<artifactId>reg-app-jpa</artifactId>
+							<bundleFileName>reg-app-jpa.jar</bundleFileName>
+							<moduleId>reg-app-jpa</moduleId>
 						</ejbModule>
 						<ejbModule>
 							<groupId>edu.kit.scc</groupId>
-							<artifactId>bwreg-service</artifactId>
-							<bundleFileName>bwreg-service.jar</bundleFileName>
+							<artifactId>reg-app-service</artifactId>
+							<bundleFileName>reg-app-service.jar</bundleFileName>
 							<moduleId>bwreg-service</moduleId>
 						</ejbModule>
 						<webModule>
 							<groupId>edu.kit.scc</groupId>
-							<artifactId>bwreg-webapp</artifactId>
+							<artifactId>reg-app-webapp</artifactId>
 							<contextRoot>/</contextRoot>
 						</webModule>
 					</modules>  
