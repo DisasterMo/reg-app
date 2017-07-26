@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import edu.kit.scc.webreg.audit.Auditor;
 import edu.kit.scc.webreg.dao.BaseDao;
 import edu.kit.scc.webreg.dao.RegistryDao;
-import edu.kit.scc.webreg.dao.SamlIdpMetadataDao;
 import edu.kit.scc.webreg.dao.UserDao;
 import edu.kit.scc.webreg.entity.GroupEntity;
 import edu.kit.scc.webreg.entity.RegistryEntity;
@@ -44,9 +43,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
 	
 	@Inject
 	private UserDao dao;
-	
-	@Inject
-	private SamlIdpMetadataDao idpDao;
 	
 	@Inject
 	private UserUpdater userUpdater;
@@ -70,20 +66,10 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
 	}
 	
 	@Override
-	public UserEntity findByPersistentWithRoles(String spId, String idpId, String persistentId) {
-		return dao.findByPersistentWithRoles(spId, idpId, persistentId);
-	}
-
-	@Override
 	public List<UserEntity> findByGroup(GroupEntity group) {
 		return dao.findByGroup(group);
 	}
 	
-	@Override
-	public UserEntity findByEppn(String eppn) {
-		return dao.findByEppn(eppn);
-	}
-
 	@Override
 	public List<UserEntity> findByStatus(UserStatus status) {
 		return dao.findByStatus(status);

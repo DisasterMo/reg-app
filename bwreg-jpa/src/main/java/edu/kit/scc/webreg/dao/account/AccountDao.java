@@ -15,4 +15,6 @@ import edu.kit.scc.webreg.entity.account.AccountEntity;
 
 public interface AccountDao extends BaseDao<AccountEntity, Long> {
 
+	AccountEntity findByGlobalId(String globalId);
+
 }

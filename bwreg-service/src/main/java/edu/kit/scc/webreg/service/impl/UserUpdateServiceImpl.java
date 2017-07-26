@@ -17,6 +17,7 @@ import edu.kit.scc.webreg.bootstrap.ApplicationConfig;
 import edu.kit.scc.webreg.dao.RegistryDao;
 import edu.kit.scc.webreg.dao.ServiceDao;
 import edu.kit.scc.webreg.dao.UserDao;
+import edu.kit.scc.webreg.dao.account.AccountDao;
 import edu.kit.scc.webreg.drools.KnowledgeSessionService;
 import edu.kit.scc.webreg.drools.OverrideAccess;
 import edu.kit.scc.webreg.drools.UnauthorizedUser;
@@ -25,6 +26,7 @@ import edu.kit.scc.webreg.entity.RegistryEntity;
 import edu.kit.scc.webreg.entity.RegistryStatus;
 import edu.kit.scc.webreg.entity.ServiceEntity;
 import edu.kit.scc.webreg.entity.UserEntity;
+import edu.kit.scc.webreg.entity.account.AccountEntity;
 import edu.kit.scc.webreg.exc.LoginFailedException;
 import edu.kit.scc.webreg.exc.NoRegistryFoundException;
 import edu.kit.scc.webreg.exc.NoServiceFoundException;
@@ -46,6 +48,9 @@ public class UserUpdateServiceImpl implements UserUpdateService, Serializable {
 	private UserDao userDao;
 	
 	@Inject
+	private AccountDao accountDao;
+	
+	@Inject
 	private UserUpdater userUpdater;
 
 	@Inject
@@ -65,7 +70,11 @@ public class UserUpdateServiceImpl implements UserUpdateService, Serializable {
 			String serviceShortName, String localHostName, String executor)
 			throws IOException, RestInterfaceException {
 
-		UserEntity user = findUser(eppn);
+		AccountEntity account = findAccount(eppn);
+		if (account == null)
+			throw new NoUserFoundException("no such account");
+		
+		UserEntity user = account.getUser();
 		if (user == null)
 			throw new NoUserFoundException("no such user");
 		
@@ -84,7 +93,11 @@ public class UserUpdateServiceImpl implements UserUpdateService, Serializable {
 	public Map<String, String> updateUser(String eppn, String localHostName, String executor)
 			throws IOException, RestInterfaceException {
 
-		UserEntity user = findUser(eppn);
+		AccountEntity account = findAccount(eppn);
+		if (account == null)
+			throw new NoUserFoundException("no such account");
+		
+		UserEntity user = account.getUser();
 		if (user == null)
 			throw new NoUserFoundException("no such user");
 		
@@ -108,7 +121,13 @@ public class UserUpdateServiceImpl implements UserUpdateService, Serializable {
 	@Asynchronous
 	public void updateUserAsync(String eppn, String localHostName, String executor) {
 
-		UserEntity user = findUser(eppn);
+		AccountEntity account = findAccount(eppn);
+		if (account == null) {
+			logger.info("Not updating user. No such account: {}", eppn);
+			return;
+		}
+		
+		UserEntity user = account.getUser();
 		if (user == null) {
 			logger.info("Not updating user. No such user: {}", eppn);
 			return;
@@ -263,14 +282,10 @@ public class UserUpdateServiceImpl implements UserUpdateService, Serializable {
 		return service;
 	}
 
-	private UserEntity findUser(String eppn) {
-		UserEntity user = userDao.findByEppn(eppn);
+	private AccountEntity findAccount(String globalId) {
+		AccountEntity account = accountDao.findByGlobalId(globalId);
 
-		if (user != null) {
-			user = userDao.findByIdWithStore(user.getId());
-		}
-
-		return user;
+		return account;
 	}
 
 }

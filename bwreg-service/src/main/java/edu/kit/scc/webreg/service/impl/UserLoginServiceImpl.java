@@ -15,8 +15,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 
-import net.shibboleth.utilities.java.support.httpclient.HttpClientBuilder;
-
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -39,12 +37,9 @@ import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
-import org.opensaml.soap.client.SOAPClientException;
-import org.opensaml.soap.client.http.HttpSOAPClient;
 import org.opensaml.soap.client.http.PipelineFactoryHttpSOAPClient;
 import org.opensaml.soap.common.SOAPException;
 import org.opensaml.soap.messaging.context.SOAP11Context;
-import org.opensaml.soap.soap11.Envelope;
 import org.opensaml.xmlsec.encryption.support.DecryptionException;
 import org.slf4j.Logger;
 
@@ -53,6 +48,8 @@ import edu.kit.scc.webreg.dao.SamlIdpMetadataDao;
 import edu.kit.scc.webreg.dao.SamlSpConfigurationDao;
 import edu.kit.scc.webreg.dao.ServiceDao;
 import edu.kit.scc.webreg.dao.UserDao;
+import edu.kit.scc.webreg.dao.account.AccountDao;
+import edu.kit.scc.webreg.dao.account.SamlAccountDao;
 import edu.kit.scc.webreg.drools.KnowledgeSessionService;
 import edu.kit.scc.webreg.drools.OverrideAccess;
 import edu.kit.scc.webreg.drools.UnauthorizedUser;
@@ -64,6 +61,8 @@ import edu.kit.scc.webreg.entity.SamlIdpMetadataEntityStatus;
 import edu.kit.scc.webreg.entity.SamlSpConfigurationEntity;
 import edu.kit.scc.webreg.entity.ServiceEntity;
 import edu.kit.scc.webreg.entity.UserEntity;
+import edu.kit.scc.webreg.entity.account.AccountEntity;
+import edu.kit.scc.webreg.entity.account.SamlAccountEntity;
 import edu.kit.scc.webreg.exc.AssertionException;
 import edu.kit.scc.webreg.exc.GenericRestInterfaceException;
 import edu.kit.scc.webreg.exc.LoginFailedException;
@@ -104,6 +103,12 @@ public class UserLoginServiceImpl implements UserLoginService, Serializable {
 	@Inject
 	private PasswordUtil passwordUtil;
 
+	@Inject
+	private AccountDao accountDao;
+	
+	@Inject
+	private SamlAccountDao samlAccountDao;
+	
 	@Inject
 	private UserDao userDao;
 	
@@ -152,10 +157,16 @@ public class UserLoginServiceImpl implements UserLoginService, Serializable {
 			String password, String localHostName)
 			throws IOException, ServletException, RestInterfaceException {
 
-		UserEntity user = findUser(eppn);
+		AccountEntity account = findAccount(eppn);
+		
+		if (account == null)
+			throw new NoUserFoundException("no such account");
+		
+		UserEntity user = account.getUser();
+
 		if (user == null)
 			throw new NoUserFoundException("no such user");
-		
+
 		ServiceEntity service = findService(serviceShortName);
 		if (service == null)
 			throw new NoServiceFoundException("no such service");
@@ -478,10 +489,16 @@ public class UserLoginServiceImpl implements UserLoginService, Serializable {
 
 		String persistentId = saml2AssertionService.extractPersistentId(assertion, spEntity);
 		
-		UserEntity user = userDao.findByPersistentWithRoles(spEntity.getEntityId(), 
+		SamlAccountEntity samlAccount = samlAccountDao.findByPersistentWithRoles(spEntity.getEntityId(), 
 				idp.getEntityId(), persistentId);
 	
-		if (user == null) {
+		if (samlAccount == null) {
+			throw new UserNotRegisteredException("account not registered in webapp");
+		}
+		
+		UserEntity user = samlAccount.getUser();
+
+		if (samlAccount == null) {
 			throw new UserNotRegisteredException("user not registered in webapp");
 		}
 		
@@ -545,14 +562,10 @@ public class UserLoginServiceImpl implements UserLoginService, Serializable {
 		return service;
 	}
 
-	private UserEntity findUser(String eppn) {
-		UserEntity user = userDao.findByEppn(eppn);
+	private AccountEntity findAccount(String globalId) {
+		AccountEntity account = accountDao.findByGlobalId(globalId);
 
-		if (user != null) {
-			user = userDao.findByIdWithStore(user.getId());
-		}
-
-		return user;
+		return account;
 	}
 
 	private List<Object> checkRules(UserEntity user, ServiceEntity service, RegistryEntity registry) {
