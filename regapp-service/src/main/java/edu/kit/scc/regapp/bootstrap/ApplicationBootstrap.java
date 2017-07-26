@@ -28,16 +28,16 @@ import edu.kit.scc.regapp.entity.GroupEntity;
 import edu.kit.scc.regapp.entity.RoleEntity;
 import edu.kit.scc.regapp.entity.SerialEntity;
 import edu.kit.scc.regapp.entity.ServiceEntity;
+import edu.kit.scc.regapp.service.AdminUserService;
+import edu.kit.scc.regapp.service.GroupService;
+import edu.kit.scc.regapp.service.RoleService;
+import edu.kit.scc.regapp.service.SerialService;
+import edu.kit.scc.regapp.service.ServiceService;
+import edu.kit.scc.regapp.service.UserService;
+import edu.kit.scc.regapp.service.impl.HookManager;
+import edu.kit.scc.regapp.service.mail.TemplateRenderer;
+import edu.kit.scc.regapp.service.timer.StandardScheduler;
 import edu.kit.scc.webreg.drools.BpmProcessService;
-import edu.kit.scc.webreg.service.AdminUserService;
-import edu.kit.scc.webreg.service.GroupService;
-import edu.kit.scc.webreg.service.RoleService;
-import edu.kit.scc.webreg.service.SerialService;
-import edu.kit.scc.webreg.service.ServiceService;
-import edu.kit.scc.webreg.service.UserService;
-import edu.kit.scc.webreg.service.impl.HookManager;
-import edu.kit.scc.webreg.service.mail.TemplateRenderer;
-import edu.kit.scc.webreg.service.timer.StandardScheduler;
 
 @Singleton
 @Startup

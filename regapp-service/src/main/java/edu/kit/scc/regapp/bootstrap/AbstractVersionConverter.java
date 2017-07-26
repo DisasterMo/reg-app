@@ -4,14 +4,14 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import edu.kit.scc.regapp.entity.ApplicationConfigEntity;
-import edu.kit.scc.webreg.service.AdminUserService;
-import edu.kit.scc.webreg.service.GroupService;
-import edu.kit.scc.webreg.service.RoleService;
-import edu.kit.scc.webreg.service.SamlSpConfigurationService;
-import edu.kit.scc.webreg.service.SerialService;
-import edu.kit.scc.webreg.service.ServiceService;
-import edu.kit.scc.webreg.service.UserService;
-import edu.kit.scc.webreg.service.account.SamlAccountService;
+import edu.kit.scc.regapp.service.AdminUserService;
+import edu.kit.scc.regapp.service.GroupService;
+import edu.kit.scc.regapp.service.RoleService;
+import edu.kit.scc.regapp.service.SamlSpConfigurationService;
+import edu.kit.scc.regapp.service.SerialService;
+import edu.kit.scc.regapp.service.ServiceService;
+import edu.kit.scc.regapp.service.UserService;
+import edu.kit.scc.regapp.service.account.SamlAccountService;
 
 public abstract class AbstractVersionConverter implements VersionConverter {
 
