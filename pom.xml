@@ -12,7 +12,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.kit.scc</groupId>
-	<artifactId>bwreg</artifactId>
+	<artifactId>reg-app</artifactId>
 	<version>3.0.0</version>
 	<packaging>pom</packaging>
 	<name>bw Services Registration Webapp</name>
@@ -23,10 +23,10 @@
 	</properties>
 
 	<modules>
-		<module>bwreg-jpa</module>
-		<module>bwreg-service</module>
-		<module>bwreg-webapp</module>
-		<module>bwreg-ear</module>
+		<module>reg-app-jpa</module>
+		<module>reg-app-service</module>
+		<module>reg-app-webapp</module>
+		<module>reg-app-ear</module>
 	</modules>
 
 	<dependencyManagement>
