@@ -23,17 +23,17 @@ import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
 import org.slf4j.Logger;
 
+import edu.kit.scc.regapp.dao.AdminUserDao;
+import edu.kit.scc.regapp.dao.GroupDao;
+import edu.kit.scc.regapp.dao.RoleDao;
+import edu.kit.scc.regapp.dao.SerialDao;
+import edu.kit.scc.regapp.dao.ServiceDao;
+import edu.kit.scc.regapp.dao.UserDao;
 import edu.kit.scc.regapp.entity.AdminUserEntity;
 import edu.kit.scc.regapp.entity.GroupEntity;
 import edu.kit.scc.regapp.entity.RoleEntity;
 import edu.kit.scc.regapp.entity.SerialEntity;
 import edu.kit.scc.regapp.entity.ServiceEntity;
-import edu.kit.scc.regapp.service.AdminUserService;
-import edu.kit.scc.regapp.service.GroupService;
-import edu.kit.scc.regapp.service.RoleService;
-import edu.kit.scc.regapp.service.SerialService;
-import edu.kit.scc.regapp.service.ServiceService;
-import edu.kit.scc.regapp.service.UserService;
 import edu.kit.scc.regapp.service.impl.HookManager;
 import edu.kit.scc.regapp.service.mail.TemplateRenderer;
 import edu.kit.scc.regapp.service.timer.StandardScheduler;
@@ -50,22 +50,22 @@ public class ApplicationBootstrap {
 	private ApplicationConfig appConfig;
 	
 	@Inject
-	private GroupService groupService;
+	private GroupDao groupDao;
 
 	@Inject
-	private UserService userService;
+	private UserDao userDao;
 	
 	@Inject
-	private RoleService roleService;
+	private RoleDao roleDao;
 	
 	@Inject
-	private ServiceService serviceService;
+	private ServiceDao serviceDao;
 	
 	@Inject
-	private AdminUserService adminUserService;
+	private AdminUserDao adminUserDao;
 	
 	@Inject
-	private SerialService serialService;
+	private SerialDao serialDao;
 	
 	@Inject
 	private StandardScheduler standardScheduler;
@@ -108,21 +108,21 @@ public class ApplicationBootstrap {
     	checkRole("AttributeSourceAdmin");
     	
     	logger.info("Initializing admin Account");
-    	if (adminUserService.findByUsername("admin") == null) {
-    		AdminUserEntity a = adminUserService.createNew();
+    	if (adminUserDao.findByUsername("admin") == null) {
+    		AdminUserEntity a = adminUserDao.createNew();
     		a.setUsername("admin");
     		a.setPassword("secret");
     		Set<RoleEntity> roles = new HashSet<RoleEntity>();
-    		roles.add(roleService.findByName("MasterAdmin"));
+    		roles.add(roleDao.findByName("MasterAdmin"));
     		a.setRoles(roles);
-    		adminUserService.save(a);
+    		adminUserDao.persist(a);
     	}
 
     	logger.info("Setting PasswordCapable and GroupCapable on all services, according to implemented interfaces");
-    	List<ServiceEntity> serviceList = serviceService.findAll();
+    	List<ServiceEntity> serviceList = serviceDao.findAll();
     	for (ServiceEntity service : serviceList) {
         	logger.debug("Update capabilities on service {}", service.getName());
-    		serviceService.updateCapabilities(service);
+        	serviceDao.updateCapabilities(service);
     	}
     	
 		logger.info("Initializing Hooks");
@@ -144,30 +144,30 @@ public class ApplicationBootstrap {
 	}
 	
     private void checkGroup(String name, Integer createActual) {
-    	GroupEntity entity = groupService.findByName(name);
+    	GroupEntity entity = groupDao.findByName(name);
     	if (entity == null) {
-    		entity = groupService.createNew();
+    		entity = groupDao.createNew();
     		entity.setName(name);
     		entity.setGidNumber(createActual);
-    		groupService.save(entity);
+    		groupDao.persist(entity);
     	}    	
     }
 
     private void checkRole(String roleName) {
-    	if (roleService.findByName(roleName) == null) {
-    		RoleEntity role = roleService.createNew();
+    	if (roleDao.findByName(roleName) == null) {
+    		RoleEntity role = roleDao.createNew();
     		role.setName(roleName);
-    		roleService.save(role);
+    		roleDao.persist(role);
     	}    	
     }
 
     private void checkSerial(String serialName, Long createActual) {
-    	SerialEntity serial = serialService.findByName(serialName);
+    	SerialEntity serial = serialDao.findByName(serialName);
     	if (serial == null) {
-    		serial = serialService.createNew();
+    		serial = serialDao.createNew();
     		serial.setName(serialName);
     		serial.setActual(createActual);
-    		serialService.save(serial);
+    		serialDao.persist(serial);
     	}    	
     }
 
