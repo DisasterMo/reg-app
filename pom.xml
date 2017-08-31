@@ -23,10 +23,10 @@
 	</properties>
 
 	<modules>
-		<module>regapp-jpa</module>
-		<module>regapp-service</module>
-		<module>regapp-webapp</module>
-		<module>regapp-ear</module>
+		<module>reg-app-jpa</module>
+		<module>reg-app-service</module>
+		<module>reg-app-webapp</module>
+		<module>reg-app-ear</module>
 	</modules>
 
 	<dependencyManagement>

@@ -29,6 +29,7 @@ import edu.kit.scc.regapp.dao.RoleDao;
 import edu.kit.scc.regapp.dao.SerialDao;
 import edu.kit.scc.regapp.dao.ServiceDao;
 import edu.kit.scc.regapp.dao.UserDao;
+import edu.kit.scc.regapp.drools.BpmProcessService;
 import edu.kit.scc.regapp.entity.AdminUserEntity;
 import edu.kit.scc.regapp.entity.GroupEntity;
 import edu.kit.scc.regapp.entity.RoleEntity;
@@ -37,7 +38,6 @@ import edu.kit.scc.regapp.entity.ServiceEntity;
 import edu.kit.scc.regapp.service.impl.HookManager;
 import edu.kit.scc.regapp.service.mail.TemplateRenderer;
 import edu.kit.scc.regapp.service.timer.StandardScheduler;
-import edu.kit.scc.webreg.drools.BpmProcessService;
 
 @Singleton
 @Startup
