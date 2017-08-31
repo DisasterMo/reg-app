@@ -11,7 +11,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>regapp-ear</artifactId>
+	<artifactId>reg-app-ear</artifactId>
 	<packaging>ear</packaging>
 
 	<properties>
@@ -21,26 +21,26 @@
 
 	<parent>
 		<groupId>edu.kit.scc</groupId>
-		<artifactId>regapp</artifactId>
+		<artifactId>reg-app</artifactId>
 		<version>3.0.0</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
-			<artifactId>regapp-jpa</artifactId>
+			<artifactId>reg-app-jpa</artifactId>
 			<version>3.0.0</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
-			<artifactId>regapp-service</artifactId>
+			<artifactId>reg-app-service</artifactId>
 			<version>3.0.0</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
-			<artifactId>regapp-webapp</artifactId>
+			<artifactId>reg-app-webapp</artifactId>
 			<version>3.0.0</version>
 			<type>war</type>
 		</dependency>
