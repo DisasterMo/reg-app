@@ -121,7 +121,7 @@
 
 	<build>
 		<defaultGoal>install</defaultGoal>
-		<finalName>regapp${bwreg.name.suffix}-${project.version}</finalName>
+		<finalName>reg-app${bwreg.name.suffix}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -134,19 +134,19 @@
 					<modules>
 						<ejbModule>
 							<groupId>edu.kit.scc</groupId>
-							<artifactId>regapp-jpa</artifactId>
+							<artifactId>reg-app-jpa</artifactId>
 							<bundleFileName>regapp-jpa.jar</bundleFileName>
-							<moduleId>regapp-jpa</moduleId>
+							<moduleId>reg-app-jpa</moduleId>
 						</ejbModule>
 						<ejbModule>
 							<groupId>edu.kit.scc</groupId>
-							<artifactId>regapp-service</artifactId>
-							<bundleFileName>regapp-service.jar</bundleFileName>
-							<moduleId>bwreg-service</moduleId>
+							<artifactId>reg-app-service</artifactId>
+							<bundleFileName>reg-app-service.jar</bundleFileName>
+							<moduleId>reg-app-service</moduleId>
 						</ejbModule>
 						<webModule>
 							<groupId>edu.kit.scc</groupId>
-							<artifactId>regapp-webapp</artifactId>
+							<artifactId>reg-app-webapp</artifactId>
 							<contextRoot>/</contextRoot>
 						</webModule>
 					</modules>  
