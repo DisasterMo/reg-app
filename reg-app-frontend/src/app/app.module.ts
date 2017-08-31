@@ -1,11 +1,14 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { IndexComponent } from './index/index.component';
 import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './page-not-found.component';
+
+import { LoginService } from './login/login.service';
 
 const appRoutes: Routes = [
   { path: 'index', component: IndexComponent },
@@ -23,12 +26,13 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
+    HttpModule,
     RouterModule.forRoot(
       appRoutes,
       // { enableTracing: true } <-- debugging purposes only
     )
   ],
-  providers: [],
+  providers: [LoginService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
