@@ -129,13 +129,13 @@
 				<version>2.8</version>
 				<configuration>
 					<version>6</version>
-					<applicationName>regapp</applicationName>
+					<applicationName>reg-app</applicationName>
 					<displayName>Registration Webapp</displayName>
 					<modules>
 						<ejbModule>
 							<groupId>edu.kit.scc</groupId>
 							<artifactId>reg-app-jpa</artifactId>
-							<bundleFileName>regapp-jpa.jar</bundleFileName>
+							<bundleFileName>reg-app-jpa.jar</bundleFileName>
 							<moduleId>reg-app-jpa</moduleId>
 						</ejbModule>
 						<ejbModule>
