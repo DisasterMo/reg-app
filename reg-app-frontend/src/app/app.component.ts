@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from './data/user';
+import { AuthInfo } from './data/auth-info';
 import { LoginService } from './login/login.service';
 
 @Component({
@@ -10,13 +11,15 @@ import { LoginService } from './login/login.service';
 export class AppComponent implements OnInit {
   title = 'Reg-App';
   user: User;
+  authInfo: AuthInfo;
 
   constructor(private loginService: LoginService) { }
 
-  getLogin(): void {
-    this.loginService.getUser().then(user => this.user = user);
+  getLoginStatus(): void {
+    this.loginService.getAuthInfo().then(authInfo => this.authInfo = authInfo);
   }
+
   ngOnInit(): void {
-    this.getLogin();
+    this.getLoginStatus();
   }
 }
