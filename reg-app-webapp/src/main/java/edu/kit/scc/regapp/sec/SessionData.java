@@ -11,46 +11,52 @@
 package edu.kit.scc.regapp.sec;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
 import edu.kit.scc.regapp.entity.RoleEntity;
 
-@Named("sessionManager")
-@ApplicationScoped
-public class SessionManager implements Serializable {
+@Named("sessionData")
+@SessionScoped
+public class SessionData implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Inject
-	private SessionData session;
+	private Long userId;
+
+	private Set<RoleEntity> roles;
+    private Long roleSetCreated;
 
 	@PostConstruct
 	public void init() {
+		roles = new HashSet<>();
 	}
-
+	
 	public Long getUserId() {
-		return session.getUserId();
+		return userId;
 	}
 
 	public void setUserId(Long userId) {
-		session.setUserId(userId);
+		this.userId = userId;
 	}
 
-	public void addRole(RoleEntity role) {
-		session.getRoles().add(role);
+	public Set<RoleEntity> getRoles() {
+		return roles;
 	}
 
-	public void addRoles(Set<RoleEntity> rolesToAdd) {
-		session.getRoles().addAll(rolesToAdd);
+	public void setRoles(Set<RoleEntity> roles) {
+		this.roles = roles;
 	}
 
-	public boolean isUserInRole(RoleEntity role) {
-		return session.getRoles().contains(role);
+	public Long getRoleSetCreated() {
+		return roleSetCreated;
 	}
 
+	public void setRoleSetCreated(Long roleSetCreated) {
+		this.roleSetCreated = roleSetCreated;
+	}
 }
