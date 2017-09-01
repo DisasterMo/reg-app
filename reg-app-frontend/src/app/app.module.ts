@@ -9,10 +9,11 @@ import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './page-not-found.component';
 
 import { LoginService } from './login/login.service';
+import { CanActivateAuthGuard } from './auth.service';
 
 const appRoutes: Routes = [
-  { path: 'index', component: IndexComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'index', component: IndexComponent, canActivate: [CanActivateAuthGuard] },
   { path: '', redirectTo: '/index', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
 ];
@@ -32,7 +33,7 @@ const appRoutes: Routes = [
       // { enableTracing: true } <-- debugging purposes only
     )
   ],
-  providers: [LoginService],
+  providers: [LoginService, CanActivateAuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
