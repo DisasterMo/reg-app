@@ -20,7 +20,6 @@ import javax.persistence.Table;
 
 import edu.kit.scc.regapp.entity.AbstractBaseEntity;
 import edu.kit.scc.regapp.entity.UserEntity;
-import edu.kit.scc.regapp.entity.UserStatus;
 
 @Entity(name = "AccountEntity")
 @Table(name = "account")
