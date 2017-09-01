@@ -6,13 +6,14 @@ import { AuthInfo } from './data/auth-info';
 @Injectable()
 export class CanActivateAuthGuard implements CanActivate {
 
-    constructor(private loginService: LoginService) { }
+    constructor(private router: Router, private loginService: LoginService) { }
 
     canActivate() {
         return this.loginService.getAuthInfo().then((authInfo: AuthInfo) => {
             if (authInfo.loggedIn) {
                 return true;
             } else {
+                this.router.navigate(['/login']);
                 return false;
             }
         });
