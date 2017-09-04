@@ -10,13 +10,14 @@
  ******************************************************************************/
 package edu.kit.scc.regapp.dao.jpa.auth;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ListJoin;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
 
 import edu.kit.scc.regapp.dao.auth.AuthMechDao;
@@ -32,11 +33,10 @@ public class JpaAuthMechDao extends JpaBaseDao<AuthMechEntity, Long> implements 
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<AuthMechEntity> criteria = builder.createQuery(AuthMechEntity.class);
 		Root<AuthMechEntity> root = criteria.from(AuthMechEntity.class);
-		ListJoin<AuthMechEntity, String> elementJoin = root.joinList("hostNameList");
 		
-		criteria.select(root);
+		Expression<Collection<String>> hostnames = root.get("hostNameList");
 		criteria.where(
-				builder.equal(elementJoin.as(String.class), hostname));
+				builder.isMember(hostname, hostnames));
 
 		return em.createQuery(criteria).getResultList();
 	}

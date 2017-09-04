@@ -6,7 +6,7 @@ import javax.persistence.ManyToOne;
 
 import edu.kit.scc.regapp.entity.SamlSpConfigurationEntity;
 
-@Entity(name = "SamlAuthMech")
+@Entity(name = "SamlAuthMechEntity")
 public class SamlAuthMechEntity extends AuthMechEntity {
 
 	private static final long serialVersionUID = 1L;

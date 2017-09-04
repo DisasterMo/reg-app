@@ -1,6 +1,5 @@
 package edu.kit.scc.regapp.dto.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -27,13 +26,7 @@ public class RegistryDtoServiceImpl extends BaseDtoServiceImpl<RegistryEntity, R
 	@Override
 	public List<RegistryEntityDto> findRegistriesForDepro(String serviceShortName) {
 		List<RegistryEntity> regList = dao.findRegistriesForDepro(serviceShortName);
-		List<RegistryEntityDto> dtoList = new ArrayList<RegistryEntityDto>(regList.size());
-		for (RegistryEntity reg : regList) {
-			RegistryEntityDto dto = createNewDto();
-			mapper.copyProperties(reg, dto);
-			dtoList.add(dto);
-		}
-		return dtoList;
+		return createListDto(regList);
 	}
 	
 	@Override

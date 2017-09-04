@@ -1,6 +1,5 @@
 package edu.kit.scc.regapp.entity.auth;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -12,8 +11,8 @@ import javax.persistence.Table;
 
 import edu.kit.scc.regapp.entity.AbstractBaseEntity;
 
-@Entity(name = "AuthMech")
-@Table(name = "auth_mech")
+@Entity
+@Table(name = "authmech")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class AuthMechEntity extends AbstractBaseEntity {
 
@@ -23,7 +22,7 @@ public class AuthMechEntity extends AbstractBaseEntity {
 	private String name;
 
 	@ElementCollection
-	private List<String> hostNameList = new ArrayList<String>();
+	private List<String> hostNameList;
 	
 	public List<String> getHostNameList() {
 		return hostNameList;

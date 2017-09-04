@@ -1,6 +1,8 @@
 package edu.kit.scc.regapp.dto.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.kit.scc.regapp.dao.BaseDao;
 import edu.kit.scc.regapp.dto.entity.BaseEntityDto;
@@ -26,6 +28,18 @@ public abstract class BaseDtoServiceImpl<T extends BaseEntity<PK>, E extends Bas
 		}
 	}
 
+	@Override
+	public List<E> createListDto(List<T> fromList) {
+		List<E> toList = new ArrayList<>(fromList.size());
+		for (T from : fromList) {
+			E to = createNewDto();
+			getMapper().copyProperties(from, to);
+			toList.add(to);
+		}
+		return toList;
+
+	}
+	
 	@Override
 	public E findById(PK pk) {
 		E dto = createNewDto();
