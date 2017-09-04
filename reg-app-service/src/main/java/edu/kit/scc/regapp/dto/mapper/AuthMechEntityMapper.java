@@ -16,11 +16,11 @@ public class AuthMechEntityMapper extends AbstractBaseEntityMapper<AuthMechEntit
 	protected void copyAllProperties(AuthMechEntity fromBaseEntity,
 			AuthMechEntityDto toDtoEntity) {
 		if (fromBaseEntity instanceof SamlAuthMechEntity) {
-			toDtoEntity.setType("SamlAuthMechEntity");
+			toDtoEntity.setType("SamlAuthMech");
 			toDtoEntity.setFederationId(((SamlAuthMechEntity) fromBaseEntity).getFederation().getId());
 		}
 		else if (fromBaseEntity instanceof LocalUPAuthMechEntity) {
-			toDtoEntity.setType("LocalUPAuthMechEntity");
+			toDtoEntity.setType("LocalUPAuthMech");
 		}
 	}
 
