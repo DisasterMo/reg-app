@@ -13,7 +13,7 @@ export class LoginService {
 
     private authUrl = '/rest/auth/info';
     private userUrl = '/rest/user/detail';
-    
+
     constructor(private http: Http) { }
 
     getAuthInfo(): Promise<AuthInfo> {
