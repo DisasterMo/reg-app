@@ -2,3 +2,8 @@
 <div style="text-align:center">
     Login to {{title}}!
 </div>
+<div>
+    <div *ngFor="let authMech of authMechs">
+        {{authMech.name}}
+    </div>
+</div>
