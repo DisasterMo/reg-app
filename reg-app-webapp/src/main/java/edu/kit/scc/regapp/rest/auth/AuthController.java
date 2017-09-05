@@ -6,10 +6,16 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
+import org.slf4j.Logger;
 
 import edu.kit.scc.regapp.dto.entity.AuthMechEntityDto;
 import edu.kit.scc.regapp.dto.service.AuthMechDtoService;
@@ -19,6 +25,9 @@ import edu.kit.scc.regapp.sec.SessionManager;
 @Path("/auth/")
 public class AuthController {
 
+	@Inject
+	private Logger logger;
+	
 	@Inject
 	private SessionManager sessionManager;
 	
@@ -61,5 +70,14 @@ public class AuthController {
 					throws IOException, RestInterfaceException, ServletException {
 		String hostname = request.getLocalName();
 		return authMechDtoService.findByHostname(hostname);
+	}
+	
+	@Path(value = "/locallogin/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({"application/json"})
+	@POST
+	public void localLogin(AuthMechEntityDto authMechDto, @PathParam("id") Long id, @Context HttpServletRequest request)
+			throws IOException, RestInterfaceException, ServletException {
+		logger.info("processing local login request for auth mech {} with username {}", id, authMechDto.getUsername());
 	}
 }

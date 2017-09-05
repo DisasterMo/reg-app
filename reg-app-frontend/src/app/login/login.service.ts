@@ -43,8 +43,10 @@ export class LoginService {
 
     postLocalLogin(authMech: AuthMech): Promise<AuthMech> {
         const url = `${this.localLoginUrl}/${authMech.id}`;
+        console.log('Posting local login: ' + JSON.stringify(authMech));
+
         return this.http
-            .put(url, JSON.stringify(authMech.usernamePassword), { headers: this.headers })
+            .post(url, JSON.stringify(authMech), { headers: this.headers })
             .toPromise()
             .then(() => authMech)
             .catch(this.handleError);
