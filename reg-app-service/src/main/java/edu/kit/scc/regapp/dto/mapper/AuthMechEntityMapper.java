@@ -31,7 +31,7 @@ public class AuthMechEntityMapper extends AbstractBaseEntityMapper<AuthMechEntit
 
 	@Override
 	protected String[] getPropertiesToCopy() {
-		return new String[] { "name" };
+		return new String[] { "name", "displayName" };
 	}
 
 }

@@ -21,6 +21,9 @@ public class AuthMechEntity extends AbstractBaseEntity {
 	@Column(name = "name", length = 128)
 	private String name;
 
+	@Column(name = "display_name", length = 128)
+	private String displayName;
+
 	@ElementCollection
 	private List<String> hostNameList;
 	
@@ -38,5 +41,13 @@ public class AuthMechEntity extends AbstractBaseEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 }
