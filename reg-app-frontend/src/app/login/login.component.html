@@ -3,7 +3,22 @@
     Login to {{title}}!
 </div>
 <div>
-    <div *ngFor="let authMech of authMechs">
-        {{authMech.displayName}} ({{authMech.name}})
-    </div>
+    <form>
+        <div *ngFor="let authMech of authMechs">
+            {{authMech.displayName}} ({{authMech.name}})
+            <div *ngIf="authMech.type == 'LocalUPAuthMech'">
+                <div class="form-group">
+                    <label for="name-{{authMech.id}}">Username</label>
+                    <input type="text" class="form-control" id="username-{{authMech.id}}" required ([ngModel])="authMech.usernamePassword.username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password-{{authMech.id}}">Password</label>
+                    <input type="password" class="form-control" id="password-{{authMech.id}}" ([ngModel])="authMech.usernamePassword.password">
+                </div>
+
+                <button type="submit" id="submit-{{authMech.id}}" class="btn btn-success" (click)="login(authMech)">Submit</button>
+            </div>
+        </div>
+    </form>
 </div>

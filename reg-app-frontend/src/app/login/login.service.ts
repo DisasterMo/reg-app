@@ -15,6 +15,9 @@ export class LoginService {
     private authUrl = '/rest/auth/info';
     private authMechUrl = '/rest/auth/mech/list';
     private userUrl = '/rest/user/detail';
+    private localLoginUrl = '/rest/auth/locallogin';
+
+    private headers = new Headers({'Content-Type': 'application/json'});
 
     constructor(private http: Http) { }
 
@@ -36,6 +39,15 @@ export class LoginService {
         return this.http.get(this.userUrl)
             .map((res: Response) => res.json())
             .catch(error => this.handleError(error));
+    }
+
+    postLocalLogin(authMech: AuthMech): Promise<AuthMech> {
+        const url = `${this.localLoginUrl}/${authMech.id}`;
+        return this.http
+            .put(url, JSON.stringify(authMech.usernamePassword), { headers: this.headers })
+            .toPromise()
+            .then(() => authMech)
+            .catch(this.handleError);
     }
 
     private handleError(error: any): Promise<any> {
