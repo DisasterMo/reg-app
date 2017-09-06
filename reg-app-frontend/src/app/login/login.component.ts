@@ -1,6 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { LoginService } from '../login/login.service';
 import { AuthMech, SamlAuthFederation, SamlAuthIdp } from '../data/auth-mech';
+
+import 'rxjs/add/operator/startWith';
+import 'rxjs/add/operator/map';
 
 @Component({
   selector: 'app-login-login',
@@ -10,6 +14,8 @@ import { AuthMech, SamlAuthFederation, SamlAuthIdp } from '../data/auth-mech';
 export class LoginComponent implements OnInit {
 
   authMechs: AuthMech[];
+
+  myControl: FormControl = new FormControl();
 
   constructor(private loginService: LoginService) { }
 
@@ -30,6 +36,10 @@ export class LoginComponent implements OnInit {
       console.log('Promised federation returned: {}', federation.id);
       authMech.federation = federation;
       console.log('Federations array at pos {} returnes: {}', federation.id, authMech.federation.entityId);
+
+      authMech.federation.filteredIdpList = this.myControl.valueChanges
+        .startWith(null)
+        .map(val => this.filter(authMech.federation, val));
     });
   }
 
@@ -39,7 +49,7 @@ export class LoginComponent implements OnInit {
     if (authMech.type === 'LocalUPAuthMech') {
       console.log('Starting Local Username Password authentication');
       this.loginService.postLocalLogin(authMech)
-        .then(() => authMech.error = null )
+        .then(() => authMech.error = null)
         .catch(error => {
           authMech.error = 'loginFailed';
           authMech.errorDetail = 'Login failed';
@@ -48,6 +58,15 @@ export class LoginComponent implements OnInit {
       console.log('Starting Saml authentication');
     } else {
       console.log('unimplemented authentication type');
+    }
+  }
+
+  filter(federation: SamlAuthFederation, val: string): SamlAuthIdp[] {
+    if (val) {
+      return federation.idpList.filter(idp =>
+        idp.displayName.toLowerCase().indexOf(val.toLowerCase()) === 0);
+    } else {
+      return federation.idpList;
     }
   }
 

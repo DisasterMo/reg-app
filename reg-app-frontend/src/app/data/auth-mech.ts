@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs/Observable';
+
 export class AuthMech {
     id: number;
     name: string;
@@ -16,6 +18,7 @@ export class SamlAuthFederation {
     name: string;
     entityId: string;
     idpList: SamlAuthIdp[];
+    filteredIdpList: Observable<SamlAuthIdp[]>;
 }
 
 export class SamlAuthIdp {

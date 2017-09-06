@@ -1,8 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpModule } from '@angular/http';
+
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MdButtonModule, MdCheckboxModule, MdCardModule, MdAutocompleteModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { IndexComponent } from './index/index.component';
@@ -28,12 +31,13 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
-    FormsModule,
+    FormsModule, ReactiveFormsModule,
     HttpModule,
     RouterModule.forRoot(
       appRoutes,
       // { enableTracing: true } <-- debugging purposes only
-    )
+    ),
+    NoopAnimationsModule, MdButtonModule, MdCheckboxModule, MdCardModule, MdAutocompleteModule
   ],
   providers: [LoginService, CanActivateAuthGuard],
   bootstrap: [AppComponent]
