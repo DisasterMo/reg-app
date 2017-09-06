@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { User } from '../data/user';
 import { AuthInfo } from '../data/auth-info';
-import { AuthMech } from '../data/auth-mech';
+import { AuthMech, SamlAuthFederation, SamlAuthIdp } from '../data/auth-mech';
 import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/map';
@@ -15,6 +15,7 @@ export class LoginService {
     private authUrl = '/rest/auth/info';
     private authMechUrl = '/rest/auth/mech/list';
     private userUrl = '/rest/user/detail';
+    private federationUrl = '/rest/auth/saml/federation/list';
     private localLoginUrl = '/rest/auth/locallogin';
 
     private headers = new Headers({'Content-Type': 'application/json'});
@@ -28,10 +29,16 @@ export class LoginService {
             .catch(error => this.handleError(error));
     }
 
-    getAuthMechList(): Promise<AuthMech[]> {
+    getAuthMechList(): Observable<AuthMech[]> {
         return this.http.get(this.authMechUrl)
             .map((res: Response) => res.json())
-            .toPromise()
+            .catch(error => this.handleError(error));
+    }
+
+    getFederation(id: number): Observable<SamlAuthFederation> {
+        const url = `${this.federationUrl}/${id}`;
+        return this.http.get(url)
+            .map((res: Response) => res.json())
             .catch(error => this.handleError(error));
     }
 

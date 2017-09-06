@@ -6,6 +6,15 @@
     <form name="loginForm">
         <div *ngFor="let authMech of authMechs">
             {{authMech.displayName}} ({{authMech.name}})
+
+            <div *ngIf="authMech.type == 'SamlAuthMech'">
+                Hello Test! {{authMech.federationId}}
+                {{authMech.federation?.entityId}}
+                <div *ngFor="let idp of authMech.federation?.idpList">
+                    {{idp.entityId}}
+                </div>
+            </div>
+
             <div *ngIf="authMech.type == 'LocalUPAuthMech'">
                 <div *ngIf="authMech.error">
                     {{authMech.errorDetail}}

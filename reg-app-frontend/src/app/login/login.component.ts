@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { LoginService } from '../login/login.service';
-import { AuthMech } from '../data/auth-mech';
+import { AuthMech, SamlAuthFederation, SamlAuthIdp } from '../data/auth-mech';
 
 @Component({
   selector: 'app-login-login',
@@ -14,7 +14,23 @@ export class LoginComponent implements OnInit {
   constructor(private loginService: LoginService) { }
 
   getAuthMechs(): void {
-    this.loginService.getAuthMechList().then(authMechs => this.authMechs = authMechs);
+    this.loginService.getAuthMechList().subscribe(authMechs => {
+      this.authMechs = authMechs;
+      for (const authMech of this.authMechs) {
+        if (authMech.type === 'SamlAuthMech') {
+          console.log('Getting federation {}', authMech.federationId);
+          this.getFederation(authMech);
+        }
+      }
+    });
+  }
+
+  getFederation(authMech: AuthMech): void {
+    this.loginService.getFederation(authMech.federationId).subscribe(federation => {
+      console.log('Promised federation returned: {}', federation.id);
+      authMech.federation = federation;
+      console.log('Federations array at pos {} returnes: {}', federation.id, authMech.federation.entityId);
+    });
   }
 
   login(authMech: AuthMech): void {
