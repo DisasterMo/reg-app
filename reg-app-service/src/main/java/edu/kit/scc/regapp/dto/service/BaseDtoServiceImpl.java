@@ -42,8 +42,14 @@ public abstract class BaseDtoServiceImpl<T extends BaseEntity<PK>, E extends Bas
 	
 	@Override
 	public E findById(PK pk) {
+		T entity = getDao().findById(pk);
+		
+		if (entity == null) {
+			return null;
+		}
+		
 		E dto = createNewDto();
-		getMapper().copyProperties(getDao().findById(pk), dto);
+		getMapper().copyProperties(entity, dto);
 		return dto;
 	}
 }
