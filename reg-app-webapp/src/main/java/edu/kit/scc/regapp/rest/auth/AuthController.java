@@ -19,8 +19,11 @@ import org.slf4j.Logger;
 
 import edu.kit.scc.regapp.dto.entity.AuthMechEntityDto;
 import edu.kit.scc.regapp.dto.service.AuthMechDtoService;
+import edu.kit.scc.regapp.entity.account.LocalAccountEntity;
+import edu.kit.scc.regapp.exc.LoginFailedException;
 import edu.kit.scc.regapp.exc.RestInterfaceException;
 import edu.kit.scc.regapp.sec.SessionManager;
+import edu.kit.scc.regapp.service.auth.LocalUPAuthService;
 
 @Path("/auth/")
 public class AuthController {
@@ -33,6 +36,9 @@ public class AuthController {
 	
 	@Inject
 	private AuthMechDtoService authMechDtoService;
+	
+	@Inject
+	private LocalUPAuthService localUPAuthService;
 	
 	@Path(value = "/info")
 	@Produces({"application/json"})
@@ -79,5 +85,14 @@ public class AuthController {
 	public void localLogin(AuthMechEntityDto authMechDto, @PathParam("id") Long id, @Context HttpServletRequest request)
 			throws IOException, RestInterfaceException, ServletException {
 		logger.info("processing local login request for auth mech {} with username {}", id, authMechDto.getUsername());
+		LocalAccountEntity entity = localUPAuthService.checkUsernamePassword(authMechDto.getUsername(), authMechDto.getPassword());
+		if (entity == null) {
+			logger.info("Login failed for {}", authMechDto.getUsername());
+			throw new LoginFailedException("login failed");
+		}
+		else {
+			logger.info("Login succeded for {}. Setting userId.", authMechDto.getUsername());
+			sessionManager.setUserId(entity.getUser().getId());
+		}
 	}
 }

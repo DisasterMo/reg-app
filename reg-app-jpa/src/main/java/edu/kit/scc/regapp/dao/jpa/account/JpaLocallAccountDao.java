@@ -52,6 +52,7 @@ public class JpaLocallAccountDao extends JpaBaseDao<LocalAccountEntity, Long> im
 		Root<LocalAccountEntity> root = criteria.from(LocalAccountEntity.class);
 		criteria.where(builder.equal(root.get(LocalAccountEntity_.localId), localId));
 		criteria.select(root);
+		root.fetch("user");
 		
 		try {
 			return em.createQuery(criteria).getSingleResult();

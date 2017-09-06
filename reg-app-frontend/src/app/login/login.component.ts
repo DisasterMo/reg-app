@@ -3,9 +3,9 @@ import { LoginService } from '../login/login.service';
 import { AuthMech } from '../data/auth-mech';
 
 @Component({
-    selector: 'app-login-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css']
+  selector: 'app-login-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
 
@@ -22,7 +22,12 @@ export class LoginComponent implements OnInit {
 
     if (authMech.type === 'LocalUPAuthMech') {
       console.log('Starting Local Username Password authentication');
-      this.loginService.postLocalLogin(authMech);
+      this.loginService.postLocalLogin(authMech)
+        .then(() => authMech.error = null )
+        .catch(error => {
+          authMech.error = 'loginFailed';
+          authMech.errorDetail = 'Login failed';
+        });
     } else if (authMech.type === 'SamlAuthMech') {
       console.log('Starting Saml authentication');
     } else {

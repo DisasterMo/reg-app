@@ -5,4 +5,6 @@ export class AuthMech {
     type: string;
     username: string;
     password: string;
+    error: string;
+    errorDetail: string;
 }

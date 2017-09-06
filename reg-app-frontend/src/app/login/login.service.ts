@@ -48,8 +48,7 @@ export class LoginService {
         return this.http
             .post(url, JSON.stringify(authMech), { headers: this.headers })
             .toPromise()
-            .then(() => authMech)
-            .catch(this.handleError);
+            .then(() => authMech);
     }
 
     private handleError(error: any): Promise<any> {
