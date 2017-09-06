@@ -42,7 +42,7 @@ public class SamlAuthFederationEntityMapper extends AbstractBaseEntityMapper<Fed
 
 	@Override
 	protected String[] getPropertiesToCopy() {
-		return new String[] { "displayName", "entityId", "description", "orgName" };
+		return new String[] { "name", "entityId" };
 	}
 
 }

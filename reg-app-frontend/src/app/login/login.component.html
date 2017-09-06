@@ -11,7 +11,7 @@
                 Hello Test! {{authMech.federationId}}
                 {{authMech.federation?.entityId}}
                 <div *ngFor="let idp of authMech.federation?.idpList">
-                    {{idp.entityId}}
+                    {{idp.entityId}} {{idp.displayName}}
                 </div>
             </div>
 

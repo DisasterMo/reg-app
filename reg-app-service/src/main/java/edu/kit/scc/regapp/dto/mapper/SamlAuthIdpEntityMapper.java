@@ -23,7 +23,7 @@ public class SamlAuthIdpEntityMapper extends AbstractBaseEntityMapper<SamlIdpMet
 
 	@Override
 	protected String[] getPropertiesToCopy() {
-		return new String[] { "name", "entityId" };
+		return new String[] { "displayName", "entityId", "description", "orgName"  };
 	}
 
 }
