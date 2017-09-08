@@ -33,7 +33,7 @@ import net.shibboleth.utilities.java.support.component.ComponentInitializationEx
 
 @Named
 @WebServlet(urlPatterns = {"/Shibboleth.sso/Login", "/saml/login"})
-public class Saml2RedirectLoginHandlerServlet implements Servlet {
+public class SamlRedirectLoginHandlerServlet implements Servlet {
 
 	@Inject
 	private Logger logger;
