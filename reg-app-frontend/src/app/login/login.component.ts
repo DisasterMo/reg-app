@@ -13,6 +13,8 @@ import 'rxjs/add/operator/map';
 })
 export class LoginComponent implements OnInit {
 
+  private samlAuthUrl = '/Shibboleth.sso/auth';
+
   authMechs: AuthMech[];
 
   myControl: FormControl = new FormControl();
@@ -56,6 +58,12 @@ export class LoginComponent implements OnInit {
         });
     } else if (authMech.type === 'SamlAuthMech') {
       console.log('Starting Saml authentication');
+      if (authMech.selectedIdp) {
+        console.log('Loggin in via ' + authMech.selectedIdp.displayName);
+        window.location.href = `${this.samlAuthUrl}?mech=${authMech.id}&idp=${authMech.selectedIdp.id}`;
+      } else {
+        console.log('No IDP selected');
+      }
     } else {
       console.log('unimplemented authentication type');
     }
@@ -64,10 +72,15 @@ export class LoginComponent implements OnInit {
   filter(federation: SamlAuthFederation, val: string): SamlAuthIdp[] {
     if (val) {
       return federation.idpList.filter(idp =>
-        idp.displayName.toLowerCase().indexOf(val.toLowerCase()) === 0);
+        idp.displayName.toLowerCase().indexOf(val.toLowerCase()) !== -1);
     } else {
       return federation.idpList;
     }
+  }
+
+  select(idp: SamlAuthIdp, authMech: AuthMech) {
+    console.log('Idp from federation selected: ', idp.id, authMech.federation.id);
+    authMech.selectedIdp = idp;
   }
 
   ngOnInit(): void {

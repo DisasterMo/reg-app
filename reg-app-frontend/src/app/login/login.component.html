@@ -16,10 +16,11 @@
                             <input type="text" mdInput [formControl]="myControl" [mdAutocomplete]="auto">
                         </md-form-field>
                         <md-autocomplete #auto="mdAutocomplete">
-                            <md-option *ngFor="let idp of authMech.federation?.filteredIdpList | async" [value]="idp">
+                            <md-option *ngFor="let idp of authMech.federation?.filteredIdpList | async" [value]="idp.displayName" (onSelectionChange)="select(idp, authMech)">
                                 {{ idp.displayName }}
                             </md-option>
                         </md-autocomplete>
+                        <button md-button type="submit" id="submit-{{authMech.id}}" class="btn btn-success" (click)="login(authMech)">Shibboleth Login</button>
                     </div>
                     <div *ngIf="authMech.type == 'LocalUPAuthMech'">
                         <div *ngIf="authMech.error">

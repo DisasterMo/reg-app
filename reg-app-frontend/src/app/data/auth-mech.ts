@@ -11,6 +11,7 @@ export class AuthMech {
     errorDetail: string;
     federationId: number;
     federation: SamlAuthFederation;
+    selectedIdp: SamlAuthIdp;
 }
 
 export class SamlAuthFederation {

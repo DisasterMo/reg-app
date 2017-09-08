@@ -1,6 +1,0 @@
-{
-    "/rest": {
-      "target": "https://bwidm.scc.kit.edu",
-      "secure": false
-    }
-}
