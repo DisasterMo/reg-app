@@ -13,7 +13,7 @@ import 'rxjs/add/operator/map';
 })
 export class LoginComponent implements OnInit {
 
-  private samlAuthUrl = '/Shibboleth.sso/auth';
+  private samlAuthUrl = '/Shibboleth.sso/Login';
 
   authMechs: AuthMech[];
 
