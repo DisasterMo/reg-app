@@ -13,7 +13,6 @@ package edu.kit.scc.regapp.sec;
 import java.io.IOException;
 import java.security.Security;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -29,15 +28,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
 import edu.kit.scc.regapp.bootstrap.ApplicationConfig;
-import edu.kit.scc.regapp.entity.AdminUserEntity;
 import edu.kit.scc.regapp.entity.RoleEntity;
 import edu.kit.scc.regapp.service.role.RoleService;
 import edu.kit.scc.regapp.service.tools.PasswordUtil;
+import edu.kit.scc.regapp.session.SessionManager;
 
 @Named
 @WebFilter(urlPatterns = {"/*"})

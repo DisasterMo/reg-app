@@ -22,8 +22,8 @@ import edu.kit.scc.regapp.dto.service.AuthMechDtoService;
 import edu.kit.scc.regapp.entity.account.LocalAccountEntity;
 import edu.kit.scc.regapp.exc.LoginFailedException;
 import edu.kit.scc.regapp.exc.RestInterfaceException;
-import edu.kit.scc.regapp.sec.SessionManager;
 import edu.kit.scc.regapp.service.auth.LocalUPAuthService;
+import edu.kit.scc.regapp.session.SessionManager;
 
 @Path("/auth/")
 public class AuthController {

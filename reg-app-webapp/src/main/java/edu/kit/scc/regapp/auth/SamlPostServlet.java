@@ -23,26 +23,20 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opensaml.messaging.encoder.MessageEncodingException;
 import org.slf4j.Logger;
 
-import edu.kit.scc.regapp.exc.LoginFailedException;
-import edu.kit.scc.regapp.service.auth.SamlRedirectService;
-import edu.kit.scc.regapp.session.SessionManager;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import edu.kit.scc.regapp.exc.SamlAuthenticationException;
+import edu.kit.scc.regapp.service.auth.SamlPostService;
 
 @Named
-@WebServlet(urlPatterns = {"/Shibboleth.sso/Login", "/saml/login"})
-public class SamlRedirectLoginHandlerServlet implements Servlet {
+@WebServlet(urlPatterns = {"/Shibboleth.sso/SAML2/POST", "/saml/post"})
+public class SamlPostServlet implements Servlet {
 
 	@Inject
 	private Logger logger;
 
 	@Inject
-	private SessionManager session;
-
-	@Inject
-	private SamlRedirectService samlRedirectService;
+	private SamlPostService samlPostService;
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -56,30 +50,17 @@ public class SamlRedirectLoginHandlerServlet implements Servlet {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-		String authMechString = request.getParameter("mech");
-		String idpString = request.getParameter("idp");
-		
-		if ((session == null) || (authMechString == null) || (idpString == null)) {
-			response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "parameters are wrong");
-			return;
-		}
-		
-		try {
-			Long authMethId = Long.parseLong(authMechString);
-			Long idpId = Long.parseLong(idpString);
-		
-			samlRedirectService.redirectClient(authMethId, idpId, response);
+		logger.debug("Handling saml post request");
 
-		} catch (MessageEncodingException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "cannot encode saml message");
-        } catch (ComponentInitializationException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "cannot initialize saml component");
-	    } catch (LoginFailedException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-	    } catch (NumberFormatException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+		try {
+			samlPostService.consumePost(request, response);
+		} catch (SamlAuthenticationException e) {
+			logger.info("Exception while handling post assertion", e);
+			String errorString = e.getMessage();
+			if (e.getCause() != null)
+				errorString += "(" + e.getCause().getMessage() + ")";
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Handling post request failed: " + errorString);
 		}
-		
 	}
 	
 	@Override

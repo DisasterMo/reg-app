@@ -10,15 +10,16 @@
  ******************************************************************************/
 package edu.kit.scc.regapp.service.auth;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opensaml.messaging.encoder.MessageEncodingException;
+import edu.kit.scc.regapp.exc.SamlAuthenticationException;
 
-import edu.kit.scc.regapp.exc.LoginFailedException;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+public interface SamlPostService {
 
-public interface SamlRedirectService {
-
-	void redirectClient(Long authMechId, Long idpId, HttpServletResponse response) 
-					throws MessageEncodingException, ComponentInitializationException, LoginFailedException;
+	void consumePost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException, SamlAuthenticationException;
 }

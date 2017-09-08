@@ -8,7 +8,7 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.sec;
+package edu.kit.scc.regapp.session;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -41,6 +41,14 @@ public class SessionManager implements Serializable {
 		session.setUserId(userId);
 	}
 
+	public void addAuthMechData(String key, Object value) {
+		session.getAuthMechData().put(key, value);
+	}
+	
+	public Object getAuthMechData(String key) {
+		return session.getAuthMechData().get(key);
+	}
+	
 	public void addRole(RoleEntity role) {
 		session.getRoles().add(role);
 	}

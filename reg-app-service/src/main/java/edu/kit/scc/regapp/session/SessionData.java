@@ -8,10 +8,12 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.sec;
+package edu.kit.scc.regapp.session;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -31,9 +33,12 @@ public class SessionData implements Serializable {
 	private Set<RoleEntity> roles;
     private Long roleSetCreated;
 
+    private Map<String, Object> authMechData;
+    
 	@PostConstruct
 	public void init() {
 		roles = new HashSet<>();
+		authMechData = new HashMap<>();
 	}
 	
 	public Long getUserId() {
@@ -58,5 +63,13 @@ public class SessionData implements Serializable {
 
 	public void setRoleSetCreated(Long roleSetCreated) {
 		this.roleSetCreated = roleSetCreated;
+	}
+
+	public Map<String, Object> getAuthMechData() {
+		return authMechData;
+	}
+
+	public void setAuthMechData(Map<String, Object> authMechData) {
+		this.authMechData = authMechData;
 	}
 }
