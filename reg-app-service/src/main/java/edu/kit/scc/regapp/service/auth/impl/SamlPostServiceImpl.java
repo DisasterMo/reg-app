@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.bean.ApplicationScoped;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +44,7 @@ import edu.kit.scc.regapp.service.auth.SamlHelper;
 import edu.kit.scc.regapp.service.auth.SamlPostService;
 import edu.kit.scc.regapp.session.SessionManager;
 
-@ApplicationScoped
+@Stateless
 public class SamlPostServiceImpl implements SamlPostService {
 
 	@Inject
