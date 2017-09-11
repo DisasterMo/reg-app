@@ -8,36 +8,15 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.entity;
+package edu.kit.scc.regapp.event;
 
-public enum EventType {
+import java.io.Serializable;
 
-	/*
-	 * Account Events
-	 */
-	ACCOUNT_UPDATE,
-	ACCOUNT_CREATE,
-	
-	/*
-	 * User Events
-	 */
-	USER_CREATE,
-	USER_UPDATE,
+import edu.kit.scc.regapp.job.ExecutableJob;
 
-	/*
-	 * Service Events
-	 */
-	SERVICE_REGISTER,
-	REGISTRY_UPDATE,
-	SERVICE_DEREGISTER,
-	USER_LOST_ACCESS,
-	USER_GAINED_ACCESS,
-	APPROVAL_START,
-	APPROVAL_DENIED,
-	
-	
-	/*
-	 * Group Events
-	 */
-	GROUP_UPDATE,
+public interface EventExecutor<T extends Event<E>, E extends Serializable> extends ExecutableJob {
+
+	T getEvent();
+	void setEvent(T event);
+
 }

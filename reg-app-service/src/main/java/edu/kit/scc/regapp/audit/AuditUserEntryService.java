@@ -8,36 +8,11 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.entity;
+package edu.kit.scc.regapp.audit;
 
-public enum EventType {
+import edu.kit.scc.regapp.entity.audit.AuditUserEntity;
+import edu.kit.scc.regapp.service.BaseService;
 
-	/*
-	 * Account Events
-	 */
-	ACCOUNT_UPDATE,
-	ACCOUNT_CREATE,
-	
-	/*
-	 * User Events
-	 */
-	USER_CREATE,
-	USER_UPDATE,
+public interface AuditUserEntryService extends BaseService<AuditUserEntity, Long> {
 
-	/*
-	 * Service Events
-	 */
-	SERVICE_REGISTER,
-	REGISTRY_UPDATE,
-	SERVICE_DEREGISTER,
-	USER_LOST_ACCESS,
-	USER_GAINED_ACCESS,
-	APPROVAL_START,
-	APPROVAL_DENIED,
-	
-	
-	/*
-	 * Group Events
-	 */
-	GROUP_UPDATE,
 }

@@ -8,36 +8,18 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.entity;
+package edu.kit.scc.regapp.audit;
 
-public enum EventType {
+import java.util.Date;
+import java.util.List;
 
-	/*
-	 * Account Events
-	 */
-	ACCOUNT_UPDATE,
-	ACCOUNT_CREATE,
-	
-	/*
-	 * User Events
-	 */
-	USER_CREATE,
-	USER_UPDATE,
+import edu.kit.scc.regapp.entity.audit.AuditEntryEntity;
+import edu.kit.scc.regapp.service.BaseService;
 
-	/*
-	 * Service Events
-	 */
-	SERVICE_REGISTER,
-	REGISTRY_UPDATE,
-	SERVICE_DEREGISTER,
-	USER_LOST_ACCESS,
-	USER_GAINED_ACCESS,
-	APPROVAL_START,
-	APPROVAL_DENIED,
-	
-	
-	/*
-	 * Group Events
-	 */
-	GROUP_UPDATE,
+public interface AuditEntryService extends BaseService<AuditEntryEntity, Long> {
+
+	List<AuditEntryEntity> findAllOlderThan(Date date, int limit);
+
+	void deleteAllOlderThan(Date date, int limit);
+
 }

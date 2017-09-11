@@ -55,7 +55,13 @@ public class AccountEntity extends AbstractBaseEntity {
 
 	@Column(name = "last_status_change")
 	private Date lastStatusChange;
-		
+	
+	@Column(name = "no_data_count")
+	private Integer noDataCount;
+	
+	@Column(name = "last_valid_data")
+	private Date lastValidData;
+	
 	public Map<String, String> getAccountStore() {
 		return accountStore;
 	}
@@ -118,5 +124,21 @@ public class AccountEntity extends AbstractBaseEntity {
 
 	public void setLastStatusChange(Date lastStatusChange) {
 		this.lastStatusChange = lastStatusChange;
+	}
+
+	public Integer getNoDataCount() {
+		return noDataCount;
+	}
+
+	public void setNoDataCount(Integer noDataCount) {
+		this.noDataCount = noDataCount;
+	}
+
+	public Date getLastValidData() {
+		return lastValidData;
+	}
+
+	public void setLastValidData(Date lastValidData) {
+		this.lastValidData = lastValidData;
 	} 
 }

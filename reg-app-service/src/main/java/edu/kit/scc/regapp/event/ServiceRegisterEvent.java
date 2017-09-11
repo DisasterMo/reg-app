@@ -8,36 +8,20 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.entity;
+package edu.kit.scc.regapp.event;
 
-public enum EventType {
+import edu.kit.scc.regapp.entity.RegistryEntity;
+import edu.kit.scc.regapp.entity.audit.AuditEntryEntity;
 
-	/*
-	 * Account Events
-	 */
-	ACCOUNT_UPDATE,
-	ACCOUNT_CREATE,
-	
-	/*
-	 * User Events
-	 */
-	USER_CREATE,
-	USER_UPDATE,
+public class ServiceRegisterEvent extends AbstractEvent<RegistryEntity> {
 
-	/*
-	 * Service Events
-	 */
-	SERVICE_REGISTER,
-	REGISTRY_UPDATE,
-	SERVICE_DEREGISTER,
-	USER_LOST_ACCESS,
-	USER_GAINED_ACCESS,
-	APPROVAL_START,
-	APPROVAL_DENIED,
-	
-	
-	/*
-	 * Group Events
-	 */
-	GROUP_UPDATE,
+	private static final long serialVersionUID = 1L;
+
+	public ServiceRegisterEvent(RegistryEntity entity) {
+		super(entity);
+	}
+
+	public ServiceRegisterEvent(RegistryEntity entity, AuditEntryEntity audit) {
+		super(entity, audit);
+	}
 }

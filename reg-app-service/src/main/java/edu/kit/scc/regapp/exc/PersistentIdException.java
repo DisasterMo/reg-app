@@ -8,36 +8,14 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.entity;
+package edu.kit.scc.regapp.exc;
 
-public enum EventType {
+public class PersistentIdException extends RestInterfaceException {
 
-	/*
-	 * Account Events
-	 */
-	ACCOUNT_UPDATE,
-	ACCOUNT_CREATE,
-	
-	/*
-	 * User Events
-	 */
-	USER_CREATE,
-	USER_UPDATE,
+	private static final long serialVersionUID = 1L;
 
-	/*
-	 * Service Events
-	 */
-	SERVICE_REGISTER,
-	REGISTRY_UPDATE,
-	SERVICE_DEREGISTER,
-	USER_LOST_ACCESS,
-	USER_GAINED_ACCESS,
-	APPROVAL_START,
-	APPROVAL_DENIED,
-	
-	
-	/*
-	 * Group Events
-	 */
-	GROUP_UPDATE,
+	public PersistentIdException(String message) {
+		super(message);
+	}
+
 }

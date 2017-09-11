@@ -8,36 +8,17 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.entity;
+package edu.kit.scc.regapp.event;
 
-public enum EventType {
+import java.util.HashSet;
 
-	/*
-	 * Account Events
-	 */
-	ACCOUNT_UPDATE,
-	ACCOUNT_CREATE,
-	
-	/*
-	 * User Events
-	 */
-	USER_CREATE,
-	USER_UPDATE,
+import edu.kit.scc.regapp.entity.GroupEntity;
 
-	/*
-	 * Service Events
-	 */
-	SERVICE_REGISTER,
-	REGISTRY_UPDATE,
-	SERVICE_DEREGISTER,
-	USER_LOST_ACCESS,
-	USER_GAINED_ACCESS,
-	APPROVAL_START,
-	APPROVAL_DENIED,
-	
-	
-	/*
-	 * Group Events
-	 */
-	GROUP_UPDATE,
+public class MultipleGroupEvent extends AbstractEvent<HashSet<GroupEntity>> {
+
+	private static final long serialVersionUID = 1L;
+
+	public MultipleGroupEvent(HashSet<GroupEntity> groupList) {
+		super(groupList);
+	}
 }
