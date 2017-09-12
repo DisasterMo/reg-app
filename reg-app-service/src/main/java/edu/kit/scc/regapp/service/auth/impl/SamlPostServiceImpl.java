@@ -11,6 +11,7 @@
 package edu.kit.scc.regapp.service.auth.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -131,7 +132,11 @@ public class SamlPostServiceImpl implements SamlPostService {
                 idpEntity.setLastIdStatusChange(new Date());
 			}
 
+			/*
+			 * Exctract attributes from assertion and add persistentId to it
+			 */
 			Map<String, List<Object>> attributeMap = samlAssertionProcessor.extractAttributes(assertion);
+			attributeMap.put(SamlAccountUpdater.PERSISTENT_ID_KEY, Arrays.asList(new Object[]{ persistentId }));
 			
 			logger.debug("Done for now, attributeMap is {} entries", attributeMap.size());
 			

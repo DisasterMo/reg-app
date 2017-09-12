@@ -36,13 +36,13 @@ public abstract class AccountUpdater<T extends AccountEntity> {
 	private AuditDetailDao auditDetailDao;
 	
 	@Inject
-	private ApplicationConfig appConfig;
+	protected ApplicationConfig appConfig;
 	
 	@Inject
 	private EventSubmitter eventSubmitter;
 	
 	@Inject
-	private AttributeMapHelper mapHelper;
+	protected AttributeMapHelper mapHelper;
 	
 	protected abstract Boolean updateAccount(T account, Map<String, List<Object>> attributeMap, AccountUpdateAuditor auditor)
 			throws UserUpdateException;
