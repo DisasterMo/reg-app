@@ -73,4 +73,8 @@ public interface GroupDao extends BaseDao<GroupEntity, Long> {
 
 	void removeAccountFromGroup(AccountEntity account, GroupEntity group, Boolean quick);
 
+	boolean isAccountInGroup(AccountEntity account, GroupEntity group);
+
+	List<GroupEntity> findByAccount(AccountEntity account);
+
 }

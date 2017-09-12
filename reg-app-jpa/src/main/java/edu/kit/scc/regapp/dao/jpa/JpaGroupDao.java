@@ -188,7 +188,17 @@ public class JpaGroupDao extends JpaBaseDao<GroupEntity, Long> implements GroupD
 			return null;
 		}
 	}
-	
+
+	@Override
+	public boolean isAccountInGroup(AccountEntity account, GroupEntity group) {
+		if (findAccountGroupEntity(account, group) != null) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	@Override
 	public AccountGroupEntity findAccountGroupEntity(AccountEntity account, GroupEntity group) {
 		try {
@@ -216,6 +226,13 @@ public class JpaGroupDao extends JpaBaseDao<GroupEntity, Long> implements GroupD
 	public List<GroupEntity> findByUser(UserEntity user) {
 		return em.createQuery("select r.group from UserGroupEntity r where r.user = :user")
 			.setParameter("user", user).getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GroupEntity> findByAccount(AccountEntity account) {
+		return em.createQuery("select r.group from AccountGroupEntity r where r.account = :account")
+			.setParameter("account", account).getResultList();
 	}
 
 	@Override
