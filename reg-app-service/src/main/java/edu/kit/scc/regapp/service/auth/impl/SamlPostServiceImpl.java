@@ -27,6 +27,7 @@ import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.slf4j.Logger;
 
+import edu.kit.scc.regapp.account.saml.SamlAccountUpdater;
 import edu.kit.scc.regapp.bootstrap.ApplicationConfig;
 import edu.kit.scc.regapp.dao.SamlIdpMetadataDao;
 import edu.kit.scc.regapp.dao.account.SamlAccountDao;
@@ -38,7 +39,6 @@ import edu.kit.scc.regapp.entity.auth.AuthMechEntity;
 import edu.kit.scc.regapp.entity.auth.SamlAuthMechEntity;
 import edu.kit.scc.regapp.exc.SamlAuthenticationException;
 import edu.kit.scc.regapp.exc.UserUpdateException;
-import edu.kit.scc.regapp.service.account.SamlAccountUpdater;
 import edu.kit.scc.regapp.service.auth.SamlAssertionProcessor;
 import edu.kit.scc.regapp.service.auth.SamlDecoder;
 import edu.kit.scc.regapp.service.auth.SamlHelper;

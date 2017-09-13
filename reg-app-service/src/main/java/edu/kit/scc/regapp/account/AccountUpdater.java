@@ -1,4 +1,4 @@
-package edu.kit.scc.regapp.service.account;
+package edu.kit.scc.regapp.account;
 
 import java.util.Date;
 import java.util.List;
@@ -130,5 +130,5 @@ public abstract class AccountUpdater<T extends AccountEntity> {
         } catch (EventSubmitException e) {
                 logger.warn("Could not submit event", e);
         }
-}
+    }
 }

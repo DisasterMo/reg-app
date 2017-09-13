@@ -11,6 +11,7 @@
 package edu.kit.scc.regapp.bpm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.kie.api.KieServices;
 import org.kie.api.builder.ReleaseId;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.rule.FactHandle;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -46,6 +48,7 @@ import edu.kit.scc.regapp.entity.SamlIdpMetadataEntity;
 import edu.kit.scc.regapp.entity.SamlSpConfigurationEntity;
 import edu.kit.scc.regapp.entity.ServiceEntity;
 import edu.kit.scc.regapp.entity.UserEntity;
+import edu.kit.scc.regapp.entity.account.SamlAccountEntity;
 import edu.kit.scc.regapp.entity.audit.AuditStatus;
 import edu.kit.scc.regapp.event.EventSubmitter;
 import edu.kit.scc.regapp.event.ServiceRegisterEvent;
@@ -139,6 +142,40 @@ public class KnowledgeSessionWorker {
 
 		return objectList;
 	}
+
+	public String resolveSamlAccountUpdateMech(String unitId, SamlAccountEntity account, Map<String, List<Object>> attributeMap) 
+		throws MisconfiguredServiceException {
+	
+	KieSession ksession = getStatefulSession(unitId);
+
+	if (ksession == null)
+		return null;
+
+	ksession.setGlobal("logger", logger);
+	ksession.insert(account);
+	ksession.insert(attributeMap);
+	ksession.insert(new Date());
+	
+	ksession.fireAllRules();
+
+	Collection<FactHandle> facts = ksession.getFactHandles(new ObjectFilter() {
+		@Override
+		public boolean accept(Object object) {
+			if (object instanceof String)
+				return true;
+			else
+				return false;
+		}
+	});
+	
+	String className = null;
+	
+	for (FactHandle fact : facts)
+		className = ksession.getObject(fact).toString();
+	ksession.dispose();
+
+	return className;
+}
 	
 	public List<ServiceEntity> checkServiceFilterRule(String unitId, UserEntity user, List<ServiceEntity> serviceList,
 			Set<GroupEntity> groups, Set<RoleEntity> roles) 

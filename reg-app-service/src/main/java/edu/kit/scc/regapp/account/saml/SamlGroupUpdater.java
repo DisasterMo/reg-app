@@ -8,7 +8,7 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.service.account;
+package edu.kit.scc.regapp.account.saml;
 
 import java.io.Serializable;
 import java.text.Normalizer;
