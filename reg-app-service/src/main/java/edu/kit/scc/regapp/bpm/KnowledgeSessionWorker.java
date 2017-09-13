@@ -54,7 +54,7 @@ import edu.kit.scc.regapp.exc.MisconfiguredApplicationException;
 import edu.kit.scc.regapp.exc.MisconfiguredServiceException;
 
 @ApplicationScoped
-public class KnowledgeSessionService {
+public class KnowledgeSessionWorker {
 
 	@Inject
 	private Logger logger;
