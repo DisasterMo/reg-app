@@ -19,6 +19,7 @@ import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
 import org.slf4j.Logger;
 
+import edu.kit.scc.regapp.bpm.BpmProcessService;
 import edu.kit.scc.regapp.entity.RoleEntity;
 import edu.kit.scc.regapp.service.role.RoleService;
 
@@ -52,10 +53,10 @@ public class ApplicationBootstrap {
 //	
 //	@Inject
 //	private StandardScheduler standardScheduler;
-//
-//	@Inject
-//	private BpmProcessService bpmProcessService;
-//	
+
+	@Inject
+	private BpmProcessService bpmProcessService;
+
 //	@Inject
 //	private TemplateRenderer velocityRenderer;
 //	
@@ -119,8 +120,8 @@ public class ApplicationBootstrap {
 			logger.error("Serious Error happened", e);
 		}
         
-//        bpmProcessService.init();
-//        
+        bpmProcessService.init();
+        
 //        velocityRenderer.init();
 //        
 //        standardScheduler.initialize();
