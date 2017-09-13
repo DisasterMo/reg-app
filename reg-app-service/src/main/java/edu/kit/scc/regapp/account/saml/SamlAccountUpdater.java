@@ -24,6 +24,7 @@ public class SamlAccountUpdater extends AccountUpdater<SamlAccountEntity> {
 	public static final String SAML_GROUP_MECH_RULE = "saml_group_mech_rule";
 	
 	public static final String SAML_ACCOUNT_STANDARD_MECH = "edu.kit.scc.regapp.account.saml.StandardSamlAccountUpdateMech";
+	public static final String SAML_GROUP_STANDARD_MECH = "edu.kit.scc.regapp.account.saml.StandardSamlGroupUpdateMech";
 	
 	public static final String PERSISTENT_ID_KEY = "__persistentId__";
 	public static final String EPPN_URN = "urn:oid:1.3.6.1.4.1.5923.1.1.1.6";
