@@ -67,6 +67,9 @@ public class SamlAccountUpdater extends AccountUpdater<SamlAccountEntity> {
 			SamlAccountUpdateMech accountUpdateMech = (SamlAccountUpdateMech) Class.forName(className).newInstance();
 			accountUpdateMech.setMapHelper(mapHelper);
 			changed = accountUpdateMech.updateAccount(account, attributeMap, auditor);
+			
+			samlGroupUpdater.updateGroupsForAccount(account, attributeMap, auditor);
+			
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			logger.warn("Could not execute account update", e);
 			throw new UserUpdateException(e);
