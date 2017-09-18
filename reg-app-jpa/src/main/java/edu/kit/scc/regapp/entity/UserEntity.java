@@ -19,7 +19,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
@@ -52,7 +51,7 @@ public class UserEntity extends AbstractBaseEntity {
 	@Column(name = "email", length = 1024)
 	private String email;
 	
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@JoinTable(name = "user_email_addresses")
 	private Set<String> emailAddresses;
 	
