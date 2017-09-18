@@ -60,6 +60,10 @@ public class SamlAccountUpdater extends AccountUpdater<SamlAccountEntity> {
 		}
 		else {
 			className = knowledgeSession.resolveSamlAccountUpdateMech(accountMechRuleString, account, attributeMap);
+			if (className == null) {
+				logger.debug("className resolved to null, setting standard group mech");
+				className = SamlAccountUpdater.SAML_ACCOUNT_STANDARD_MECH;
+			}
 			logger.debug("Resolved update mech {}", className);
 		}
 		

@@ -84,6 +84,10 @@ public class SamlGroupUpdater implements Serializable {
 		}
 		else {
 			className = knowledgeSession.resolveSamlAccountUpdateMech(groupMechRuleString, account, attributeMap);
+			if (className == null) {
+				logger.debug("className resolved to null, setting standard group mech");
+				className = SamlAccountUpdater.SAML_GROUP_STANDARD_MECH;
+			}
 			logger.debug("Resolved group update mech {}", className);
 		}
 		
