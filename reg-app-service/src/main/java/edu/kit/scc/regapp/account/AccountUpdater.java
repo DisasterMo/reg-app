@@ -23,6 +23,7 @@ import edu.kit.scc.regapp.event.EventSubmitter;
 import edu.kit.scc.regapp.exc.EventSubmitException;
 import edu.kit.scc.regapp.exc.UserUpdateException;
 import edu.kit.scc.regapp.service.tools.AttributeMapHelper;
+import edu.kit.scc.regapp.user.UserUpdater;
 
 public abstract class AccountUpdater<T extends AccountEntity> {
 	
@@ -43,6 +44,9 @@ public abstract class AccountUpdater<T extends AccountEntity> {
 	
 	@Inject
 	protected AttributeMapHelper mapHelper;
+	
+	@Inject
+	private UserUpdater userUpdater;
 	
 	protected abstract Boolean updateAccount(T account, Map<String, List<Object>> attributeMap, AccountUpdateAuditor auditor)
 			throws UserUpdateException;
@@ -102,6 +106,8 @@ public abstract class AccountUpdater<T extends AccountEntity> {
         account.setLastUpdate(new Date());
         account.setLastFailedUpdate(null);
 
+        userUpdater.updateUser(account, auditor, null);
+        
         if (changed) {
         	fireAccountChangeEvent(account, auditor.getActualExecutor(), auditor);
         }
