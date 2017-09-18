@@ -93,7 +93,7 @@ public class SamlGroupUpdater implements Serializable {
 		
 		try {
 			SamlGroupUpdateMech groupUpdateMech = (SamlGroupUpdateMech) Class.forName(className).newInstance();
-			groupUpdateMech.setEnv(mapHelper, dao, groupDao, groupFlagDao, serialDao, eventSubmitter);
+			groupUpdateMech.setEnv(mapHelper, dao, groupDao, groupFlagDao, serialDao, eventSubmitter, appConfig);
 			return groupUpdateMech.updateGroups(account, attributeMap, auditor);
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			logger.warn("Could not execute account update", e);

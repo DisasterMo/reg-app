@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.kit.scc.regapp.audit.AccountUpdateAuditor;
+import edu.kit.scc.regapp.bootstrap.ApplicationConfig;
 import edu.kit.scc.regapp.dao.GroupDao;
 import edu.kit.scc.regapp.dao.HomeOrgGroupDao;
 import edu.kit.scc.regapp.dao.SerialDao;
@@ -21,6 +22,6 @@ public interface SamlGroupUpdateMech {
 			AccountUpdateAuditor auditor) throws UserUpdateException;
 
 	void setEnv(AttributeMapHelper mapHelper, HomeOrgGroupDao homeOrgGroupDao, GroupDao groupDao,
-			ServiceGroupFlagDao groupFlagDao, SerialDao serialDao, EventSubmitter eventSubmitter);
+			ServiceGroupFlagDao groupFlagDao, SerialDao serialDao, EventSubmitter eventSubmitter, ApplicationConfig appConfig);
 
 }

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.kit.scc.regapp.audit.AccountUpdateAuditor;
+import edu.kit.scc.regapp.bootstrap.ApplicationConfig;
 import edu.kit.scc.regapp.dao.GroupDao;
 import edu.kit.scc.regapp.dao.HomeOrgGroupDao;
 import edu.kit.scc.regapp.dao.SerialDao;
@@ -33,6 +34,8 @@ public abstract class AbstractSamlGroupUpdateMech implements SamlGroupUpdateMech
 	protected SerialDao serialDao;
 
 	protected EventSubmitter eventSubmitter;
+	
+	protected ApplicationConfig appConfig;
 
 	protected abstract HashSet<GroupEntity> update(SamlAccountEntity account, Map<String, List<Object>> attributeMap,
 			AccountUpdateAuditor auditor) throws UserUpdateException;
@@ -45,13 +48,14 @@ public abstract class AbstractSamlGroupUpdateMech implements SamlGroupUpdateMech
 
 	@Override
 	public void setEnv(AttributeMapHelper mapHelper, HomeOrgGroupDao homeOrgGroupDao, GroupDao groupDao,
-			ServiceGroupFlagDao groupFlagDao, SerialDao serialDao, EventSubmitter eventSubmitter) {
+			ServiceGroupFlagDao groupFlagDao, SerialDao serialDao, EventSubmitter eventSubmitter, ApplicationConfig appConfig) {
 		this.mapHelper = mapHelper;
 		this.dao = homeOrgGroupDao;
 		this.groupDao = groupDao;
 		this.groupFlagDao = groupFlagDao;
 		this.serialDao = serialDao;
 		this.eventSubmitter = eventSubmitter;
+		this.appConfig = appConfig;
 	}
 
 }
