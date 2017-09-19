@@ -150,6 +150,16 @@ public class SamlPostServiceImpl implements SamlPostService {
 		    	logger.debug("Updating account {} ({}) from {}", samlAccount.getGlobalId(), persistentId, idpEntity.getEntityId());
 				try {
 					accountUpdater.update(samlAccount, attributeMap, "user-login");
+					
+					/*
+					 * account updated, establish session
+					 */
+					
+					sessionManager.setUserId(samlAccount.getUser().getId());
+
+					response.sendRedirect("/");
+					return;
+
 				} catch (UserUpdateException e) {
 					logger.warn("User Update failed", e);
 					throw new SamlAuthenticationException("user update failed", e);

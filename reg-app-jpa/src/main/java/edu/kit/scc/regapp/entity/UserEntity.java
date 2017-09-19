@@ -25,6 +25,7 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import edu.kit.scc.regapp.entity.account.AccountEntity;
 import edu.kit.scc.regapp.entity.as.ASUserAttrEntity;
 
 @Entity(name = "UserEntity")
@@ -85,6 +86,12 @@ public class UserEntity extends AbstractBaseEntity {
 	@OneToMany(targetEntity = ASUserAttrEntity.class, mappedBy="user")
 	private Set<ASUserAttrEntity> userAttrs;
 		
+	@OneToMany(targetEntity = AccountEntity.class, mappedBy="user")
+	private Set<AccountEntity> accounts;
+
+	@ManyToOne(targetEntity = AccountEntity.class)
+	private AccountEntity preferredAccount;
+
 	@Enumerated(EnumType.STRING)
 	private UserStatus userStatus;
 	
@@ -294,5 +301,21 @@ public class UserEntity extends AbstractBaseEntity {
 
 	public void setUserAttrs(Set<ASUserAttrEntity> userAttrs) {
 		this.userAttrs = userAttrs;
+	}
+
+	public Set<AccountEntity> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(Set<AccountEntity> accounts) {
+		this.accounts = accounts;
+	}
+
+	public AccountEntity getPreferredAccount() {
+		return preferredAccount;
+	}
+
+	public void setPreferredAccount(AccountEntity preferredAccount) {
+		this.preferredAccount = preferredAccount;
 	}
 }
