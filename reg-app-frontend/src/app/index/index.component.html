@@ -7,11 +7,12 @@
         <md-form-field>
             <md-card *ngFor="let registry of registries">
                 <md-card-header>
-                    Registry ID: {{registry.id}}
+                    {{registry.serviceName}} ({{registry.id}})
                 </md-card-header>
                 <md-card-content>
                     <div>Created At: {{registry.createdAt | date}}</div>
                     <div>Status: {{registry.registryStatus}}</div>
+                    <div>{{registry.serviceShortDescription}}</div>
                 </md-card-content>                        
             </md-card>
         </md-form-field>

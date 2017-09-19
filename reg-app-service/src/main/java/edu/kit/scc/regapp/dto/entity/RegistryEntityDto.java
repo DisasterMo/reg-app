@@ -29,6 +29,12 @@ public class RegistryEntityDto extends AbstractBaseEntityDto {
 
 	private Long userId;
 	
+	private Long serviceId;
+	
+	private String serviceName;
+	
+	private String serviceShortDescription;
+	
 	public RegistryStatus getRegistryStatus() {
 		return registryStatus;
 	}
@@ -99,5 +105,29 @@ public class RegistryEntityDto extends AbstractBaseEntityDto {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public Long getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(Long serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public String getServiceShortDescription() {
+		return serviceShortDescription;
+	}
+
+	public void setServiceShortDescription(String serviceShortDescription) {
+		this.serviceShortDescription = serviceShortDescription;
 	}
 }

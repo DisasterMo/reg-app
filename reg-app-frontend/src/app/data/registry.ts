@@ -6,4 +6,7 @@ export class Registry {
     lastAccessCheck: number;
     lastStatusChange: number;
     registryValues: any[];
+    serviceId: number;
+    serviceName: string;
+    serviceShortDescription: string;
 }

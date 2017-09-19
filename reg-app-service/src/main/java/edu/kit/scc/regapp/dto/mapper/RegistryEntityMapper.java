@@ -15,6 +15,10 @@ public class RegistryEntityMapper extends AbstractBaseEntityMapper<RegistryEntit
 			RegistryEntityDto toDtoEntity) {
 
 		toDtoEntity.setUserId(fromBaseEntity.getUser().getId());
+		toDtoEntity.setServiceId(fromBaseEntity.getService().getId());
+		toDtoEntity.setServiceName(fromBaseEntity.getService().getName());
+		toDtoEntity.setServiceShortDescription(fromBaseEntity.getService().getShortDescription());
+		
 		if (toDtoEntity.getRegistryValues().containsKey("userPassword")) {
 			toDtoEntity.getRegistryValues().remove("userPassword");
 			toDtoEntity.getRegistryValues().put("userPassword", "set");
