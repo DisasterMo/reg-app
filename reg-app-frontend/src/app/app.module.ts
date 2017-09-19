@@ -3,9 +3,13 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpModule } from '@angular/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MdButtonModule, MdCheckboxModule, MdCardModule, MdAutocompleteModule } from '@angular/material';
+
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
 import { IndexComponent } from './index/index.component';
@@ -23,6 +27,10 @@ const appRoutes: Routes = [
   { path: '**', component: PageNotFoundComponent },
 ];
 
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -34,6 +42,14 @@ const appRoutes: Routes = [
     BrowserModule,
     FormsModule, ReactiveFormsModule,
     HttpModule,
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
     RouterModule.forRoot(
       appRoutes,
       // { enableTracing: true } <-- debugging purposes only
