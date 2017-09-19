@@ -4,6 +4,7 @@
 </div>
 <div>
     <form name="indexForm">
+        <h2>Registrierte Dienste</h2>
         <md-form-field>
             <md-card *ngFor="let registry of registries">
                 <md-card-header>
@@ -15,6 +16,9 @@
                     <div>{{registry.serviceShortDescription}}</div>
                 </md-card-content>                        
             </md-card>
+        </md-form-field>
+        <h2>Buchbare Dienste</h2>
+        <md-form-field>
         </md-form-field>
     </form>
 </div>
