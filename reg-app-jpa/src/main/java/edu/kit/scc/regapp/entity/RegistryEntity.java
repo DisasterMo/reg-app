@@ -19,7 +19,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -27,9 +26,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name = "registry")
@@ -63,8 +59,7 @@ public class RegistryEntity extends AbstractBaseEntity {
 	@Column(name="agreed_time")
 	private Date agreedTime;
 	
-	@ElementCollection(fetch = FetchType.EAGER)
-    @Fetch(value = FetchMode.SELECT)
+	@ElementCollection
 	@JoinTable(name = "registry_value")
     @MapKeyColumn(name = "key_data", length = 128)
     @Column(name = "value_data", length = 2048)

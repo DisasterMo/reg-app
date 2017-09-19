@@ -16,7 +16,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -25,8 +24,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 
 import edu.kit.scc.regapp.entity.as.AttributeSourceServiceEntity;
@@ -88,8 +85,7 @@ public class ServiceEntity extends AbstractBaseEntity {
 	@ManyToOne(targetEntity = BusinessRulePackageEntity.class)
 	private BusinessRulePackageEntity mandatoryValueRulePackage;
 	
-	@ElementCollection(fetch = FetchType.LAZY)
-    @Fetch(value = FetchMode.SELECT)
+	@ElementCollection
 	@JoinTable(name = "service_properties")
     @MapKeyColumn(name = "key_data", length = 128)
     @Column(name = "value_data", length = 2048)
