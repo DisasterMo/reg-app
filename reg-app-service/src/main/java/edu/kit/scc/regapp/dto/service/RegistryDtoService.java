@@ -9,4 +9,6 @@ public interface RegistryDtoService extends BaseDtoService<RegistryEntity, Regis
 
 	List<RegistryEntityDto> findRegistriesForDepro(String serviceShortName);
 
+	List<RegistryEntityDto> findRegistriesForUserDisplay(Long userId);
+
 }

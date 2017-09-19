@@ -44,42 +44,46 @@ public class AccessChecker {
 		RoleEntity rootRole = roleService.findByName("User");
 		root.addAllowRole(rootRole);
 
-		addAccessNode(root, "user", true);
-		addAccessNode(root, "service", true);
-		addAccessNode(root, "service-admin", true);
-		addAccessNode(root, "service-approver", true);
-		addAccessNode(root, "service-group-admin", true);
-
-		addDenyNode(root, "register", false, "User");
+		AccessNode restNode = addAccessNode(root, "rest", true);
+		addAccessNode(restNode, "user", true);
 		
-		AccessNode adminNode = addAccessNode(root, "admin", false, "MasterAdmin");
-		addAccessNode(adminNode, "role", true, "RoleAdmin");
-		addAccessNode(adminNode, "user", true, "UserAdmin");
-		addAccessNode(adminNode, "service", true, "ServiceAdmin");
-		addAccessNode(adminNode, "saml", true, "SamlAdmin");
-		addAccessNode(adminNode, "business-rule", true, "BusinessRuleAdmin");
-		addAccessNode(adminNode, "bulk", true, "BulkAdmin");
-		addAccessNode(adminNode, "timer", true, "TimerAdmin");
-		addAccessNode(adminNode, "audit", true, "AuditAdmin");
-		addAccessNode(adminNode, "group", true, "GroupAdmin");
-		addAccessNode(adminNode, "as", true, "AttributeSourceAdmin");
-
-		AccessNode restNode = addAccessNode(root, "rest", false, "MasterAdmin", "RestAdmin");
-		addAccessNode(restNode, "service-admin", true, "RestServiceAdmin");
-		
-		AccessNode droolsNode = addAccessNode(restNode, "drools", true);
-		addAccessNode(droolsNode, "test", true);
-
-		AccessNode attrqNode = addAccessNode(restNode, "attrq", true);
-		addAccessNode(attrqNode, "eppn", true);
-
-		AccessNode ecpNode = addAccessNode(restNode, "ecp", true);
-		addAccessNode(ecpNode, "eppn", true);
-
-		AccessNode imageNode = addAccessNode(restNode, "image", true);
-		addAccessNode(imageNode, "original", true, "User");
-		addAccessNode(imageNode, "small", true, "User");
-		addAccessNode(imageNode, "icon", true, "User");
+		//AccessNode restNode = addAccessNode(root, "rest", false, "MasterAdmin", "RestAdmin");
+//		addAccessNode(restNode, "service-admin", true, "RestServiceAdmin");
+//
+//		addAccessNode(root, "user", true);
+//		addAccessNode(root, "service", true);
+//		addAccessNode(root, "service-admin", true);
+//		addAccessNode(root, "service-approver", true);
+//		addAccessNode(root, "service-group-admin", true);
+//
+//		addDenyNode(root, "register", false, "User");
+//		
+//		AccessNode adminNode = addAccessNode(root, "admin", false, "MasterAdmin");
+//		addAccessNode(adminNode, "role", true, "RoleAdmin");
+//		addAccessNode(adminNode, "user", true, "UserAdmin");
+//		addAccessNode(adminNode, "service", true, "ServiceAdmin");
+//		addAccessNode(adminNode, "saml", true, "SamlAdmin");
+//		addAccessNode(adminNode, "business-rule", true, "BusinessRuleAdmin");
+//		addAccessNode(adminNode, "bulk", true, "BulkAdmin");
+//		addAccessNode(adminNode, "timer", true, "TimerAdmin");
+//		addAccessNode(adminNode, "audit", true, "AuditAdmin");
+//		addAccessNode(adminNode, "group", true, "GroupAdmin");
+//		addAccessNode(adminNode, "as", true, "AttributeSourceAdmin");
+//
+//		
+//		AccessNode droolsNode = addAccessNode(restNode, "drools", true);
+//		addAccessNode(droolsNode, "test", true);
+//
+//		AccessNode attrqNode = addAccessNode(restNode, "attrq", true);
+//		addAccessNode(attrqNode, "eppn", true);
+//
+//		AccessNode ecpNode = addAccessNode(restNode, "ecp", true);
+//		addAccessNode(ecpNode, "eppn", true);
+//
+//		AccessNode imageNode = addAccessNode(restNode, "image", true);
+//		addAccessNode(imageNode, "original", true, "User");
+//		addAccessNode(imageNode, "small", true, "User");
+//		addAccessNode(imageNode, "icon", true, "User");
 	}
 	
 	public Boolean check(String path, Set<RoleEntity> roles) {

@@ -13,6 +13,7 @@ import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './page-not-found.component';
 
 import { LoginService } from './login/login.service';
+import { IndexService } from './index/index.service';
 import { CanActivateAuthGuard } from './auth.service';
 
 const appRoutes: Routes = [
@@ -39,7 +40,7 @@ const appRoutes: Routes = [
     ),
     NoopAnimationsModule, MdButtonModule, MdCheckboxModule, MdCardModule, MdAutocompleteModule
   ],
-  providers: [LoginService, CanActivateAuthGuard],
+  providers: [LoginService, IndexService, CanActivateAuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

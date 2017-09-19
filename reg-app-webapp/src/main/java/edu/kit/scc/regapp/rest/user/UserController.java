@@ -1,4 +1,4 @@
-package edu.kit.scc.regapp.rest;
+package edu.kit.scc.regapp.rest.user;
 
 import java.io.IOException;
 
@@ -13,6 +13,7 @@ import javax.ws.rs.core.Context;
 import edu.kit.scc.regapp.dto.entity.UserEntityDto;
 import edu.kit.scc.regapp.dto.service.UserDtoService;
 import edu.kit.scc.regapp.exc.RestInterfaceException;
+import edu.kit.scc.regapp.session.SessionManager;
 
 @Path("/user")
 public class UserController {
@@ -20,12 +21,15 @@ public class UserController {
 	@Inject
 	private UserDtoService service;
 	
+	@Inject
+	private SessionManager session;
+	
 	@Path(value = "/detail")
 	@Produces({"application/json"})
 	@GET
-	public UserEntityDto updateUserAsync(@Context HttpServletRequest request)
+	public UserEntityDto detail(@Context HttpServletRequest request)
 					throws IOException, RestInterfaceException, ServletException {
 		
-		return service.findById(1009L);
+		return service.findById(session.getUserId());
 	}
 }
