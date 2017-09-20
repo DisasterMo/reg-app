@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { Registry } from '../data/registry';
+import { Service } from '../data/service';
 import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/operator/map';
@@ -11,6 +12,7 @@ import 'rxjs/add/operator/catch';
 export class IndexService {
 
     private registryListUrl = '/rest/user/registry/list';
+    private serviceShortUrl = '/rest/service/detail';
 
     private headers = new Headers({'Content-Type': 'application/json'});
 
@@ -18,6 +20,12 @@ export class IndexService {
 
     getRegsitryList(): Observable<Registry[]> {
         return this.http.get(this.registryListUrl)
+            .map((res: Response) => res.json())
+            .catch(error => this.handleError(error));
+    }
+
+    getServiceShort(id: number): Observable<Service> {
+        return this.http.get(`${this.serviceShortUrl}/${id}`)
             .map((res: Response) => res.json())
             .catch(error => this.handleError(error));
     }

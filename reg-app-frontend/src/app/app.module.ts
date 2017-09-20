@@ -13,6 +13,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
 import { IndexComponent } from './index/index.component';
+import { ServiceDetailComponent } from './index/service-detail.component';
 import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './page-not-found.component';
 
@@ -23,6 +24,7 @@ import { CanActivateAuthGuard } from './auth.service';
 const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'index', component: IndexComponent, canActivate: [CanActivateAuthGuard] },
+  { path: 'service/:id', component: ServiceDetailComponent, canActivate: [CanActivateAuthGuard] },
   { path: '', redirectTo: '/index', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },
 ];
