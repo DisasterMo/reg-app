@@ -32,8 +32,6 @@ public interface ServiceDao extends BaseDao<ServiceEntity, Long> {
 
 	ServiceEntity findByShortName(String shortName);
 
-	List<ServiceEntity> findAllPublishedWithServiceProps();
-
 	List<ServiceEntity> findByHotlineRole(RoleEntity role);
 
 	List<ServiceEntity> findByGroupCapability(Boolean capable);
@@ -41,5 +39,7 @@ public interface ServiceDao extends BaseDao<ServiceEntity, Long> {
 	List<ServiceEntity> findByGroupAdminRole(RoleEntity role);
 
 	List<ServiceEntity> findByParentService(ServiceEntity service);
+
+	List<ServiceEntity> findAvailableForUser(Long userId);
 
 }

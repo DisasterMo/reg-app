@@ -12,6 +12,7 @@ import 'rxjs/add/operator/catch';
 export class IndexService {
 
     private registryListUrl = '/rest/user/registry/list';
+    private availableServiceListUrl = '/rest/service/available/list';
     private serviceShortUrl = '/rest/service/detail';
 
     private headers = new Headers({'Content-Type': 'application/json'});
@@ -20,6 +21,12 @@ export class IndexService {
 
     getRegsitryList(): Observable<Registry[]> {
         return this.http.get(this.registryListUrl)
+            .map((res: Response) => res.json())
+            .catch(error => this.handleError(error));
+    }
+
+    getAvailableServiceList(): Observable<Service[]> {
+        return this.http.get(this.availableServiceListUrl)
             .map((res: Response) => res.json())
             .catch(error => this.handleError(error));
     }

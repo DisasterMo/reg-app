@@ -1,5 +1,7 @@
 package edu.kit.scc.regapp.dto.service;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -21,6 +23,13 @@ public class ServiceShortDtoServiceImpl extends BaseDtoServiceImpl<ServiceEntity
 	@Inject
 	private ServiceDao dao;
 
+	@Override
+	public List<ServiceEntityDto> findServicesAvailableForUser(Long userId) {
+		List<ServiceEntity> serviceList = dao.findAvailableForUser(userId);
+		
+		return createListDto(serviceList);
+	}
+	
 	@Override
 	protected BaseEntityMapper<ServiceEntity, ServiceEntityDto, Long> getMapper() {
 		return mapper;

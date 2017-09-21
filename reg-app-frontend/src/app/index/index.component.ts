@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { IndexService } from './index.service';
 import { Registry } from '../data/registry';
+import { Service } from '../data/service';
 import { Observable } from 'rxjs/Observable';
 
 @Component({
@@ -13,6 +14,7 @@ import { Observable } from 'rxjs/Observable';
     constructor(private indexService: IndexService) { }
 
     registries: Registry[];
+    availableServices: Service[];
 
     getRegistries(): void {
       this.indexService.getRegsitryList().subscribe(registries => {
@@ -23,7 +25,17 @@ import { Observable } from 'rxjs/Observable';
       });
     }
 
+    getAvailableServices(): void {
+      this.indexService.getAvailableServiceList().subscribe(availableServices => {
+        this.availableServices = availableServices;
+        for (const service of this.availableServices) {
+          console.log('Got available: ', service.name);
+        }
+      });
+    }
+
     ngOnInit(): void {
       this.getRegistries();
+      this.getAvailableServices();
     }
   }

@@ -19,11 +19,15 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import edu.kit.scc.regapp.dao.ServiceDao;
 import edu.kit.scc.regapp.entity.ImageEntity;
+import edu.kit.scc.regapp.entity.RegistryEntity;
+import edu.kit.scc.regapp.entity.RegistryEntity_;
 import edu.kit.scc.regapp.entity.RoleEntity;
 import edu.kit.scc.regapp.entity.ServiceEntity;
+import edu.kit.scc.regapp.entity.ServiceEntity_;
 
 @Named
 @ApplicationScoped
@@ -40,15 +44,22 @@ public class JpaServiceDao extends JpaBaseDao<ServiceEntity, Long> implements Se
 	}
 
 	@Override
-	public List<ServiceEntity> findAllPublishedWithServiceProps() {
+	public List<ServiceEntity> findAvailableForUser(Long userId) {
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<ServiceEntity> criteria = builder.createQuery(ServiceEntity.class);
 		Root<ServiceEntity> root = criteria.from(ServiceEntity.class);
+		
+		Subquery<ServiceEntity> registryQuery = criteria.subquery(ServiceEntity.class);
+		Root<RegistryEntity> registryRoot = registryQuery.from(RegistryEntity.class);
+		registryQuery.select(registryRoot.get(RegistryEntity_.service));
+		registryQuery.where(builder.equal(registryRoot.get(RegistryEntity_.user), userId));
+		
 		criteria.where(
-				builder.equal(root.get("published"), true));
+				builder.and(
+						builder.equal(root.get(ServiceEntity_.published), true),
+						root.in(registryQuery).not()
+				));
 		criteria.select(root);
-		criteria.distinct(true);
-		root.fetch("serviceProps", JoinType.LEFT);
 
 		return em.createQuery(criteria).getResultList();
 	}
