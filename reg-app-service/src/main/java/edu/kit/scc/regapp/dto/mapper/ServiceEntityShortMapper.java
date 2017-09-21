@@ -40,7 +40,7 @@ public class ServiceEntityShortMapper extends AbstractBaseEntityMapper<ServiceEn
 
 	@Override
 	protected String[] getPropertiesToCopy() {
-		return new String[] { "name", "shortName", "shortDescription" };
+		return new String[] { "name", "shortName", "description", "shortDescription" };
 	}
 
 }

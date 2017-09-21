@@ -38,6 +38,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     IndexComponent,
     LoginComponent,
+    ServiceDetailComponent,
     PageNotFoundComponent
   ],
   imports: [

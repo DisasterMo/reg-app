@@ -6,10 +6,11 @@
     <form name="indexForm">
         <h2>Service Detail</h2>
         <div>
-            {{service.name}}
+            {{service?.name}}
         </div>
         <div>
-            {{service.description}}
+            {{service?.description}}
         </div>
+        <button md-button (click)="toIndex()">{{ 'BACK_TO_MAIN' | translate }}</button>
     </form>
 </div>
