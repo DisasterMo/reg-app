@@ -22,19 +22,17 @@
         </div>
         <h2>Buchbare Dienste</h2>
         <div class="registry-card-panel">
-            <md-form-field>
-                <md-card *ngFor="let service of availableServices" class="registry-card">
-                    <md-card-header>
-                        {{service.name}} ({{service.id}})
-                    </md-card-header>
-                    <md-card-content>
-                        <div>{{service.shortDescription}}</div>
-                    </md-card-content>
-                    <md-card-footer>
-                        <div><a routerLink="/register/{{service.id}}">{{ "REGISTER" | translate }}</a></div>
-                    </md-card-footer>
-                </md-card>
-            </md-form-field>
+            <md-card *ngFor="let service of availableServices" class="registry-card">
+                <md-card-header>
+                    {{service.name}} ({{service.id}})
+                </md-card-header>
+                <md-card-content>
+                    <div>{{service.shortDescription}}</div>
+                </md-card-content>
+                <md-card-footer>
+                    <div><a routerLink="/register/{{service.id}}">{{ "REGISTER" | translate }}</a></div>
+                </md-card-footer>
+            </md-card>
         </div>
     </form>
 </div>
