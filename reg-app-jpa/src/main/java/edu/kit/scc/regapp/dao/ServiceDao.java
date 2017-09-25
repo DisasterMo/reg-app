@@ -15,6 +15,7 @@ import java.util.List;
 import edu.kit.scc.regapp.entity.ImageEntity;
 import edu.kit.scc.regapp.entity.RoleEntity;
 import edu.kit.scc.regapp.entity.ServiceEntity;
+import edu.kit.scc.regapp.entity.UserEntity;
 
 public interface ServiceDao extends BaseDao<ServiceEntity, Long> {
 
@@ -40,6 +41,6 @@ public interface ServiceDao extends BaseDao<ServiceEntity, Long> {
 
 	List<ServiceEntity> findByParentService(ServiceEntity service);
 
-	List<ServiceEntity> findAvailableForUser(Long userId);
+	List<ServiceEntity> findAvailableForUser(UserEntity user);
 
 }

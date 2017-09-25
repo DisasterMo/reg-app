@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -40,14 +39,14 @@ import edu.kit.scc.regapp.dao.audit.AuditDetailDao;
 import edu.kit.scc.regapp.dao.audit.AuditEntryDao;
 import edu.kit.scc.regapp.entity.BusinessRulePackageEntity;
 import edu.kit.scc.regapp.entity.EventType;
-import edu.kit.scc.regapp.entity.GroupEntity;
 import edu.kit.scc.regapp.entity.RegistryEntity;
 import edu.kit.scc.regapp.entity.RegistryStatus;
-import edu.kit.scc.regapp.entity.RoleEntity;
 import edu.kit.scc.regapp.entity.SamlIdpMetadataEntity;
 import edu.kit.scc.regapp.entity.SamlSpConfigurationEntity;
 import edu.kit.scc.regapp.entity.ServiceEntity;
 import edu.kit.scc.regapp.entity.UserEntity;
+import edu.kit.scc.regapp.entity.UserGroupEntity;
+import edu.kit.scc.regapp.entity.account.AccountEntity;
 import edu.kit.scc.regapp.entity.account.SamlAccountEntity;
 import edu.kit.scc.regapp.entity.audit.AuditStatus;
 import edu.kit.scc.regapp.event.EventSubmitter;
@@ -177,12 +176,11 @@ public class KnowledgeSessionWorker {
 	return className;
 }
 	
-	public List<ServiceEntity> checkServiceFilterRule(String unitId, UserEntity user, List<ServiceEntity> serviceList,
-			Set<GroupEntity> groups, Set<RoleEntity> roles) 
+	public List<ServiceEntity> checkServiceFilterRule(String unitId, UserEntity user, List<ServiceEntity> serviceList) 
 			throws MisconfiguredServiceException {
+		logger.debug("Starting evaluation of rule {}", unitId);
+		long start = System.currentTimeMillis();
 		
-		user = userDao.merge(user);
-
 		KieSession ksession = getStatefulSession(unitId);
 
 		if (ksession == null)
@@ -190,8 +188,10 @@ public class KnowledgeSessionWorker {
 
 		ksession.setGlobal("logger", logger);
 		ksession.insert(user);
-		for (GroupEntity group : groups)
-			ksession.insert(group);
+		for (UserGroupEntity uge : user.getGroups())
+			ksession.insert(uge.getGroup());
+		for (AccountEntity account : user.getAccounts())
+			ksession.insert(account);
 		for (ServiceEntity service : serviceList)
 			ksession.insert(service);
 		ksession.insert(new Date());
@@ -220,6 +220,9 @@ public class KnowledgeSessionWorker {
 
 		List<ServiceEntity> returnList = new ArrayList<ServiceEntity>(serviceList);
 		returnList.removeAll(removeList);
+
+		long end = System.currentTimeMillis();
+		logger.debug("Rule evaluation of rule {} took {} ms", unitId, (end-start));
 		
 		return returnList;
 	}

@@ -28,6 +28,7 @@ import edu.kit.scc.regapp.entity.RegistryEntity_;
 import edu.kit.scc.regapp.entity.RoleEntity;
 import edu.kit.scc.regapp.entity.ServiceEntity;
 import edu.kit.scc.regapp.entity.ServiceEntity_;
+import edu.kit.scc.regapp.entity.UserEntity;
 
 @Named
 @ApplicationScoped
@@ -44,7 +45,7 @@ public class JpaServiceDao extends JpaBaseDao<ServiceEntity, Long> implements Se
 	}
 
 	@Override
-	public List<ServiceEntity> findAvailableForUser(Long userId) {
+	public List<ServiceEntity> findAvailableForUser(UserEntity user) {
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<ServiceEntity> criteria = builder.createQuery(ServiceEntity.class);
 		Root<ServiceEntity> root = criteria.from(ServiceEntity.class);
@@ -52,7 +53,7 @@ public class JpaServiceDao extends JpaBaseDao<ServiceEntity, Long> implements Se
 		Subquery<ServiceEntity> registryQuery = criteria.subquery(ServiceEntity.class);
 		Root<RegistryEntity> registryRoot = registryQuery.from(RegistryEntity.class);
 		registryQuery.select(registryRoot.get(RegistryEntity_.service));
-		registryQuery.where(builder.equal(registryRoot.get(RegistryEntity_.user), userId));
+		registryQuery.where(builder.equal(registryRoot.get(RegistryEntity_.user), user));
 		
 		criteria.where(
 				builder.and(
