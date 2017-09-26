@@ -33,6 +33,7 @@ import edu.kit.scc.regapp.entity.audit.AuditStatus;
 import edu.kit.scc.regapp.exc.RegisterException;
 import edu.kit.scc.regapp.register.Infotainment;
 import edu.kit.scc.regapp.register.InfotainmentCapable;
+import edu.kit.scc.regapp.register.PropertyReader;
 import edu.kit.scc.regapp.register.RegisterUserWorkflow;
 
 public abstract class AbstractSimpleLdapRegisterWorkflow 

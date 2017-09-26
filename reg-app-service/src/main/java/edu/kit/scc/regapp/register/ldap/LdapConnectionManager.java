@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.kit.scc.regapp.exc.PropertyReaderException;
+import edu.kit.scc.regapp.register.PropertyReader;
 import edu.vt.middleware.ldap.Ldap;
 import edu.vt.middleware.ldap.LdapConfig;
 import edu.vt.middleware.ldap.ssl.TLSSocketFactory;

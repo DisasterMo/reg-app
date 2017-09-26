@@ -25,6 +25,7 @@ import edu.kit.scc.regapp.entity.UserEntity;
 import edu.kit.scc.regapp.exc.RegisterException;
 import edu.kit.scc.regapp.register.GroupCapable;
 import edu.kit.scc.regapp.register.GroupUpdateStructure;
+import edu.kit.scc.regapp.register.PropertyReader;
 
 public abstract class AbstractSimpleGroupLdapRegisterWorkflow 
 		extends AbstractSimpleLdapRegisterWorkflow

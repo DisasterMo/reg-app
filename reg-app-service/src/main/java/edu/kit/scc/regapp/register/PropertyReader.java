@@ -8,7 +8,7 @@
  * Contributors:
  *     Michael Simon - initial
  ******************************************************************************/
-package edu.kit.scc.regapp.register.ldap;
+package edu.kit.scc.regapp.register;
 
 import java.util.Map;
 

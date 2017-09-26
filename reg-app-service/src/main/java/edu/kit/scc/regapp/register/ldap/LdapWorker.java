@@ -34,6 +34,7 @@ import edu.kit.scc.regapp.exc.PropertyReaderException;
 import edu.kit.scc.regapp.exc.RegisterException;
 import edu.kit.scc.regapp.register.Infotainment;
 import edu.kit.scc.regapp.register.InfotainmentTreeNode;
+import edu.kit.scc.regapp.register.PropertyReader;
 import edu.vt.middleware.ldap.AttributesFactory;
 import edu.vt.middleware.ldap.Ldap;
 import edu.vt.middleware.ldap.Ldap.AttributeModification;
