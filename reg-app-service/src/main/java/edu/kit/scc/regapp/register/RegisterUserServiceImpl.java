@@ -456,8 +456,8 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 		RegisterUserWorkflow workflow = getWorkflowInstance(registry.getRegisterBean());
 
 		try {
-			ServiceEntity serviceEntity = serviceDao.findByIdWithServiceProps(registry.getService().getId());
-			UserEntity userEntity = userDao.findByIdWithAll(registry.getUser().getId());
+			ServiceEntity serviceEntity = registry.getService();
+			UserEntity userEntity = registry.getUser();
 
 			ServiceRegisterAuditor auditor = new ServiceRegisterAuditor(auditDao, auditDetailDao, appConfig);
 			auditor.startAuditTrail(executor);
@@ -469,7 +469,6 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
 			registry.setRegistryStatus(RegistryStatus.DELETED);
 			registry.setLastStatusChange(new Date());
-			registry = registryDao.persist(registry);
 
 			HashSet<GroupEntity> userGroups = new HashSet<GroupEntity>(userEntity.getGroups().size());
 
