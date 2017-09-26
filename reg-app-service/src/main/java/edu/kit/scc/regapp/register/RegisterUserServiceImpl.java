@@ -126,6 +126,17 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 	public void registerUser(UserEntity user, ServiceEntity service, String executor, Boolean sendGroupUpdate, Auditor parentAuditor)
 			throws RegisterException {
 		
+		if (service == null) {
+			throw new RegisterException("No such service");
+		}
+
+		List<RegistryEntity> registryList = registryDao.findByServiceAndUserAndNotStatus(service, user,
+                RegistryStatus.DELETED, RegistryStatus.DEPROVISIONED);
+
+		if (registryList.size() != 0) {
+			throw new RegisterException("Already registered");
+		}
+		
 		if (! UserStatus.ACTIVE.equals(user.getUserStatus())) {
 			logger.warn("Only Users in status ACTIVE can register with a service. User {} is {}", "user-" + user.getId(), user.getUserStatus());
 			throw new RegisterException("Only Users in status ACTIVE can register with a service");
@@ -144,9 +155,9 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
 		if (service.getParentService() != null) {
 			logger.info("Service has Parent. Checking parent first.");
-			List<RegistryEntity> r = registryDao.findByServiceAndUserAndNotStatus(service.getParentService(), user, 
+			List<RegistryEntity> parentRegistryList = registryDao.findByServiceAndUserAndNotStatus(service.getParentService(), user, 
 					RegistryStatus.DELETED, RegistryStatus.DEPROVISIONED);
-			if (r.size() == 0) {
+			if (parentRegistryList.size() == 0) {
 				logger.info("User {} is not registered with parent service {} yet", "user-" + user.getId(), service.getParentService().getName());
 				registerUser(user, service.getParentService(), executor, true, auditor);
 			}
