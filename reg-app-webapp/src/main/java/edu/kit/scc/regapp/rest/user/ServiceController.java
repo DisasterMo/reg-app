@@ -15,7 +15,9 @@ import javax.ws.rs.core.Context;
 import edu.kit.scc.regapp.dto.entity.ServiceEntityDto;
 import edu.kit.scc.regapp.dto.service.ServicePolicyDtoService;
 import edu.kit.scc.regapp.dto.service.ServiceShortDtoService;
+import edu.kit.scc.regapp.exc.RegisterException;
 import edu.kit.scc.regapp.exc.RestInterfaceException;
+import edu.kit.scc.regapp.register.RegisterUserService;
 import edu.kit.scc.regapp.session.SessionManager;
 
 @Path("/service")
@@ -28,6 +30,9 @@ public class ServiceController {
 	private ServicePolicyDtoService policyService;
 	
 	@Inject
+	private RegisterUserService registerUserService;
+	
+	@Inject
 	private SessionManager session;
 	
 	@Path(value = "/detail/{id}")
@@ -38,7 +43,25 @@ public class ServiceController {
 		
 		return policyService.findById(id);
 	}
+
+	@Path(value = "/register/{id}")
+	@Produces({"application/json"})
+	@GET
+	public void register(@PathParam("id") Long id, @Context HttpServletRequest request)
+					throws IOException, RestInterfaceException, ServletException, RegisterException {
+		
+		registerUserService.registerUser(session.getUserId(), id, "user-" + session.getUserId());
+	}
 	
+	@Path(value = "/deregister/{id}")
+	@Produces({"application/json"})
+	@GET
+	public void deregister(@PathParam("id") Long id, @Context HttpServletRequest request)
+					throws IOException, RestInterfaceException, ServletException, RegisterException {
+
+		registerUserService.deregisterUser(id, "user-" + session.getUserId());
+	}
+		
 	@Path(value = "/available/list")
 	@Produces({"application/json"})
 	@GET

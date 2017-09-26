@@ -145,36 +145,75 @@ public class KnowledgeSessionWorker {
 	public String resolveSamlAccountUpdateMech(String unitId, SamlAccountEntity account, Map<String, List<Object>> attributeMap) 
 		throws MisconfiguredServiceException {
 	
-	KieSession ksession = getStatefulSession(unitId);
-
-	if (ksession == null)
-		return null;
-
-	ksession.setGlobal("logger", logger);
-	ksession.insert(account);
-	ksession.insert(attributeMap);
-	ksession.insert(new Date());
+		KieSession ksession = getStatefulSession(unitId);
 	
-	ksession.fireAllRules();
-
-	Collection<FactHandle> facts = ksession.getFactHandles(new ObjectFilter() {
-		@Override
-		public boolean accept(Object object) {
-			if (object instanceof String)
-				return true;
-			else
-				return false;
-		}
-	});
+		if (ksession == null)
+			return null;
 	
-	String className = null;
+		ksession.setGlobal("logger", logger);
+		ksession.insert(account);
+		ksession.insert(attributeMap);
+		ksession.insert(new Date());
+		
+		ksession.fireAllRules();
 	
-	for (FactHandle fact : facts)
-		className = ksession.getObject(fact).toString();
-	ksession.dispose();
+		Collection<FactHandle> facts = ksession.getFactHandles(new ObjectFilter() {
+			@Override
+			public boolean accept(Object object) {
+				if (object instanceof String)
+					return true;
+				else
+					return false;
+			}
+		});
+		
+		String className = null;
+		
+		for (FactHandle fact : facts)
+			className = ksession.getObject(fact).toString();
+		ksession.dispose();
+	
+		return className;
+	}
+	
+	public boolean checkServiceAccess(UserEntity user, ServiceEntity service) {
+		List<Object> objectList;
 
-	return className;
-}
+        if (service.getAccessRule() == null) {
+                objectList = checkRule("default", "permitAllRule", "1.0.0", user, service, null, "user-self", false);
+        }
+        else {
+                BusinessRulePackageEntity rulePackage = service.getAccessRule().getRulePackage();
+                if (rulePackage != null) {
+                        objectList = checkRule(rulePackage.getPackageName(), rulePackage.getKnowledgeBaseName(),
+                                rulePackage.getKnowledgeBaseVersion(), user, service, null, "user-" + user.getId(), false);
+                }
+                else {
+                        throw new IllegalStateException("checkServiceAccess called with a rule (" +
+                                                service.getAccessRule().getName() + ") that has no rulePackage");
+                }
+        }
+
+        List<String> requirementsList = new ArrayList<String>();
+        for (Object o : objectList) {
+                if (o instanceof OverrideAccess) {
+                        requirementsList.clear();
+                        logger.debug("Removing requirements due to OverrideAccess");
+                        break;
+                }
+                else if (o instanceof UnauthorizedUser) {
+                        String s = ((UnauthorizedUser) o).getMessage();
+                        requirementsList.add(s);
+                }
+        }
+
+        if (requirementsList.size() == 0) {
+                return true;
+        }
+        else {
+                return false;
+        }
+	}
 	
 	public List<ServiceEntity> checkServiceFilterRule(String unitId, UserEntity user, List<ServiceEntity> serviceList) 
 			throws MisconfiguredServiceException {
