@@ -5,6 +5,7 @@ import javax.naming.NamingException;
 
 import edu.kit.scc.regapp.bpm.BpmProcessService;
 import edu.kit.scc.regapp.entity.ApplicationConfigEntity;
+import edu.kit.scc.regapp.job.JobClassService;
 import edu.kit.scc.regapp.service.account.SamlAccountService;
 import edu.kit.scc.regapp.service.role.RoleService;
 
@@ -15,6 +16,7 @@ public abstract class AbstractVersionConverter implements VersionConverter {
 	private RoleService roleService;
 	private SamlAccountService samlAccountService;
 	private BpmProcessService bpmProcessService;
+	private JobClassService jobClassService;
 	
 //	private GroupService groupService;
 //	private UserService userService;
@@ -54,6 +56,13 @@ public abstract class AbstractVersionConverter implements VersionConverter {
 			bpmProcessService = (BpmProcessService) ic.lookup("global/reg-app/reg-app-service/BpmProcessServiceImpl!edu.kit.scc.regapp.bpm.BpmProcessService");
 		}
 		return bpmProcessService;
+	}
+
+	public JobClassService getJobClassService() throws NamingException {
+		if (jobClassService == null) {
+			jobClassService = (JobClassService) ic.lookup("global/reg-app/reg-app-service/JobClassServiceImpl!edu.kit.scc.regapp.job.JobClassService");
+		}
+		return jobClassService;
 	}
 
 //	public GroupService getGroupService() throws NamingException {
