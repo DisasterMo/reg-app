@@ -8,12 +8,16 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.appformer.maven.integration.Aether;
+import org.appformer.maven.integration.MavenRepository;
+import org.appformer.maven.integration.embedder.MavenSettings;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.drools.compiler.kie.builder.impl.KieBuilderImpl;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.KieModule;
+import org.kie.api.builder.KieRepository;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.ReleaseId;
 import org.kie.api.io.Resource;
@@ -101,6 +105,7 @@ public class BpmProcessServiceImpl implements BpmProcessService {
 	
 			List<BusinessRulePackageEntity> ruleList = rulePackageDao.findAll();
 			
+			MavenSettings.getSettings().setOffline(true);
 			KieServices ks = KieServices.Factory.get();
 
 			// Create permit all package if not in database
@@ -167,7 +172,12 @@ public class BpmProcessServiceImpl implements BpmProcessService {
 			if (rule.getRuleType().equals("DRL") || rule.getRuleType().equals("BPMN2")) {
 				resources[i].setResourceType(ResourceType.getResourceType(rule.getRuleType()));
 			}
-			resources[i].setSourcePath("kbase/" + rule.getName());
+			if (rule.getRuleType().equals("DRL")) {
+				resources[i].setSourcePath("kbase/" + rule.getName() + ".drl");
+			}
+			else if (rule.getRuleType().equals("BPMN2")) {
+				resources[i].setSourcePath("kbase/" + rule.getName() + ".bpmn2");
+			}
 			i++;
 		}
 		
