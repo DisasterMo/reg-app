@@ -1,5 +1,7 @@
 {
     "HEADING_1": "Willkommen bei der Reg-App!",
     "BACK_TO_MAIN": "Zurück zur Übersicht",
-    "SERVICE_DESCRIPTION": "Dienstbeschreibung"
+    "BACK": "Zurück",
+    "SERVICE_DESCRIPTION": "Dienstbeschreibung",
+    "REGISTER": "Registrieren"
 }
