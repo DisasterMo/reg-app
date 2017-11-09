@@ -77,31 +77,6 @@
 				<version>3.3.7</version>
 			</dependency>
 			<dependency>
-				<groupId>org.primefaces</groupId>
-				<artifactId>primefaces</artifactId>
-				<version>5.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.primefaces.themes</groupId>
-				<artifactId>all-themes</artifactId>
-				<version>1.0.9</version>
-			</dependency>
-			<dependency>
-				<groupId>org.omnifaces</groupId>
-				<artifactId>omnifaces</artifactId>
-				<version>1.3</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>1.2.2</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.2</version>
-			</dependency>
-			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>1.7.2</version>
@@ -186,12 +161,6 @@
 			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
 		</repository>
 		<repository>
-			<id>prime-repo</id>
-			<name>PrimeFaces Maven Repository</name>
-			<url>http://repository.primefaces.org</url>
-			<layout>default</layout>
-		</repository>
-		<repository>
 			<id>shibboleth.internet2.edu</id>
 			<name>Internet2</name>
 			<layout>default</layout>
@@ -247,13 +216,6 @@
 				<bwreg.faces.stage>Production</bwreg.faces.stage>
 				<bwreg.hibernate.dialect>org.hibernate.dialect.PostgreSQLDialect</bwreg.hibernate.dialect>
 				<bwreg.hibernate.datasource>java:/ds/bwidmDS</bwreg.hibernate.datasource>
-				<bwreg.theme>aristo</bwreg.theme>
-				<bwreg.css>std.css</bwreg.css>
-				<bwreg.template>layout-template.xhtml</bwreg.template>
-				<bwreg.template.head-bar>head-bar.xhtml</bwreg.template.head-bar>
-				<bwreg.template.left-side-bar>left-side-bar.xhtml</bwreg.template.left-side-bar>
-				<bwreg.template.left-side-bar-admin>left-side-bar-admin.xhtml</bwreg.template.left-side-bar-admin>
-				<bwreg.template.footer>footer.xhtml</bwreg.template.footer>
                 <bwreg.jboss-singleton>org.jboss.as.clustering.singleton</bwreg.jboss-singleton>
                 <bwreg.jboss-singleton-activator>edu.kit.scc.webreg.service.timer.ClusterSingletonServiceActivator</bwreg.jboss-singleton-activator>
 			</properties>
@@ -265,13 +227,6 @@
 				<bwreg.faces.stage>Development</bwreg.faces.stage>
 				<bwreg.hibernate.dialect>org.hibernate.dialect.PostgreSQLDialect</bwreg.hibernate.dialect>
 				<bwreg.hibernate.datasource>java:/ds/bwidmDS</bwreg.hibernate.datasource>
-				<bwreg.theme>aristo</bwreg.theme>
-				<bwreg.css>std.css</bwreg.css>
-				<bwreg.template>layout-template.xhtml</bwreg.template>
-				<bwreg.template.head-bar>head-bar.xhtml</bwreg.template.head-bar>
-				<bwreg.template.left-side-bar>left-side-bar.xhtml</bwreg.template.left-side-bar>
-				<bwreg.template.left-side-bar-admin>left-side-bar-admin.xhtml</bwreg.template.left-side-bar-admin>
-				<bwreg.template.footer>footer.xhtml</bwreg.template.footer>
                 <bwreg.jboss-singleton>org.jboss.as.clustering.singleton</bwreg.jboss-singleton>
                 <bwreg.jboss-singleton-activator>edu.kit.scc.webreg.service.timer.ClusterSingletonServiceActivator</bwreg.jboss-singleton-activator>
 			</properties>
@@ -287,13 +242,6 @@
 				<bwreg.faces.stage>Production</bwreg.faces.stage>
 				<bwreg.hibernate.dialect>org.hibernate.dialect.PostgreSQLDialect</bwreg.hibernate.dialect>
 				<bwreg.hibernate.datasource>java:/ds/bwidmDS</bwreg.hibernate.datasource>
-				<bwreg.theme>aristo</bwreg.theme>
-				<bwreg.css>std.css</bwreg.css>
-				<bwreg.template>layout-template.xhtml</bwreg.template>
-				<bwreg.template.head-bar>head-bar.xhtml</bwreg.template.head-bar>
-				<bwreg.template.left-side-bar>left-side-bar.xhtml</bwreg.template.left-side-bar>
-				<bwreg.template.left-side-bar-admin>left-side-bar-admin.xhtml</bwreg.template.left-side-bar-admin>
-				<bwreg.template.footer>footer.xhtml</bwreg.template.footer>
 				<bwreg.jboss-singleton>org.wildfly.clustering.singleton</bwreg.jboss-singleton>
 				<bwreg.jboss-singleton-activator>edu.kit.scc.webreg.service.timer.WildflyClusterSingletonServiceActivator</bwreg.jboss-singleton-activator>
 			</properties>
@@ -305,60 +253,9 @@
 				<bwreg.faces.stage>Development</bwreg.faces.stage>
 				<bwreg.hibernate.dialect>org.hibernate.dialect.PostgreSQLDialect</bwreg.hibernate.dialect>
 				<bwreg.hibernate.datasource>java:/ds/bwidmDS</bwreg.hibernate.datasource>
-				<bwreg.theme>aristo</bwreg.theme>
-				<bwreg.css>std.css</bwreg.css>
-				<bwreg.template>layout-template.xhtml</bwreg.template>
-				<bwreg.template.head-bar>head-bar.xhtml</bwreg.template.head-bar>
-				<bwreg.template.left-side-bar>left-side-bar.xhtml</bwreg.template.left-side-bar>
-				<bwreg.template.left-side-bar-admin>left-side-bar-admin.xhtml</bwreg.template.left-side-bar-admin>
-				<bwreg.template.footer>footer.xhtml</bwreg.template.footer>
 				<bwreg.jboss-singleton>org.wildfly.clustering.singleton</bwreg.jboss-singleton>
 				<bwreg.jboss-singleton-activator>edu.kit.scc.webreg.service.timer.WildflyClusterSingletonServiceActivator</bwreg.jboss-singleton-activator>
 			</properties>
-		</profile>
-
-		<profile>
-			<id>doc</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.agilejava.docbkx</groupId>
-						<artifactId>docbkx-maven-plugin</artifactId>
-						<version>2.0.15</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>generate-html</goal>
-									<goal>generate-pdf</goal>
-								</goals>
-								<phase>generate-sources</phase>
-							</execution>
-						</executions>
-						<dependencies>
-							<dependency>
-					            <groupId>net.sf.docbook</groupId>
-					            <artifactId>docbook-xml</artifactId>
-					            <version>5.0-all</version>
-					            <classifier>resources</classifier>
-					            <type>zip</type>
-					            <scope>runtime</scope>
-							</dependency>
-						</dependencies>
-						<configuration>
-							<sourceDirectory>documentation</sourceDirectory>
-							<targetDirectory>target/documentation</targetDirectory>
-							<xincludeSupported>true</xincludeSupported>
-							<useExtensions>1</useExtensions>
-							<highlightSource>1</highlightSource>
-							<highlightDefaultLanguage>java</highlightDefaultLanguage>
-							<calloutsExtension>1</calloutsExtension>
-							<paperType>A4</paperType>
-							<fop1Extensions>1</fop1Extensions>
-							<includes>index.xml</includes>
-						</configuration>
-					</plugin>
-				</plugins>			
-			</build>
 		</profile>
 		
 	</profiles>
