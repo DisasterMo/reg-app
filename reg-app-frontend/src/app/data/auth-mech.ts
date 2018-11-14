@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 
-export class AuthMech {
+export interface AuthMech {
     id: number;
     name: string;
     displayName: string;

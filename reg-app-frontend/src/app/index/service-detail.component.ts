@@ -5,8 +5,7 @@ import { Location } from '@angular/common';
 import { IndexService } from './index.service';
 import { Service } from '../data/service';
 import { Observable } from 'rxjs/Observable';
-
-import 'rxjs/add/operator/switchMap';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-index-service-detail',

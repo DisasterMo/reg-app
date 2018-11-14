@@ -3,10 +3,7 @@ import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { Registry } from '../data/registry';
 import { Service } from '../data/service';
 import { Observable } from 'rxjs/Observable';
-
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/catch';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class IndexService {

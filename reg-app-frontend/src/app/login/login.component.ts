@@ -3,8 +3,7 @@ import { FormControl } from '@angular/forms';
 import { LoginService } from '../login/login.service';
 import { AuthMech, SamlAuthFederation, SamlAuthIdp } from '../data/auth-mech';
 
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/map';
+import { startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login-login',

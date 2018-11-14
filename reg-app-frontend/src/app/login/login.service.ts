@@ -1,13 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { User } from '../data/user';
 import { AuthInfo } from '../data/auth-info';
 import { AuthMech, SamlAuthFederation, SamlAuthIdp } from '../data/auth-mech';
 import { Observable } from 'rxjs/Observable';
-
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/catch';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map, tap } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export class LoginService {
@@ -20,19 +17,19 @@ export class LoginService {
 
     private headers = new Headers({'Content-Type': 'application/json'});
 
-    constructor(private http: Http) { }
+    constructor(private http: HttpClient) { }
 
     getAuthInfo(): Promise<AuthInfo> {
-        return this.http.get(this.authUrl)
-            .map((res: Response) => res.json())
-            .toPromise()
-            .catch(error => this.handleError(error));
+        return this.http.get(this.authUrl).pipe(
+                map((res: Response) => res.json()),
+                catchError(error => this.handleError(error))
+            ).toPromise();
     }
 
     getAuthMechList(): Observable<AuthMech[]> {
-        return this.http.get(this.authMechUrl)
-            .map((res: Response) => res.json())
-            .catch(error => this.handleError(error));
+        return this.http.get<AuthMech[]>(this.authMechUrl).pipe(
+                catchError(error => this.handleError(error))
+            );
     }
 
     getFederation(id: number): Observable<SamlAuthFederation> {
