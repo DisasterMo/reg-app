@@ -20,8 +20,7 @@ export class LoginService {
     constructor(private http: HttpClient) { }
 
     getAuthInfo(): Promise<AuthInfo> {
-        return this.http.get(this.authUrl).pipe(
-                map((res: Response) => res.json()),
+        return this.http.get<AuthInfo>(this.authUrl).pipe(
                 catchError(error => this.handleError(error))
             ).toPromise();
     }

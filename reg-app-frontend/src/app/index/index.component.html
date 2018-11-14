@@ -2,33 +2,33 @@
     <form name="indexForm">
         <h2>Registrierte Dienste</h2>
         <div class="registry-card-panel">
-            <md-card *ngFor="let registry of registries" class="registry-card">
-                <md-card-header>
+            <mat-card *ngFor="let registry of registries" class="registry-card">
+                <mat-card-header>
                     {{registry.serviceName}} ({{registry.id}})
-                </md-card-header>
-                <md-card-content>
+                </mat-card-header>
+                <mat-card-content>
                     <div>Created At: {{registry.createdAt | date}}</div>
                     <div>Status: {{registry.registryStatus}}</div>
                     <div>{{registry.serviceShortDescription}}</div>
-                </md-card-content>
-                <md-card-footer>
+                </mat-card-content>
+                <mat-card-footer>
                     <div><a routerLink="/service/{{registry.serviceId}}">{{ "SERVICE_DESCRIPTION" | translate }}</a></div>
-                </md-card-footer>
-            </md-card>
+                </mat-card-footer>
+            </mat-card>
         </div>
         <h2>Buchbare Dienste</h2>
         <div class="registry-card-panel">
-            <md-card *ngFor="let service of availableServices" class="registry-card">
-                <md-card-header>
+            <mat-card *ngFor="let service of availableServices" class="registry-card">
+                <mat-card-header>
                     {{service.name}} ({{service.id}})
-                </md-card-header>
-                <md-card-content>
+                </mat-card-header>
+                <mat-card-content>
                     <div>{{service.shortDescription}}</div>
-                </md-card-content>
-                <md-card-footer>
+                </mat-card-content>
+                <mat-card-footer>
                     <div><a routerLink="/register/{{service.id}}">{{ "REGISTER" | translate }}</a></div>
-                </md-card-footer>
-            </md-card>
+                </mat-card-footer>
+            </mat-card>
         </div>
     </form>
 </div>

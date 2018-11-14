@@ -1,22 +1,22 @@
 <div>
     <form name="loginForm">
-        <md-form-field>
-            <md-card *ngFor="let authMech of authMechs">
-                <md-card-header>
+        <mat-form-field>
+            <mat-card *ngFor="let authMech of authMechs">
+                <mat-card-header>
                     {{authMech.displayName}} ({{authMech.name}})
-                </md-card-header>
-                <md-card-content>
+                </mat-card-header>
+                <mat-card-content>
                     <div *ngIf="authMech.type == 'SamlAuthMech'">
                         Hello Test! {{authMech.federationId}} {{authMech.federation?.entityId}}
-                        <md-form-field>
-                            <input type="text" mdInput [formControl]="myControl" [mdAutocomplete]="auto">
-                        </md-form-field>
-                        <md-autocomplete #auto="mdAutocomplete">
-                            <md-option *ngFor="let idp of authMech.federation?.filteredIdpList | async" [value]="idp.displayName" (onSelectionChange)="select(idp, authMech)">
+                        <mat-form-field>
+                            <input type="text" mdInput [formControl]="myControl" [matAutocomplete]="auto">
+                        </mat-form-field>
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let idp of authMech.federation?.filteredIdpList | async" [value]="idp.displayName" (onSelectionChange)="select(idp, authMech)">
                                 {{ idp.displayName }}
-                            </md-option>
-                        </md-autocomplete>
-                        <button md-button type="submit" id="submit-{{authMech.id}}" class="btn btn-success" (click)="login(authMech)">Shibboleth Login</button>
+                            </mat-option>
+                        </mat-autocomplete>
+                        <button mat-button type="submit" id="submit-{{authMech.id}}" class="btn btn-success" (click)="login(authMech)">Shibboleth Login</button>
                     </div>
                     <div *ngIf="authMech.type == 'LocalUPAuthMech'">
                         <div *ngIf="authMech.error">
@@ -33,10 +33,10 @@
                             <input type="password" class="form-control" id="password-{{authMech.id}}" name="password-{{authMech.id}}" [(ngModel)]="authMech.password">
                         </div>
 
-                        <button md-button type="submit" id="submit-{{authMech.id}}" class="btn btn-success" (click)="login(authMech)">Submit</button>
+                        <button mat-button type="submit" id="submit-{{authMech.id}}" class="btn btn-success" (click)="login(authMech)">Submit</button>
                     </div>
-                </md-card-content>
-            </md-card>
-        </md-form-field>
+                </mat-card-content>
+            </mat-card>
+        </mat-form-field>
     </form>
 </div>
