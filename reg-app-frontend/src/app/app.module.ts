@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MdButtonModule, MdCheckboxModule, MdCardModule, MdAutocompleteModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule, MatCardModule, MatAutocompleteModule } from '@angular/material';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -55,7 +55,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       appRoutes,
       // { enableTracing: true } <-- debugging purposes only
     ),
-    NoopAnimationsModule, MdButtonModule, MdCheckboxModule, MdCardModule, MdAutocompleteModule
+    NoopAnimationsModule, MatButtonModule, MatCheckboxModule, MatCardModule, MatAutocompleteModule
   ],
   providers: [LoginService, IndexService, CanActivateAuthGuard],
   bootstrap: [AppComponent]

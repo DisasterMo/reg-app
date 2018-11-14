@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { LoginService } from '../login/login.service';
 import { AuthMech, SamlAuthFederation, SamlAuthIdp } from '../data/auth-mech';
 
-import { startWith } from 'rxjs/operators';
+import { startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login-login',
@@ -38,9 +38,9 @@ export class LoginComponent implements OnInit {
       authMech.federation = federation;
       console.log('Federations array at pos {} returnes: {}', federation.id, authMech.federation.entityId);
 
-      authMech.federation.filteredIdpList = this.myControl.valueChanges
-        .startWith(null)
-        .map(val => this.filter(authMech.federation, val));
+      authMech.federation.filteredIdpList = this.myControl.valueChanges.pipe(
+        map(val => this.filter(authMech.federation, val))
+      );
     });
   }
 

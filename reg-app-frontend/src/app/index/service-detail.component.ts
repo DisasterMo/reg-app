@@ -4,7 +4,7 @@ import { Location } from '@angular/common';
 
 import { IndexService } from './index.service';
 import { Service } from '../data/service';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-index-service-detail',
@@ -23,8 +23,10 @@ export class ServiceDetailComponent implements OnInit {
   service: Service;
 
   ngOnInit(): void {
-    this.service = this.route.paramMap.pipe<Service>(
-      switchMap((params: ParamMap) => this.indexService.getServiceShort(params.get('id')))
+    this.route.paramMap.pipe(
+      switchMap((params: ParamMap) => this.indexService.getServiceShort(+params.get('id')))
+    ).subscribe(
+      (service) => this.service = service
     );
   }
 
