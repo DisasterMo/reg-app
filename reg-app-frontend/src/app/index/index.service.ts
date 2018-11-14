@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions } from '@angular/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Registry } from '../data/registry';
 import { Service } from '../data/service';
-import { Observable } from 'rxjs/Observable';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class IndexService {
@@ -12,26 +12,26 @@ export class IndexService {
     private availableServiceListUrl = '/rest/service/available/list';
     private serviceShortUrl = '/rest/service/detail';
 
-    private headers = new Headers({'Content-Type': 'application/json'});
+    private headers = new HttpHeaders({'Content-Type': 'application/json'});
 
-    constructor(private http: Http) { }
+    constructor(private http: HttpClient) { }
 
     getRegsitryList(): Observable<Registry[]> {
-        return this.http.get(this.registryListUrl)
-            .map((res: Response) => res.json())
-            .catch(error => this.handleError(error));
+        return this.http.get<Registry[]>(this.registryListUrl).pipe(
+            catchError(error => this.handleError(error))
+        );
     }
 
     getAvailableServiceList(): Observable<Service[]> {
-        return this.http.get(this.availableServiceListUrl)
-            .map((res: Response) => res.json())
-            .catch(error => this.handleError(error));
+        return this.http.get<Service[]>(this.availableServiceListUrl).pipe(
+            catchError(error => this.handleError(error))
+        );
     }
 
     getServiceShort(id: number): Observable<Service> {
-        return this.http.get(`${this.serviceShortUrl}/${id}`)
-            .map((res: Response) => res.json())
-            .catch(error => this.handleError(error));
+        return this.http.get<Service>(`${this.serviceShortUrl}/${id}`).pipe(
+            catchError(error => this.handleError(error))
+        );
     }
 
     private handleError(error: any): Promise<any> {

@@ -1,10 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { IndexService } from './index.service';
 import { Service } from '../data/service';
-import { Observable } from 'rxjs/Observable';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
@@ -24,9 +23,9 @@ export class ServiceDetailComponent implements OnInit {
   service: Service;
 
   ngOnInit(): void {
-    this.route.paramMap.switchMap(
-      (params: ParamMap) => this.indexService.getServiceShort(+params.get('id')))
-      .subscribe(service => this.service = service);
+    this.service = this.route.paramMap.pipe<Service>(
+      switchMap((params: ParamMap) => this.indexService.getServiceShort(params.get('id')))
+    );
   }
 
   toIndex(): void {

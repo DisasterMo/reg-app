@@ -1,8 +1,8 @@
 import { User } from '../data/user';
 import { AuthInfo } from '../data/auth-info';
 import { AuthMech, SamlAuthFederation, SamlAuthIdp } from '../data/auth-mech';
-import { Observable } from 'rxjs/Observable';
-import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
@@ -15,7 +15,7 @@ export class LoginService {
     private federationUrl = '/rest/auth/saml/federation/list';
     private localLoginUrl = '/rest/auth/locallogin';
 
-    private headers = new Headers({'Content-Type': 'application/json'});
+    private headers = new HttpHeaders({'Content-Type': 'application/json'});
 
     constructor(private http: HttpClient) { }
 
@@ -34,15 +34,15 @@ export class LoginService {
 
     getFederation(id: number): Observable<SamlAuthFederation> {
         const url = `${this.federationUrl}/${id}`;
-        return this.http.get(url)
-            .map((res: Response) => res.json())
-            .catch(error => this.handleError(error));
+        return this.http.get<SamlAuthFederation>(url).pipe(
+                catchError(error => this.handleError(error))
+            );
     }
 
     getUser(): Observable<User> {
-        return this.http.get(this.userUrl)
-            .map((res: Response) => res.json())
-            .catch(error => this.handleError(error));
+        return this.http.get<User>(this.userUrl).pipe(
+                catchError(error => this.handleError(error))
+            );
     }
 
     postLocalLogin(authMech: AuthMech): Promise<AuthMech> {
