@@ -2,6 +2,8 @@ import { Observable } from 'rxjs';
 
 export interface AuthMech {
     id: number;
+    createdAt: Date;
+    updatedAt: Date;
     name: string;
     displayName: string;
     type: string;

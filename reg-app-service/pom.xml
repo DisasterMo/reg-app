@@ -127,12 +127,6 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
 			<groupId>jcifs</groupId>
 			<artifactId>jcifs</artifactId>
 			<scope>provided</scope>
@@ -141,18 +135,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-        <dependency>
-            <groupId>org.jboss.msc</groupId>
-            <artifactId>jboss-msc</artifactId>
-			<scope>provided</scope>
-        </dependency>
-        	
-		<dependency>
-	            <groupId>org.wildfly</groupId>
-	            <artifactId>wildfly-clustering-singleton-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 

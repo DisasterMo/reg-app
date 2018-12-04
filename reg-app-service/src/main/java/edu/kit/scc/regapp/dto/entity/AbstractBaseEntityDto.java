@@ -3,6 +3,8 @@ package edu.kit.scc.regapp.dto.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.json.bind.annotation.JsonbDateFormat;
+
 public abstract class AbstractBaseEntityDto implements BaseEntityDto<Long>, Serializable {
 
 	private static final long serialVersionUID = 1L;

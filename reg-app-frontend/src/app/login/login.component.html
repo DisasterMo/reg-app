@@ -1,15 +1,15 @@
 <div>
     <form name="loginForm">
-        <mat-form-field>
             <mat-card *ngFor="let authMech of authMechs">
                 <mat-card-header>
                     {{authMech.displayName}} ({{authMech.name}})
+                    {{authMech.createdAt | date}}
                 </mat-card-header>
                 <mat-card-content>
                     <div *ngIf="authMech.type == 'SamlAuthMech'">
                         Hello Test! {{authMech.federationId}} {{authMech.federation?.entityId}}
                         <mat-form-field>
-                            <input type="text" mdInput [formControl]="myControl" [matAutocomplete]="auto">
+                            <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
                         </mat-form-field>
                         <mat-autocomplete #auto="matAutocomplete">
                             <mat-option *ngFor="let idp of authMech.federation?.filteredIdpList | async" [value]="idp.displayName" (onSelectionChange)="select(idp, authMech)">
@@ -37,6 +37,5 @@
                     </div>
                 </mat-card-content>
             </mat-card>
-        </mat-form-field>
     </form>
 </div>
