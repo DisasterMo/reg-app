@@ -13,7 +13,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.kit.scc</groupId>
 	<artifactId>bwreg</artifactId>
-	<version>2.5.13</version>
+	<version>2.5.14</version>
 	<packaging>pom</packaging>
 	<name>bw Services Registration Webapp</name>
 
@@ -316,6 +316,43 @@
 				<bwreg.jboss-singleton-activator>edu.kit.scc.webreg.service.timer.WildflyClusterSingletonServiceActivator</bwreg.jboss-singleton-activator>
 			</properties>
 		</profile>
+
+                <profile>
+                        <id>fr</id>
+                        <properties>
+                                <bwreg.name.suffix></bwreg.name.suffix>
+                                <bwreg.faces.stage>Production</bwreg.faces.stage>
+                                <bwreg.hibernate.dialect>org.hibernate.dialect.PostgreSQLDialect</bwreg.hibernate.dialect>
+                                <bwreg.hibernate.datasource>java:/ds/bwidmDS</bwreg.hibernate.datasource>
+                                <bwreg.theme>aristo</bwreg.theme>
+                                <bwreg.css>unifr.css</bwreg.css>
+                                <bwreg.template>layout-template.xhtml</bwreg.template>
+                                <bwreg.template.head-bar>head-bar-ufr.xhtml</bwreg.template.head-bar>
+                                <bwreg.template.left-side-bar>left-side-bar-ufr.xhtml</bwreg.template.left-side-bar>
+                                <bwreg.template.left-side-bar-admin>left-side-bar-admin-ufr.xhtml</bwreg.template.left-side-bar-admin>
+                                <bwreg.template.footer>footer-ufr.xhtml</bwreg.template.footer>
+                                <bwreg.jboss-singleton>org.wildfly.clustering.singleton</bwreg.jboss-singleton>
+                                <bwreg.jboss-singleton-activator>edu.kit.scc.webreg.service.timer.WildflyClusterSingletonServiceActivator</bwreg.jboss-singleton-activator>
+                        </properties>
+                </profile>
+                <profile>
+                        <id>fr-test</id>
+                        <properties>
+                                <bwreg.name.suffix></bwreg.name.suffix>
+                                <bwreg.faces.stage>Production</bwreg.faces.stage>
+                                <bwreg.hibernate.dialect>org.hibernate.dialect.PostgreSQLDialect</bwreg.hibernate.dialect>
+                                <bwreg.hibernate.datasource>java:/ds/bwidmDS</bwreg.hibernate.datasource>
+                                <bwreg.theme>aristo</bwreg.theme>
+                                <bwreg.css>unifr.css</bwreg.css>
+                                <bwreg.template>layout-template.xhtml</bwreg.template>
+                                <bwreg.template.head-bar>head-bar-ufr-test.xhtml</bwreg.template.head-bar>
+                                <bwreg.template.left-side-bar>left-side-bar-ufr.xhtml</bwreg.template.left-side-bar>
+                                <bwreg.template.left-side-bar-admin>left-side-bar-admin-ufr.xhtml</bwreg.template.left-side-bar-admin>
+                                <bwreg.template.footer>footer-ufr.xhtml</bwreg.template.footer>
+                                <bwreg.jboss-singleton>org.wildfly.clustering.singleton</bwreg.jboss-singleton>
+                                <bwreg.jboss-singleton-activator>edu.kit.scc.webreg.service.timer.WildflyClusterSingletonServiceActivator</bwreg.jboss-singleton-activator>
+                        </properties>
+                </profile>
 
 		<profile>
 			<id>doc</id>
