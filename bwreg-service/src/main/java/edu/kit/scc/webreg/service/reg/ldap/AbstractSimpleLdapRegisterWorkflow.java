@@ -183,7 +183,18 @@ public abstract class AbstractSimpleLdapRegisterWorkflow
 		String givenName = regMap.get("givenName");
 		String mail = regMap.get("mail");
 		String localUid = regMap.get("localUid");
-		String uidNumber = regMap.get("uidNumber");
+                
+                // SS: Sonderfall durch LSDF1 Migration (HD). Es kann u.U. eine alte uidnumber vorhanden sein, die nur für den Samba 4 Fall (SDS@HD) verwendet werden muss.
+                //! andere Dienste sollten aber weiterhin die reguläre bwIdm uidnumber verwenden
+                String uidNumber = regMap.get("uidNumber");
+                if (isSambaEnabled()) {
+                    if (user.getUidNumberLSDF1() != null && user.getUidNumberLSDF1() > 0) {
+                        uidNumber = String.valueOf(user.getUidNumberLSDF1());
+                        logger.info("LDAP Reconsiliation - old LSDF1 BioQuant ID detected. Using BQ ID {} instead of bwIdm ID {}", user.getUidNumberLSDF1(), regMap.get("uidNumber"));
+                    } else {
+                        logger.info("LDAP Reconsiliation - no old LSDF1 BioQuant ID found! ({})",user.getUidNumberLSDF1());
+                    }
+                }
 		String gidNumber = regMap.get("gidNumber");
 		String homeDir = regMap.get("homeDir");
 		String description = registry.getId().toString();

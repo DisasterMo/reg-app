@@ -65,14 +65,19 @@ public abstract class AbstractLdapRegisterWorkflow
 
 		String ntPassword = null;
 		
-		if (isSambaEnabled())
-			ntPassword = calcNtPassword(password);
+		if (isSambaEnabled()) {
+                    // SS: Password wird direkt als NT Hash an pdbedit übergeben
+                    ntPassword = calcNtPassword(password);
+                }
+                
+		LdapWorker ldapWorker = new LdapWorker(prop, auditor, isSambaEnabled());		                
 
-		LdapWorker ldapWorker = new LdapWorker(prop, auditor, isSambaEnabled());
-		ldapWorker.setPassword(localUid, password);
-
-		if (isSambaEnabled())
+                // SS: Password muss/soll für Samba4 gar nicht im LDAP auftauchen
+		if (isSambaEnabled()) {
 			ldapWorker.setSambaPassword(localUid, ntPassword, user);
+                } else {
+                    ldapWorker.setPassword(localUid, password);
+                }
 		
 		ldapWorker.closeConnections();		
 	}
