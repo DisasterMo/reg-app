@@ -23,13 +23,12 @@ import edu.kit.scc.webreg.entity.ServiceEntity;
 import edu.kit.scc.webreg.entity.UserEntity;
 import edu.kit.scc.webreg.exc.RegisterException;
 import edu.kit.scc.webreg.service.reg.SetPasswordCapable;
-import edu.kit.scc.webreg.service.reg.ldap.AbstractSimpleGroupLdapRegisterWorkflow;
 import edu.kit.scc.webreg.service.reg.ldap.PropertyReader;
 import jcifs.util.Hexdump;
 import jcifs.util.MD4;
 
 public abstract class AbstractSamba4RegisterWorkflow 
-		extends AbstractSimpleGroupLdapRegisterWorkflow
+		extends AbstractSimpleGroupSamba4RegisterWorkflow
 		implements SetPasswordCapable {
 
 	protected static Logger logger = LoggerFactory.getLogger(AbstractSamba4RegisterWorkflow.class);
