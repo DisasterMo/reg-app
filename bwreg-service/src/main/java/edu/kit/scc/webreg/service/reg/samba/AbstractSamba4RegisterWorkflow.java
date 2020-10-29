@@ -24,7 +24,6 @@ import edu.kit.scc.webreg.entity.UserEntity;
 import edu.kit.scc.webreg.exc.RegisterException;
 import edu.kit.scc.webreg.service.reg.SetPasswordCapable;
 import edu.kit.scc.webreg.service.reg.ldap.AbstractSimpleGroupLdapRegisterWorkflow;
-import edu.kit.scc.webreg.service.reg.ldap.LdapWorker;
 import edu.kit.scc.webreg.service.reg.ldap.PropertyReader;
 import jcifs.util.Hexdump;
 import jcifs.util.MD4;
@@ -72,7 +71,7 @@ public abstract class AbstractSamba4RegisterWorkflow
                     ntPassword = calcNtPassword(password);
                 }
                 
-		LdapWorker ldapWorker = new LdapWorker(prop, auditor, isSambaEnabled());		                
+		Samba4Worker ldapWorker = new Samba4Worker(prop, auditor);		                
 
                 // SS: Password muss/soll für Samba4 gar nicht im LDAP auftauchen
 		if (isSambaEnabled()) {
@@ -90,7 +89,7 @@ public abstract class AbstractSamba4RegisterWorkflow
 		PropertyReader prop = PropertyReader.newRegisterPropReader(service);
 		Map<String, String> regMap = registry.getRegistryValues();
 		String localUid = regMap.get("localUid");
-		LdapWorker ldapWorker = new LdapWorker(prop, auditor, isSambaEnabled());
+		Samba4Worker ldapWorker = new Samba4Worker(prop, auditor);
 		ldapWorker.deletePassword(localUid);
 		ldapWorker.closeConnections();		
 	}	
