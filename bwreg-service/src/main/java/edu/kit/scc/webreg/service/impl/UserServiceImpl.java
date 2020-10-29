@@ -55,6 +55,17 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
 	private RegistryDao registryDao;
 	
 	@Override
+	public void migrateLSDFUidNumber() {
+		List<UserEntity> userList = dao.findByLsdfUidNumber();
+		for (UserEntity user : userList) {
+			if (! user.getGenericStore().containsKey("uid_number_lsdf1")) {
+				logger.info("Migrate LSDF UidNumber {} for user {}", user.getUidNumberLSDF1(), user.getEppn());
+				user.getGenericStore().put("uid_number_lsdf1", "" + user.getUidNumberLSDF1());
+			}
+		}
+	}
+	
+	@Override
 	public List<UserEntity> findOrderByUpdatedWithLimit(Date date, Integer limit) {
 		return dao.findOrderByUpdatedWithLimit(date, limit);
 	}

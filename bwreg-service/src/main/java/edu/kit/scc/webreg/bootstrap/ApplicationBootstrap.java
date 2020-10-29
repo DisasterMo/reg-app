@@ -131,6 +131,9 @@ public class ApplicationBootstrap {
     		serviceService.updateCapabilities(service);
     	}
     	
+    	logger.info("Starting LSDF UidNumber Migration");
+    	userService.migrateLSDFUidNumber();
+    	
 		logger.info("Initializing Hooks");
     	hookManager.reloadHooks();
 		

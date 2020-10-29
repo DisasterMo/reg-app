@@ -53,4 +53,5 @@ public interface UserService extends BaseService<UserEntity, Long> {
 	SamlUserEntity updateUserFromAssertion(SamlUserEntity user, Assertion assertion, String executor)
 			throws UserUpdateException;
 
+	void migrateLSDFUidNumber();
 }

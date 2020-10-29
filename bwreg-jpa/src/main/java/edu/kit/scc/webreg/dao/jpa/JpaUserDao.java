@@ -40,6 +40,13 @@ public class JpaUserDao extends JpaBaseDao<UserEntity, Long> implements UserDao,
 				.setParameter("primaryGroup", group).getResultList();
 	}
 
+	@Override
+    @SuppressWarnings({"unchecked"})
+	public List<UserEntity> findByLsdfUidNumber() {
+		return em.createQuery("select e from UserEntity e where e.uidNumberLsdf1 is not null")
+				.getResultList();
+	}
+
     @Override
     @SuppressWarnings({"unchecked"})
 	public List<UserEntity> findOrderByUpdatedWithLimit(Date date, Integer limit) {
