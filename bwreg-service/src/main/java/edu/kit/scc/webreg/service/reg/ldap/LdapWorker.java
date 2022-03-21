@@ -48,6 +48,8 @@ public class LdapWorker {
 	
 	private String ldapUserBase;
 	private String ldapGroupBase;
+    private String ldapUserObjectclasses;
+    private String ldapGroupObjectclasses;
 	
 	private String ldapGroupType;
 	
@@ -66,12 +68,16 @@ public class LdapWorker {
 			connectionManager = new LdapConnectionManager(prop);
 			ldapUserBase = prop.readProp("ldap_user_base");
 			ldapGroupBase = prop.readProp("ldap_group_base");
+                        
+			ldapUserObjectclasses = prop.readPropOrNull("ldap_user_objectclass");
+			ldapGroupObjectclasses = prop.readPropOrNull("ldap_group_objectclass");
+
+			ldapGroupType = prop.readPropOrNull("group_type");
 
 			if (sambaEnabled)
 				sidPrefix = prop.readProp("sid_prefix");
 			
-			ldapGroupType = prop.readPropOrNull("group_type");
-			
+
 		} catch (PropertyReaderException e) {
 			throw new RegisterException(e);
 		}		
@@ -203,7 +209,7 @@ public class LdapWorker {
 			if (dnList.size() == 0) {
 				logger.debug("Account does not exist. Creating...");
 				try {
-					createUserIntern(ldap, cn, givenName, sn, mail, uid, uidNumber, gidNumber, homeDir, description);
+					createUserIntern(ldap, cn, givenName, sn, mail, uid, uidNumber, gidNumber, homeDir, description, extraAttributesMap);
 					logger.info("User {},{} with ldap {} successfully created", 
 							new Object[] {uid, gidNumber, ldapUserBase});
 					auditor.logAction("", "RECON CREATE LDAP USER", uid, "User created in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
@@ -571,19 +577,23 @@ public class LdapWorker {
 	}
 	
 	private void createUserIntern(Ldap ldap, String cn, String givenName, String sn, String mail, String uid, String uidNumber, String gidNumber,
-			String homeDir, String description) throws NamingException {
+			String homeDir, String description, Map<String, String> extraAttributesMap) throws NamingException {
 		Attributes attrs;
+                
+		if (ldapUserObjectclasses == null || ldapUserObjectclasses.trim().isEmpty())
+			ldapUserObjectclasses = "top person organizationalPerson inetOrgPerson posixAccount";
 		
 		if (sambaEnabled) {
-			attrs = AttributesFactory.createAttributes("objectClass", new String[] {
-					"top", "person", "organizationalPerson", 
-	        		"inetOrgPerson", "posixAccount", "sambaSamAccount"});
-			attrs.put(AttributesFactory.createAttribute("sambaSID", sidPrefix + (Long.parseLong(uidNumber) * 2L + 1000L)));					
+			if (!ldapUserObjectclasses.matches("(?:\\s|.)*?\\bsambaSamAccount\\b(?:\\s|.)*"))
+				ldapUserObjectclasses += " sambaSamAccount";
+                        
+			attrs = AttributesFactory.createAttributes("objectClass",
+                                ldapUserObjectclasses.split("\\s+"));
+			attrs.put(AttributesFactory.createAttribute("sambaSID", sidPrefix + (Long.parseLong(uidNumber) * 2L + 1000L)));
 		}
 		else {
-			attrs = AttributesFactory.createAttributes("objectClass", new String[] {
-				"top", "person", "organizationalPerson", 
-        		"inetOrgPerson", "posixAccount"});
+			attrs = AttributesFactory.createAttributes("objectClass",
+                                ldapUserObjectclasses.split("\\s+"));
 		}
 		
 		attrs.put(AttributesFactory.createAttribute("cn", cn));
@@ -596,6 +606,14 @@ public class LdapWorker {
 		attrs.put(AttributesFactory.createAttribute("homeDirectory", homeDir));
 		attrs.put(AttributesFactory.createAttribute("description", description));
 
+		if (extraAttributesMap != null) {
+			for (Entry<String, String> extraAttribute : extraAttributesMap.entrySet()) {
+				if (extraAttribute.getKey().startsWith("extra_") && extraAttribute.getKey().length() > 6) {
+					attrs.put(AttributesFactory.createAttribute(extraAttribute.getKey().substring(6), extraAttribute.getValue()));
+				}
+			}
+		}
+		
 		ldap.create("uid=" + uid + "," + ldapUserBase, attrs);
 	}
 	
@@ -603,21 +621,31 @@ public class LdapWorker {
 			throws NamingException {
 
 		Attributes attrs;
+                
+		if (ldapGroupObjectclasses == null || ldapGroupObjectclasses.trim().isEmpty())
+			ldapGroupObjectclasses = "top posixGroup";
 		
+		if (sambaEnabled && (! ldapGroupObjectclasses.matches("(?:\\s|.)*?\\bsambaGroupMapping\\b(?:\\s|.)*"))) {
+			ldapGroupObjectclasses += " sambaGroupMapping";
+		}
+
+		/*
+		 * In order to this for work, the ldap schema must be modified. The standard OpenLDAP core schema will fail,
+		 * because of groupOfNames MUST member. This prevents the creation of empty groups. member must be in the MAY section.
+		 * 
+		 * Second is posixGroup being STRUCTURAL. This conflicts with groupOfNames also being STRUCTURAL. 
+		 * It should be AUXILIARY like posixAccount. If you want this to work, you must change posixGroup to AUXILIARY
+		 */
+		if (ldapGroupType != null && ldapGroupType.equals("member")) {
+			ldapGroupObjectclasses += " groupOfNames";
+		}
+
+		attrs = AttributesFactory.createAttributes("objectClass",
+                ldapGroupObjectclasses.split("\\s+"));
+
 		if (sambaEnabled) {
-			attrs = AttributesFactory.createAttributes("objectClass", new String[] {
-					"top", "posixGroup", "sambaGroupMapping"});
 			attrs.put(AttributesFactory.createAttribute("sambaSID", sidPrefix + (Long.parseLong(gidNumber) * 2L + 1000L)));					
 			attrs.put(AttributesFactory.createAttribute("sambaGroupType", "2"));
-		}
-		if (ldapGroupType != null && ldapGroupType.equals("member")) {
-			attrs = AttributesFactory.createAttributes("objectClass", new String[] {
-					"top", "groupOfNames", "posixGroup"});
-			attrs.put(AttributesFactory.createAttribute("member", "cn=" + cn + "," + ldapGroupBase));
-		}
-		else {
-			attrs = AttributesFactory.createAttributes("objectClass", new String[] {
-					"top", "posixGroup"});
 		}
 
 		attrs.put(AttributesFactory.createAttribute("cn", cn));
