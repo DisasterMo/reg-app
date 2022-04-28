@@ -49,8 +49,8 @@ public class LdapWorker {
 	
 	private String ldapUserBase;
 	private String ldapGroupBase;
-    private String ldapUserObjectclasses;
-    private String ldapGroupObjectclasses;
+        private String ldapUserObjectclasses;
+        private String ldapGroupObjectclasses;
 	
 	private String ldapGroupType;
 	private String ldapGroupMemberBase;
@@ -84,6 +84,54 @@ public class LdapWorker {
 		} catch (PropertyReaderException e) {
 			throw new RegisterException(e);
 		}		
+	}
+
+        /**
+         * For a given ldap this will set an attribute attrName associated with
+         * the supplied dn to attrValue, creating the attribute as necessary.
+         *
+         * @param  ldap  <code>Ldap</code> LDAP connection to work on
+         * @param  dn  <code>String</code> named object in the LDAP
+         * @param  attrName  <code>String</code> name of the attribute to set
+         * @param  attrValue  <code>Object</code> value to set the attribute to
+         * 
+         * @throws javax.naming.NamingException
+         */
+        private void setAttribute(Ldap ldap, String dn, String attrName, Object attrValue) throws NamingException {
+                Attributes attrs = ldap.getAttributes(dn);
+                if (attrs.get(attrName) == null) {
+                        ldap.modifyAttributes(dn, AttributeModification.ADD,
+                                AttributesFactory.createAttributes(attrName, attrValue));
+                }
+                else {
+                        ldap.modifyAttributes(dn, AttributeModification.REPLACE,
+                                AttributesFactory.createAttributes(attrName, attrValue));
+                }
+        }
+
+        /**
+         * This will set the "x-accountStatus" LDAP attribute of the user
+         * associated with the given uid to "deleted", marking the user 
+         * as inactive, without actually deleting them.
+         *
+         * @param  uid  <code>String</code> ID of the target user
+         */
+        public void deactivateUser(String uid) {
+                String ldapDn = "uid=" + uid + "," + ldapUserBase;
+                for (Ldap ldap : connectionManager.getConnections()) {
+                        try {
+                                setAttribute(ldap, ldapDn, "x-accountStatus", "deleted");
+                                logger.info("Marked User {} as deleted from ldap {}",
+                                            new Object[] {uid, ldapUserBase});
+                                auditor.logAction("", "DEACTIVATE LDAP USER", uid, "User marked as deleted in "
+                                        + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
+                        } catch (NamingException e) {
+                                logger.warn("FAILED: Mark User {} as deleted from ldap {}: {}",
+                                        new Object[] {uid, ldapUserBase, e.getMessage()});
+                                auditor.logAction("", "DEACTIVATE LDAP USER", uid, "User deactivation failed in "
+                                        + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
+                        }
+                }
 	}
 
 	public void deleteUser(String uid) {
@@ -452,16 +500,7 @@ public class LdapWorker {
 		for (Ldap ldap : connectionManager.getConnections()) {
 			try {
 				String ldapDn = "uid=" + uid + "," + ldapUserBase;
-				Attributes attrs = ldap.getAttributes(ldapDn);
-				Attribute attr = attrs.get("userPassword");
-				if (attr == null) {
-					ldap.modifyAttributes(ldapDn, AttributeModification.ADD, 
-							AttributesFactory.createAttributes("userPassword", password));
-				}
-				else {
-					ldap.modifyAttributes(ldapDn, AttributeModification.REPLACE, 
-							AttributesFactory.createAttributes("userPassword", password));
-				}
+                                setAttribute(ldap, ldapDn, "userPassword", password);
 				logger.info("Setting password for User {} in ldap {}", 
 						new Object[] {uid, ldapUserBase});
 				auditor.logAction("", "SET PASSWORD LDAP USER", uid, "Set User password in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
@@ -656,7 +695,7 @@ public class LdapWorker {
 			String homeDir, String description, Map<String, String> extraAttributesMap) throws NamingException {
 		Attributes attrs;
                 
-		if (ldapUserObjectclasses == null || ldapUserObjectclasses.trim().isEmpty())
+		if (ldapUserObjectclasses == null || ldapUserObjectclasses.isBlank())
 			ldapUserObjectclasses = "top person organizationalPerson inetOrgPerson posixAccount";
 		
 		if (sambaEnabled) {
@@ -699,7 +738,7 @@ public class LdapWorker {
 		Attributes attrs;
 
 		if (! groupOfNames) {
-			if (ldapGroupObjectclasses == null || ldapGroupObjectclasses.trim().isEmpty())
+			if (ldapGroupObjectclasses == null || ldapGroupObjectclasses.isBlank())
 				ldapGroupObjectclasses = "top posixGroup";
 			
 			if (sambaEnabled && (! ldapGroupObjectclasses.matches("(?:\\s|.)*?\\bsambaGroupMapping\\b(?:\\s|.)*"))) {
