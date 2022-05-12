@@ -64,7 +64,7 @@ public abstract class AbstractSimpleLdapRegisterWorkflow
 		String localUid = regMap.get("localUid");
 
 		LdapWorker ldapWorker = new LdapWorker(prop, auditor, isSambaEnabled());
-		ldapWorker.deleteUser(localUid);
+		ldapWorker.deactivateUser(localUid);
 		ldapWorker.closeConnections();
 	}
 	

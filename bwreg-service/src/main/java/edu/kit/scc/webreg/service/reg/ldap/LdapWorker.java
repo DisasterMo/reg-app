@@ -94,7 +94,7 @@ public class LdapWorker {
          * @param  dn  <code>String</code> named object in the LDAP
          * @param  attrName  <code>String</code> name of the attribute to set
          * @param  attrValue  <code>Object</code> value to set the attribute to
-         * 
+         *
          * @throws javax.naming.NamingException
          */
         private void setAttribute(Ldap ldap, String dn, String attrName, Object attrValue) throws NamingException {
@@ -111,7 +111,7 @@ public class LdapWorker {
 
         /**
          * This will set the "x-accountStatus" LDAP attribute of the user
-         * associated with the given uid to "deleted", marking the user 
+         * associated with the given uid to "deleted", marking the user
          * as inactive, without actually deleting them.
          *
          * @param  uid  <code>String</code> ID of the target user
@@ -375,6 +375,7 @@ public class LdapWorker {
 					compareAttr(attrs, "gidNumber", gidNumber, modList, log);
 					compareAttr(attrs, "homeDirectory", homeDir, modList, log);
 					compareAttr(attrs, "description", description, modList, log);
+                                        compareAttr(attrs, "x-accountStatus", "active", modList, log);
 					
 					if (sambaEnabled) {
 						addAttrIfNotExists(attrs, "objectClass", "sambaSamAccount", modList);

@@ -44,12 +44,12 @@ public class ImportUser implements Serializable {
 	public void generatePersistentId(String salt) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 		if (uid == null)
 			throw new IllegalStateException("uid must not be null");
-                
+
                 if (salt == null || salt.isBlank()) {
-                        persistentId = spEntityId + "!" + uid;
+                        persistentId = uid;
                         return;
                 }
-		
+
 		String text = spEntityId + "!" + uid + "!" + salt;
 		MessageDigest md = MessageDigest.getInstance("SHA-1");
 		byte[] bytes = text.getBytes(("UTF-8"));
