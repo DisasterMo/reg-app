@@ -120,13 +120,13 @@ public class LdapWorker {
                 String ldapDn = "uid=" + uid + "," + ldapUserBase;
                 for (Ldap ldap : connectionManager.getConnections()) {
                         try {
-                                setAttribute(ldap, ldapDn, "x-accountStatus", "deleted");
-                                logger.info("Marked User {} as deleted from ldap {}",
+                                setAttribute(ldap, ldapDn, "x-accountStatus", "deactivated");
+                                logger.info("Deactivated User {} in ldap {}",
                                             new Object[] {uid, ldapUserBase});
-                                auditor.logAction("", "DEACTIVATE LDAP USER", uid, "User marked as deleted in "
+                                auditor.logAction("", "DEACTIVATE LDAP USER", uid, "User deactivated in "
                                         + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
                         } catch (NamingException e) {
-                                logger.warn("FAILED: Mark User {} as deleted from ldap {}: {}",
+                                logger.warn("FAILED: Deactivate User {} in ldap {}: {}",
                                         new Object[] {uid, ldapUserBase, e.getMessage()});
                                 auditor.logAction("", "DEACTIVATE LDAP USER", uid, "User deactivation failed in "
                                         + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
@@ -721,6 +721,7 @@ public class LdapWorker {
 		attrs.put(AttributesFactory.createAttribute("gidNumber", gidNumber));
 		attrs.put(AttributesFactory.createAttribute("homeDirectory", homeDir));
 		attrs.put(AttributesFactory.createAttribute("description", description));
+                attrs.put(AttributesFactory.createAttribute("x-accountStatus", "active"));
 
 		if (extraAttributesMap != null) {
 			for (Entry<String, String> extraAttribute : extraAttributesMap.entrySet()) {
