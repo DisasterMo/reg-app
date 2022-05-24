@@ -71,7 +71,7 @@ public class ScriptedLdapRegisterWorkflow
 		String localUid = regMap.get("localUid");
 
 		LdapWorker ldapWorker = new LdapWorker(prop, auditor, Boolean.parseBoolean(regMap.get("sambaEnabled")));
-		ldapWorker.deactivateUser(localUid);
+		ldapWorker.deactivateAccount(localUid);
 		ldapWorker.closeConnections();
 	}
 	

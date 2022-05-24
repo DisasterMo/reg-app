@@ -87,6 +87,22 @@ public class LdapWorker {
 	}
 
         /**
+         * For a given ldap this will remove an attribute attrName associated with
+         * the supplied dn, if present; if not, NamingException is thrown.
+         *
+         * @param  ldap  <code>Ldap</code> LDAP connection to work on
+         * @param  dn  <code>String</code> named object in the LDAP
+         * @param  attrName  <code>String</code> name of the attribute to remove
+         *
+         * @throws javax.naming.NamingException
+         */
+        private void removeAttribute(Ldap ldap, String dn, String attrName) throws NamingException {
+                Attributes attrs = ldap.getAttributes(dn);
+                ldap.modifyAttributes(dn, AttributeModification.REMOVE, 
+                        AttributesFactory.createAttributes(attrName));
+        }
+        
+        /**
          * For a given ldap this will set an attribute attrName associated with
          * the supplied dn to attrValue, creating the attribute as necessary.
          *
@@ -110,25 +126,25 @@ public class LdapWorker {
         }
 
         /**
-         * This will set the "x-accountStatus" LDAP attribute of the user
-         * associated with the given uid to "deleted", marking the user
-         * as inactive, without actually deleting them.
+         * This will set the "x-accountStatus" LDAP attribute of the user's account
+         * associated with the given uid to "deleted", marking the account
+         * as inactive, without actually deleting it.
          *
          * @param  uid  <code>String</code> ID of the target user
          */
-        public void deactivateUser(String uid) {
+        public void deactivateAccount(String uid) {
                 String ldapDn = "uid=" + uid + "," + ldapUserBase;
                 for (Ldap ldap : connectionManager.getConnections()) {
                         try {
-                                setAttribute(ldap, ldapDn, "x-accountStatus", "deactivated");
-                                logger.info("Deactivated User {} in ldap {}",
+                                setAttribute(ldap, ldapDn, "x-accountStatus", "deleted");
+                                logger.info("Deactivated account {} in ldap {}",
                                             new Object[] {uid, ldapUserBase});
-                                auditor.logAction("", "DEACTIVATE LDAP USER", uid, "User deactivated in "
+                                auditor.logAction("", "DEACTIVATE LDAP ACCOUNT", uid, "Account deactivated in "
                                         + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
                         } catch (NamingException e) {
-                                logger.warn("FAILED: Deactivate User {} in ldap {}: {}",
+                                logger.warn("FAILED: Deactivate account {} in ldap {}: {}",
                                         new Object[] {uid, ldapUserBase, e.getMessage()});
-                                auditor.logAction("", "DEACTIVATE LDAP USER", uid, "User deactivation failed in "
+                                auditor.logAction("", "DEACTIVATE LDAP ACCOUNT", uid, "Account deactivation failed in "
                                         + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
                         }
                 }
