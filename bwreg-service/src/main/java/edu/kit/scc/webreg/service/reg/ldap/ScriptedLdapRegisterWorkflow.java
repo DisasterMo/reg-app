@@ -10,22 +10,6 @@
  ******************************************************************************/
 package edu.kit.scc.webreg.service.reg.ldap;
 
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.kit.scc.webreg.audit.Auditor;
 import edu.kit.scc.webreg.entity.GroupEntity;
 import edu.kit.scc.webreg.entity.RegistryEntity;
@@ -43,8 +27,21 @@ import edu.kit.scc.webreg.service.reg.RegisterUserWorkflow;
 import edu.kit.scc.webreg.service.reg.ScriptingWorkflow;
 import edu.kit.scc.webreg.service.reg.SetPasswordCapable;
 import edu.kit.scc.webreg.service.reg.impl.GroupUpdateStructure;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import jcifs.util.Hexdump;
 import jcifs.util.MD4;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScriptedLdapRegisterWorkflow 
 		implements RegisterUserWorkflow, InfotainmentCapable, GroupCapable, SetPasswordCapable, ScriptingWorkflow {
@@ -71,7 +68,7 @@ public class ScriptedLdapRegisterWorkflow
 		String localUid = regMap.get("localUid");
 
 		LdapWorker ldapWorker = new LdapWorker(prop, auditor, Boolean.parseBoolean(regMap.get("sambaEnabled")));
-		ldapWorker.deactivateAccount(localUid);
+		ldapWorker.deleteUser(localUid);
 		ldapWorker.closeConnections();
 	}
 	

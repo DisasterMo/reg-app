@@ -10,27 +10,6 @@
  ******************************************************************************/
 package edu.kit.scc.webreg.service.reg.ldap;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
-import javax.naming.directory.SearchResult;
-
-import org.apache.commons.collections.IteratorUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.kit.scc.webreg.audit.Auditor;
 import edu.kit.scc.webreg.entity.UserEntity;
 import edu.kit.scc.webreg.entity.audit.AuditStatus;
@@ -42,6 +21,23 @@ import edu.vt.middleware.ldap.AttributesFactory;
 import edu.vt.middleware.ldap.Ldap;
 import edu.vt.middleware.ldap.Ldap.AttributeModification;
 import edu.vt.middleware.ldap.SearchFilter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.directory.SearchResult;
+import org.apache.commons.collections.IteratorUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LdapWorker {
 
@@ -57,6 +53,11 @@ public class LdapWorker {
 	
 	private boolean sambaEnabled;
 	private String sidPrefix;
+
+        // optional feature: marking LDAP accounts as active/deactivated without deleting them
+        private String activationAttributeName; // LDAP attribute name to use; required to use feature
+        private String activeValue; // optional custom "active" value replacement
+        private String nonActiveValue; // optional custom "deactivated" value replacement
 	
 	private LdapConnectionManager connectionManager;
 	
@@ -76,6 +77,10 @@ public class LdapWorker {
 
 			ldapGroupType = prop.readPropOrNull("group_type");
 			ldapGroupMemberBase = prop.readPropOrNull("ldap_group_member_base");
+
+                        activationAttributeName = prop.readPropOrNull("ldap_activation_name");
+                        activeValue = prop.readPropOrNull("ldap_activation_positive_value");
+                        nonActiveValue = prop.readPropOrNull("ldap_activation_negative_value");
 
 			if (sambaEnabled)
 				sidPrefix = prop.readProp("sid_prefix");
@@ -126,19 +131,21 @@ public class LdapWorker {
         }
 
         /**
-         * This will set the "x-accountStatus" LDAP attribute of the user's account
-         * associated with the given uid to "deleted", marking the account
-         * as inactive, without actually deleting it.
+         * This will set the LDAP attribute with the name specified in
+         * activationAttributeName of the user's account associated with
+         * the given uid to the value specified in nonActiveValue
+         * (or "deactivated" by default), marking the account as inactive,
+         * without actually deleting it.
          *
          * @param  uid  <code>String</code> ID of the target user
          */
-        public void deactivateAccount(String uid) {
+        private void deactivateAccount(String uid) {
                 String ldapDn = "uid=" + uid + "," + ldapUserBase;
                 for (Ldap ldap : connectionManager.getConnections()) {
                         try {
-                                setAttribute(ldap, ldapDn, "x-accountStatus", "deleted");
-                                logger.info("Deactivated account {} in ldap {}",
-                                            new Object[] {uid, ldapUserBase});
+                                setAttribute(ldap, ldapDn, activationAttributeName, nonActiveValue == null ? "deactivated" : nonActiveValue);
+                                logger.info("Deactivated account {} in ldap {} with value {}",
+                                            new Object[] {uid, ldapUserBase, nonActiveValue});
                                 auditor.logAction("", "DEACTIVATE LDAP ACCOUNT", uid, "Account deactivated in "
                                         + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
                         } catch (NamingException e) {
@@ -151,19 +158,22 @@ public class LdapWorker {
 	}
 
 	public void deleteUser(String uid) {
-
-		for (Ldap ldap : connectionManager.getConnections()) {
-			try {
-				ldap.delete("uid=" + uid + "," + ldapUserBase);
-				logger.info("Deleted User {} from ldap {}", 
-						new Object[] {uid, ldapUserBase});
-				auditor.logAction("", "DELETE LDAP USER", uid, "User deleted in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
-			} catch (NamingException e) {
-				logger.warn("FAILED: Delete User {} from ldap {}: {}", 
-						new Object[] {uid, ldapUserBase, e.getMessage()});
-				auditor.logAction("", "DELETE LDAP USER", uid, "User deletion failed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
-			}
-		}
+                if (activationAttributeName == null || activationAttributeName.isBlank()) {
+                    for (Ldap ldap : connectionManager.getConnections()) {
+                            try {
+                                    ldap.delete("uid=" + uid + "," + ldapUserBase);
+                                    logger.info("Deleted User {} from ldap {}",
+                                                    new Object[] {uid, ldapUserBase});
+                                    auditor.logAction("", "DELETE LDAP USER", uid, "User deleted in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
+                            } catch (NamingException e) {
+                                    logger.warn("FAILED: Delete User {} from ldap {}: {}",
+                                                    new Object[] {uid, ldapUserBase, e.getMessage()});
+                                    auditor.logAction("", "DELETE LDAP USER", uid, "User deletion failed in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.FAIL);
+                            }
+                    }
+                } else {
+                    deactivateAccount(uid);
+                }
 	}
 	
 	public void reconGroup(String cn, String gidNumber, Set<String> memberUids) {
@@ -391,7 +401,9 @@ public class LdapWorker {
 					compareAttr(attrs, "gidNumber", gidNumber, modList, log);
 					compareAttr(attrs, "homeDirectory", homeDir, modList, log);
 					compareAttr(attrs, "description", description, modList, log);
-                                        compareAttr(attrs, "x-accountStatus", "active", modList, log);
+                                        if (activationAttributeName != null && !activationAttributeName.isBlank()) {
+                                            compareAttr(attrs, activationAttributeName, activeValue == null ? "active" : activeValue, modList, log);
+                                        }
 					
 					if (sambaEnabled) {
 						addAttrIfNotExists(attrs, "objectClass", "sambaSamAccount", modList);
@@ -737,7 +749,9 @@ public class LdapWorker {
 		attrs.put(AttributesFactory.createAttribute("gidNumber", gidNumber));
 		attrs.put(AttributesFactory.createAttribute("homeDirectory", homeDir));
 		attrs.put(AttributesFactory.createAttribute("description", description));
-                attrs.put(AttributesFactory.createAttribute("x-accountStatus", "active"));
+                if (activationAttributeName != null && !activationAttributeName.isBlank()) {
+                    attrs.put(AttributesFactory.createAttribute(activationAttributeName, activeValue == null ? "active" : activeValue));
+                }
 
 		if (extraAttributesMap != null) {
 			for (Entry<String, String> extraAttribute : extraAttributesMap.entrySet()) {

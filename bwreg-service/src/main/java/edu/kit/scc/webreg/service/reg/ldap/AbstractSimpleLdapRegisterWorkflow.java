@@ -10,20 +10,6 @@
  ******************************************************************************/
 package edu.kit.scc.webreg.service.reg.ldap;
 
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.exception.MethodInvocationException;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.kit.scc.webreg.audit.Auditor;
 import edu.kit.scc.webreg.entity.GroupEntity;
 import edu.kit.scc.webreg.entity.RegistryEntity;
@@ -35,6 +21,18 @@ import edu.kit.scc.webreg.exc.RegisterException;
 import edu.kit.scc.webreg.service.reg.Infotainment;
 import edu.kit.scc.webreg.service.reg.InfotainmentCapable;
 import edu.kit.scc.webreg.service.reg.RegisterUserWorkflow;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.MethodInvocationException;
+import org.apache.velocity.exception.ParseErrorException;
+import org.apache.velocity.exception.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractSimpleLdapRegisterWorkflow 
 		implements RegisterUserWorkflow, InfotainmentCapable {
@@ -64,7 +62,7 @@ public abstract class AbstractSimpleLdapRegisterWorkflow
 		String localUid = regMap.get("localUid");
 
 		LdapWorker ldapWorker = new LdapWorker(prop, auditor, isSambaEnabled());
-		ldapWorker.deactivateAccount(localUid);
+		ldapWorker.deleteUser(localUid);
 		ldapWorker.closeConnections();
 	}
 	
