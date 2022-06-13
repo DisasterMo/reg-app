@@ -1,29 +1,5 @@
 package edu.kit.scc.webreg.service.impl;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.Response;
-import org.opensaml.saml.saml2.metadata.EntityDescriptor;
-import org.opensaml.soap.common.SOAPException;
-import org.opensaml.xmlsec.encryption.support.DecryptionException;
-import org.slf4j.Logger;
-import org.slf4j.MDC;
-
 import edu.kit.scc.webreg.audit.Auditor;
 import edu.kit.scc.webreg.audit.IdpCommunicationAuditor;
 import edu.kit.scc.webreg.audit.RegistryAuditor;
@@ -74,6 +50,27 @@ import edu.kit.scc.webreg.service.saml.SamlHelper;
 import edu.kit.scc.webreg.service.saml.exc.NoAssertionException;
 import edu.kit.scc.webreg.service.saml.exc.SamlAuthenticationException;
 import edu.kit.scc.webreg.service.saml.exc.SamlUnknownPrincipalException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.opensaml.soap.common.SOAPException;
+import org.opensaml.xmlsec.encryption.support.DecryptionException;
+import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 @ApplicationScoped
 public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
@@ -82,7 +79,7 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 
 	@Inject
 	private Logger logger;
-	
+
 	@Inject
 	private AuditEntryDao auditDao;
 
@@ -94,43 +91,43 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 
 	@Inject
 	private AttributeQueryHelper attrQueryHelper;
-	
+
 	@Inject
 	private SamlUserDao userDao;
 
 	@Inject
 	private ServiceService serviceService;
-	
+
 	@Inject
 	private RegistryDao registryDao;
-	
+
 	@Inject
 	private HomeOrgGroupUpdater homeOrgGroupUpdater;
 
 	@Inject
 	private SamlHelper samlHelper;
-		
-	@Inject 
+
+	@Inject
 	private SamlIdpMetadataDao idpDao;
-	
-	@Inject 
+
+	@Inject
 	private SamlSpConfigurationDao spDao;
 
 	@Inject
 	private SerialService serialService;
-	
+
 	@Inject
 	private HookManager hookManager;
-	
+
 	@Inject
 	private ASUserAttrDao asUserAttrDao;
-	
+
 	@Inject
 	private SamlAssertionDao samlAsserionDao;
-	
+
 	@Inject
 	private AttributeSourceQueryService attributeSourceQueryService;
-	
+
 	@Inject
 	private AttributeMapHelper attrHelper;
 
@@ -142,28 +139,28 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 
 	@Inject
 	private Registrator registrator;
-	
+
 	@Inject
 	private IdentityUpdater identityUpdater;
-	
+
 	@Inject
 	private LogHelper logHelper;
-	
+
 	public SamlUserEntity updateUser(SamlUserEntity user, Map<String, List<Object>> attributeMap, String executor, StringBuffer debugLog)
 			throws UserUpdateException {
 		return updateUser(user, attributeMap, executor, null, debugLog);
 	}
 
-	public SamlUserEntity updateUser(SamlUserEntity user, Map<String, List<Object>> attributeMap, String executor, 
+	public SamlUserEntity updateUser(SamlUserEntity user, Map<String, List<Object>> attributeMap, String executor,
 			ServiceEntity service, StringBuffer debugLog)
 			throws UserUpdateException {
 		MDC.put("userId", "" + user.getId());
 		logger.debug("Updating SAML user {}", user.getEppn());
 
 		user = userDao.merge(user);
-		
+
 		boolean changed = false;
-		
+
 		UserUpdateAuditor auditor = new UserUpdateAuditor(auditDao, auditDetailDao, appConfig);
 		auditor.startAuditTrail(executor);
 		auditor.setName(getClass().getName() + "-UserUpdate-Audit");
@@ -174,7 +171,7 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 		// List to store parent services, that are not registered. Need to be registered
 		// later, when attribute map is populated
 		List<ServiceEntity> delayedRegisterList = new ArrayList<ServiceEntity>();
-		
+
 		/**
 		 * put no_assertion_count in generic store if assertion is missing. Else
 		 * reset no assertion count and put last valid assertion date in
@@ -184,12 +181,12 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 				user.getGenericStore().put("no_assertion_count", "1");
 			}
 			else {
-				user.getGenericStore().put("no_assertion_count", 
+				user.getGenericStore().put("no_assertion_count",
 						"" + (Long.parseLong(user.getGenericStore().get("no_assertion_count")) + 1L));
 			}
-			
+
 			logger.info("No attribute for user {}, skipping updateFromAttribute", user.getEppn());
-			
+
 			user.getAttributeStore().clear();
 
 			if (UserStatus.ACTIVE.equals(user.getUserStatus())) {
@@ -198,7 +195,7 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 				/*
 				 * Also flag all registries for user ON_HOLD
 				 */
-				List<RegistryEntity> registryList = registryDao.findByUserAndStatus(user, 
+				List<RegistryEntity> registryList = registryDao.findByUserAndStatus(user,
 						RegistryStatus.ACTIVE, RegistryStatus.LOST_ACCESS, RegistryStatus.INVALID);
 				for (RegistryEntity registry : registryList) {
 					changeRegistryStatus(registry, RegistryStatus.ON_HOLD, "user-on-hold", auditor);
@@ -209,34 +206,34 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 			user.getGenericStore().put("no_assertion_count", "0");
 			user.getGenericStore().put("last_valid_assertion", df.format(new Date()));
-		
+
 			changed |= updateUserFromAttribute(user, attributeMap, auditor);
-			
+
 			if (UserStatus.ON_HOLD.equals(user.getUserStatus())) {
 				changeUserStatus(user, UserStatus.ACTIVE, auditor);
-				
+
 				/*
-				 * Also reenable all registries for user to LOST_ACCESS. 
+				 * Also reenable all registries for user to LOST_ACCESS.
 				 * They are rechecked then
 				 */
-				List<RegistryEntity> registryList = registryDao.findByUserAndStatus(user, 
+				List<RegistryEntity> registryList = registryDao.findByUserAndStatus(user,
 						RegistryStatus.ON_HOLD);
 				for (RegistryEntity registry : registryList) {
 					changeRegistryStatus(registry, RegistryStatus.LOST_ACCESS, "user-reactivated", auditor);
-					
+
 					/*
 					 * check if parent registry is missing
 					 */
 					if (registry.getService().getParentService() != null) {
 						List<RegistryEntity> parentRegistryList = registryDao.findByServiceAndIdentityAndNotStatus(
-								registry.getService().getParentService(), user.getIdentity(), 
+								registry.getService().getParentService(), user.getIdentity(),
 								RegistryStatus.DELETED, RegistryStatus.DEPROVISIONED);
 						if (parentRegistryList.size() == 0) {
 							delayedRegisterList.add(registry.getService().getParentService());
 						}
 					}
 				}
-				
+
 				/*
 				 * fire a user changed event to be sure, when the user is activated
 				 */
@@ -244,12 +241,12 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 			}
 
 			/*
-			 * if service is set, update only attribute sources spcific for this 
+			 * if service is set, update only attribute sources spcific for this
 			 * service. Else update all (login via web or generic attribute query)
 			 */
 			if (service != null) {
 				service = serviceService.findByIdWithAttrs(service.getId(), "attributeSourceService");
-				
+
 				for (AttributeSourceServiceEntity asse : service.getAttributeSourceService()) {
 					changed |= attributeSourceQueryService.updateUserAttributes(user, asse.getAttributeSource(), executor);
 				}
@@ -260,19 +257,19 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 					changed |= attributeSourceQueryService.updateUserAttributes(user, asUserAttr.getAttributeSource(), executor);
 				}
 			}
-			
+
 			Set<GroupEntity> changedGroups = homeOrgGroupUpdater.updateGroupsForUser(user, attributeMap, auditor);
 
 			if (changedGroups.size() > 0) {
 				changed = true;
 			}
-			
+
 			Map<String, String> attributeStore = user.getAttributeStore();
 			attributeStore.clear();
 			for (Entry<String, List<Object>> entry : attributeMap.entrySet()) {
 				attributeStore.put(entry.getKey(), attrHelper.attributeListToString(entry.getValue()));
 			}
-			
+
 			identityUpdater.updateIdentity(user);
 
 			if (appConfig.getConfigValue("create_missing_eppn_scope") != null) {
@@ -281,12 +278,12 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 					user.setEppn(user.getIdentity().getGeneratedLocalUsername() + "@" + scope);
 					changed = true;
 				}
-			}			
+			}
 		}
 
 		for (ServiceEntity delayedService : delayedRegisterList) {
 			try {
-				registrator.registerUser(user, delayedService, 
+				registrator.registerUser(user, delayedService,
 						"user-" + user.getId(), false);
 			} catch (RegisterException e) {
 				logger.warn("Parent registration didn't work out like it should", e);
@@ -298,15 +295,15 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 		user.setLastUpdate(new Date());
 		user.setLastFailedUpdate(null);
 		user.setScheduledUpdate(getNextScheduledUpdate());
-		
+
 		if (changed) {
 			fireUserChangeEvent(user, auditor.getActualExecutor(), auditor);
 		}
-		
+
 		auditor.setUser(user);
 		auditor.finishAuditTrail();
 		auditor.commitAuditTrail();
-		
+
 		if (debugLog != null) {
 			AuditUserUpdateEntity audit = auditor.getAudit();
 			debugLog.append("\n\nPrinting audit from user update process:\n\nName: ").append(audit.getName()).append("\nDetail: ")
@@ -320,21 +317,21 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 					.append(" | ").append(detail.getAuditStatus())
 					.append("\n");
 			}
-			
+
 			if (audit.getAuditDetails().size() == 0) {
 				debugLog.append("Nothing seems to have changed.\n");
 			}
 		}
-		
+
 		return user;
 	}
-	
+
 	private Date getNextScheduledUpdate() {
-		Long futureMillis = 30L * 24L * 60L * 60L * 1000L;
+            Long futureMillis = 30L * 24L * 60L * 60L * 1000L; // 30 days
 		if (appConfig.getConfigOptions().containsKey("update_schedule_future")) {
 			futureMillis = Long.decode(appConfig.getConfigValue("update_schedule_future"));
 		}
-		Integer futureMillisRandom = 6 * 60 * 60 * 1000;
+            Integer futureMillisRandom = 6 * 60 * 60 * 1000; // 6 hours
 		if (appConfig.getConfigOptions().containsKey("update_schedule_future_random")) {
 			futureMillisRandom = Integer.decode(appConfig.getConfigValue("update_schedule_future_random"));
 		}
@@ -344,17 +341,17 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 
 	public SamlUserEntity updateUser(SamlUserEntity user, Assertion assertion, String executor, ServiceEntity service, StringBuffer debugLog)
 			throws UserUpdateException {
-	
+
 		if (assertion != null) {
 			samlAsserionDao.deleteAssertionForUser(user);
-			
+
 			SamlAssertionEntity samlAssertionEntity = samlAsserionDao.createNew();
 			samlAssertionEntity.setUser(user);
 			samlAssertionEntity.setAssertionData(samlHelper.prettyPrint(assertion));
 			samlAssertionEntity.setValidUntil(new Date(System.currentTimeMillis() + (4L * 60L * 60L * 1000L)));
 			samlAssertionEntity = samlAsserionDao.persist(samlAssertionEntity);
 		}
-		
+
 		Map<String, List<Object>> attributeMap = saml2AssertionService.extractAttributes(assertion);
 
 		if (debugLog != null) {
@@ -363,7 +360,7 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 				debugLog.append(entry.getKey()).append(":\t").append(entry.getValue()).append("\n");
 			}
 		}
-		
+
 		if (service != null)
 			return updateUser(user, attributeMap, executor, service, debugLog);
 		else
@@ -372,37 +369,37 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 
 	public SamlUserEntity updateUser(SamlUserEntity user, Assertion assertion, String executor)
 			throws UserUpdateException {
-		
+
 		return updateUser(user, assertion, executor, null, null);
 	}
-	
-	public SamlUserEntity updateUserFromIdp(SamlUserEntity user, String executor) 
+
+	public SamlUserEntity updateUserFromIdp(SamlUserEntity user, String executor)
 			throws UserUpdateException {
 		return updateUserFromIdp(user, null, executor, null);
 	}
-	
-	public SamlUserEntity updateUserFromIdp(SamlUserEntity user, ServiceEntity service, String executor, StringBuffer debugLog) 
+
+	public SamlUserEntity updateUserFromIdp(SamlUserEntity user, ServiceEntity service, String executor, StringBuffer debugLog)
 			throws UserUpdateException {
 
 		SamlSpConfigurationEntity spEntity = spDao.findByEntityId(user.getPersistentSpId());
 		SamlIdpMetadataEntity idpEntity = idpDao.findByEntityId(user.getIdp().getEntityId());
-		
+
 		IdpCommunicationAuditor auditor = new IdpCommunicationAuditor(auditDao, auditDetailDao, appConfig);
 		auditor.setName("UpdateUserFromIdp");
 		auditor.setDetail("Call IDP " + idpEntity.getEntityId() + " from SP " + spEntity.getEntityId() + " for User " + user.getEppn());
 		auditor.setIdp(idpEntity);
 		auditor.setSpConfig(spEntity);
 		auditor.startAuditTrail(executor);
-		
+
 		EntityDescriptor idpEntityDescriptor = samlHelper.unmarshal(
 				idpEntity.getEntityDescriptor(), EntityDescriptor.class, auditor);
-		
+
 		Response samlResponse;
 		try {
 			/*
 			 * If something goes wrong here, communication with the idp probably failed
 			 */
-			
+
 			samlResponse = attrQueryHelper.query(user, idpEntity, idpEntityDescriptor, spEntity, debugLog);
 
 			if (logger.isTraceEnabled())
@@ -433,8 +430,8 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 		} catch (Exception e) {
 			handleException(user, e, idpEntity, auditor, debugLog);
 			throw new UserUpdateException(e);
-		} 
-		
+		}
+
 		try {
 			/*
 			 * Don't check Assertion Signature, because we are contacting the IDP directly
@@ -444,10 +441,10 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 				if (debugLog != null) {
 					debugLog.append("\nExtracting Assertion from SAML Response without signature check...\n");
 				}
-				
-				assertion = saml2AssertionService.processSamlResponse(samlResponse, idpEntity, 
+
+				assertion = saml2AssertionService.processSamlResponse(samlResponse, idpEntity,
 						idpEntityDescriptor, spEntity, false);
-				
+
 				if (logger.isTraceEnabled())
 					logger.trace("{}", samlHelper.prettyPrint(assertion));
 
@@ -482,7 +479,7 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 			throw new UserUpdateException(e);
 		}
 	}
-	
+
 	protected void handleException(SamlUserEntity user, Exception e, SamlIdpMetadataEntity idpEntity, Auditor auditor, StringBuffer debugLog) {
 		updateFail(user);
 		String message = e.getMessage();
@@ -491,7 +488,7 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 		auditor.logAction(idpEntity.getEntityId(), "SAML ATTRIBUTE QUERY", user.getEppn(), message, AuditStatus.FAIL);
 		auditor.finishAuditTrail();
 		auditor.commitAuditTrail();
-		
+
 		if (debugLog != null) {
 			debugLog.append("Attribute Query failed: ")
 				.append(e.getMessage());
@@ -500,17 +497,17 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 					.append(e.getCause().getMessage());
 			debugLog.append(logHelper.convertStacktrace(e));
 		}
-		
+
 		updateIdpStatus(SamlIdpMetadataEntityStatus.FAULTY, idpEntity);
 	}
-	
+
 	protected void updateIdpStatus(SamlIdpMetadataEntityStatus status, SamlIdpMetadataEntity idpEntity) {
 		if (! status.equals(idpEntity.getAqIdpStatus())) {
 			idpEntity.setAqIdpStatus(status);
 			idpEntity.setLastAqStatusChange(new Date());
 		}
 	}
-	
+
 	protected void updateFail(SamlUserEntity user) {
 		user.setLastFailedUpdate(new Date());
 		user.setScheduledUpdate(getNextScheduledUpdate());
@@ -518,9 +515,9 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 	}
 
 	protected void fireUserChangeEvent(UserEntity user, String executor, Auditor auditor) {
-		
+
 		UserEvent userEvent = new UserEvent(user, auditor.getAudit());
-		
+
 		try {
 			eventSubmitter.submit(userEvent, EventType.USER_UPDATE, executor);
 		} catch (EventSubmitException e) {
@@ -528,43 +525,43 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 		}
 	}
 
-	public boolean updateUserNew(SamlUserEntity user, Map<String, List<Object>> attributeMap, String executor, 
+	public boolean updateUserNew(SamlUserEntity user, Map<String, List<Object>> attributeMap, String executor,
 			Auditor auditor, StringBuffer debugLog)
 			throws UserUpdateException {
 		boolean changed = false;
-		
+
 		changed |= preUpdateUser(user, attributeMap, user.getIdp().getGenericStore(), executor, null, debugLog);
 		changed |= updateUserFromAttribute(user, attributeMap, auditor);
 		changed |= postUpdateUser(user, attributeMap, user.getIdp().getGenericStore(), executor, null, debugLog);
-		
+
 		return changed;
 	}
 
-	public boolean updateUserFromAttribute(SamlUserEntity user, Map<String, List<Object>> attributeMap, Auditor auditor) 
+	public boolean updateUserFromAttribute(SamlUserEntity user, Map<String, List<Object>> attributeMap, Auditor auditor)
 				throws UserUpdateException {
 		return updateUserFromAttribute(user, attributeMap, false, auditor);
 	}
 
-	public boolean updateUserFromAttribute(SamlUserEntity user, Map<String, List<Object>> attributeMap, boolean withoutUidNumber, Auditor auditor) 
+	public boolean updateUserFromAttribute(SamlUserEntity user, Map<String, List<Object>> attributeMap, boolean withoutUidNumber, Auditor auditor)
 				throws UserUpdateException {
 
 		boolean changed = false;
 
 		UserServiceHook completeOverrideHook = null;
 		Set<UserServiceHook> activeHooks = new HashSet<UserServiceHook>();
-		
+
 		for (UserServiceHook hook : hookManager.getUserHooks()) {
 			if (hook.isResponsible(user, attributeMap)) {
-				
+
 				hook.preUpdateUserFromAttribute(user, attributeMap, auditor);
 				activeHooks.add(hook);
-				
+
 				if (hook.isCompleteOverride()) {
 					completeOverrideHook = hook;
 				}
 			}
 		}
-		
+
 		if (completeOverrideHook == null) {
 			changed |= compareAndChangeProperty(user, "email", attributeMap.get("urn:oid:0.9.2342.19200300.100.1.3"), auditor);
 			changed |= compareAndChangeProperty(user, "eppn", attributeMap.get("urn:oid:1.3.6.1.4.1.5923.1.1.1.6"), auditor);
@@ -573,16 +570,16 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 
 			List<String> emailList = attrHelper.attributeListToStringList(attributeMap, "urn:oid:0.9.2342.19200300.100.1.3");
 			if (emailList != null && emailList.size() > 1) {
-				
+
 				if (user.getEmailAddresses() == null) {
 					user.setEmailAddresses(new HashSet<String>());
 				}
-				
+
 				for (int i=1; i<emailList.size(); i++) {
 					user.getEmailAddresses().add(emailList.get(i));
 				}
 			}
-			
+
 			if ((! withoutUidNumber) && (user.getUidNumber() == null)) {
 				user.setUidNumber(serialService.next("uid-number-serial").intValue());
 				logger.info("Setting UID Number {} for user {}", user.getUidNumber(), user.getEppn());
@@ -593,7 +590,7 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 		else {
 			logger.info("Overriding standard User Update Mechanism! Activator: {}", completeOverrideHook.getClass().getName());
 		}
-		
+
 		for (UserServiceHook hook : activeHooks) {
 			hook.postUpdateUserFromAttribute(user, attributeMap, auditor);
 		}
@@ -601,14 +598,14 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 		return changed;
 	}
 
-	
+
 	private boolean compareAndChangeProperty(UserEntity user, String property, List<Object> objectValue, Auditor auditor) {
 		String s = null;
 		String action = null;
-		
+
 		// In case of a List (multiple SAML Values), take the first value
 		String value = attrHelper.getSingleStringFirst(objectValue);
-		
+
 		try {
 			Object actualValue = PropertyUtils.getProperty(user, property);
 
@@ -616,12 +613,12 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 				// Value didn't change, do nothing
 				return false;
 			}
-			
+
 			if (actualValue == null && value == null) {
 				// Value stayed null
 				return false;
 			}
-			
+
 			if (actualValue == null) {
 				s = "null";
 				action = "SET FIELD";
@@ -630,12 +627,12 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 				s = actualValue.toString();
 				action = "UPDATE FIELD";
 			}
-			
+
 			s = s + " -> " + value;
 			if (s.length() > 1017) s = s.substring(0, 1017) + "...";
-			
+
 			PropertyUtils.setProperty(user, property, value);
-			
+
 			auditor.logAction(user.getEppn(), action, property, s, AuditStatus.SUCCESS);
 		} catch (IllegalAccessException e) {
 			logger.warn("This probably shouldn't happen: ", e);
@@ -647,27 +644,27 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 			logger.warn("This probably shouldn't happen: ", e);
 			auditor.logAction(user.getEppn(), action, property, s, AuditStatus.FAIL);
 		}
-		
+
 		return true;
 	}
-	
+
 	protected void changeUserStatus(UserEntity user, UserStatus toStatus, Auditor auditor) {
 		UserStatus fromStatus = user.getUserStatus();
 		user.setUserStatus(toStatus);
 		user.setLastStatusChange(new Date());
-		
+
 		logger.debug("{}: change user status from {} to {}", user.getEppn(), fromStatus, toStatus);
-		auditor.logAction(user.getEppn(), "CHANGE STATUS", fromStatus + " -> " + toStatus, 
+		auditor.logAction(user.getEppn(), "CHANGE STATUS", fromStatus + " -> " + toStatus,
 				"Change status " + fromStatus + " -> " + toStatus, AuditStatus.SUCCESS);
 	}
-	
+
 	protected void changeRegistryStatus(RegistryEntity registry, RegistryStatus toStatus, String statusMessage, Auditor parentAuditor) {
 		RegistryStatus fromStatus = registry.getRegistryStatus();
 		registry.setRegistryStatus(toStatus);
 		registry.setStatusMessage(statusMessage);
 		registry.setLastStatusChange(new Date());
 
-		logger.debug("{} {} {}: change registry status from {} to {}", new Object[] { 
+		logger.debug("{} {} {}: change registry status from {} to {}", new Object[] {
 				registry.getUser().getEppn(), registry.getService().getShortName(), registry.getId(), fromStatus, toStatus });
 		RegistryAuditor registryAuditor = new RegistryAuditor(auditDao, auditDetailDao, appConfig);
 		registryAuditor.setParent(parentAuditor);
@@ -675,7 +672,7 @@ public class UserUpdater extends AbstractUserUpdater<SamlUserEntity> {
 		registryAuditor.setName(getClass().getName() + "-UserUpdate-Registry-Audit");
 		registryAuditor.setDetail("Update registry " + registry.getId() + " for user " + registry.getUser().getEppn());
 		registryAuditor.setRegistry(registry);
-		registryAuditor.logAction(registry.getUser().getEppn(), "CHANGE STATUS", "registry-" + registry.getId(), 
+		registryAuditor.logAction(registry.getUser().getEppn(), "CHANGE STATUS", "registry-" + registry.getId(),
 				"Change status " + fromStatus + " -> " + toStatus, AuditStatus.SUCCESS);
 		registryAuditor.finishAuditTrail();
 	}
