@@ -40,8 +40,7 @@
 			<type>ejb</type>
 			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
+                <dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<scope>provided</scope>
@@ -68,6 +67,13 @@
 			<artifactId>bcpkix-jdk15on</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+                <dependency>
+                 <groupId>org.bouncycastle</groupId>
+                 <artifactId>bcprov-jdk15on</artifactId>
+                 <version>1.69</version>
+                 <type>jar</type>
+                </dependency>
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -152,6 +158,12 @@
 			<scope>provided</scope>
 		</dependency>
 
+                <dependency>
+                    <groupId>com.hierynomus</groupId>
+                    <artifactId>sshj</artifactId>
+                    <version>0.32.0</version>
+                    <type>jar</type>
+                </dependency>
 	</dependencies>
 
 	<build>

@@ -45,8 +45,8 @@ public class LdapWorker {
 
 	private String ldapUserBase;
 	private String ldapGroupBase;
-        private String ldapUserObjectclasses;
-        private String ldapGroupObjectclasses;
+	private String ldapUserObjectclasses;
+	private String ldapGroupObjectclasses;
 
 	private String ldapGroupType;
 	private String ldapGroupMemberBase;
@@ -54,10 +54,10 @@ public class LdapWorker {
 	private boolean sambaEnabled;
 	private String sidPrefix;
 
-        // optional feature: marking LDAP accounts as active/deactivated without deleting them
-        private String activationAttributeName; // LDAP attribute name to use; required to use feature
-        private String activeValue; // optional custom "active" value replacement
-        private String nonActiveValue; // optional custom "deactivated" value replacement
+	// optional feature: marking LDAP accounts as active/deactivated without deleting them
+	private String activationAttributeName; // LDAP attribute name to use; required to use feature
+	private String activeValue; // optional custom "active" value replacement
+	private String nonActiveValue; // optional custom "deactivated" value replacement
 
 	private LdapConnectionManager connectionManager;
 
@@ -78,9 +78,9 @@ public class LdapWorker {
 			ldapGroupType = prop.readPropOrNull("group_type");
 			ldapGroupMemberBase = prop.readPropOrNull("ldap_group_member_base");
 
-                        activationAttributeName = prop.readPropOrNull("ldap_activation_attribute_name");
-                        activeValue = prop.readPropOrNull("ldap_activation_attribute_positive_value");
-                        nonActiveValue = prop.readPropOrNull("ldap_activation_attribute_negative_value");
+			activationAttributeName = prop.readPropOrNull("ldap_activation_attribute_name");
+			activeValue = prop.readPropOrNull("ldap_activation_attribute_positive_value");
+			nonActiveValue = prop.readPropOrNull("ldap_activation_attribute_negative_value");
 
 			if (sambaEnabled)
 				sidPrefix = prop.readProp("sid_prefix");
@@ -513,7 +513,7 @@ public class LdapWorker {
 		for (Ldap ldap : connectionManager.getConnections()) {
 			try {
 				String ldapDn = "uid=" + uid + "," + ldapUserBase;
-                                setAttribute(ldap, ldapDn, "userPassword", password);
+				setAttribute(ldap, ldapDn, "userPassword", password);
 				logger.info("Setting password for User {} in ldap {}",
 						new Object[] {uid, ldapUserBase});
 				auditor.logAction("", "SET PASSWORD LDAP USER", uid, "Set User password in " + ldap.getLdapConfig().getLdapUrl(), AuditStatus.SUCCESS);
